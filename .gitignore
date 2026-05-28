@@ -40,3 +40,6 @@ Thumbs.db
 dist/
 build/
 out/
+
+# Local-only notes
+.local-deploy-notes.md

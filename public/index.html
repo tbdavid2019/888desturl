@@ -264,7 +264,11 @@
           timeoutReason: '追蹤逾時，頁面在限制時間內沒有穩定下來。',
           redirectLoopReason: '偵測到重複跳轉，疑似無窮迴圈，系統已主動停止。',
           maxRedirectStepsReason: '跳轉步數過多，系統已停止追蹤以避免無窮迴圈。',
-          traceFailedReason: '追蹤失敗，請稍後再試或檢查網址。'
+          traceFailedReason: '追蹤失敗，請稍後再試或檢查網址。',
+          accessDeniedReason: '目標網站回傳 403 Access Denied，可能在阻擋機器流量，或需要特定 cookie、標頭、登入狀態或 App 內上下文。',
+          invalidTargetReason: '目標網站回傳 404 Not Found，這個短連結可能已失效、過期，或只能在特定 App 內使用。',
+          clientErrorResponseReason: '目標網站在任何跳轉發生前就回傳了 4xx 錯誤。',
+          upstreamServerErrorReason: '目標網站在任何跳轉發生前就回傳了 5xx 錯誤。'
         },
         en: {
           pageTitle: '888desturl - Trace the Real Final Destination of Any URL',
@@ -305,7 +309,11 @@
           timeoutReason: 'The trace timed out before the page settled.',
           redirectLoopReason: 'A repeating redirect pattern was detected, so tracing was stopped.',
           maxRedirectStepsReason: 'Too many redirect steps were observed, so tracing was stopped.',
-          traceFailedReason: 'Tracing failed. Please retry or verify the URL.'
+          traceFailedReason: 'Tracing failed. Please retry or verify the URL.',
+          accessDeniedReason: 'The target site returned 403 Access Denied. It may be blocking bot traffic or require specific cookies, headers, login state, or app context.',
+          invalidTargetReason: 'The target site returned 404 Not Found. The short link may be invalid, expired, or only usable inside a specific app context.',
+          clientErrorResponseReason: 'The target site returned a 4xx response before any redirect was observed.',
+          upstreamServerErrorReason: 'The target site returned a 5xx response before any redirect was observed.'
         }
       };
 
@@ -403,7 +411,11 @@
           timeout: 'timeoutReason',
           redirect_loop: 'redirectLoopReason',
           max_redirect_steps: 'maxRedirectStepsReason',
-          trace_failed: 'traceFailedReason'
+          trace_failed: 'traceFailedReason',
+          access_denied: 'accessDeniedReason',
+          invalid_target: 'invalidTargetReason',
+          client_error_response: 'clientErrorResponseReason',
+          upstream_server_error: 'upstreamServerErrorReason'
         };
 
         const key = keyMap[code];

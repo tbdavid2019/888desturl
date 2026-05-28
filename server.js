@@ -187,6 +187,51 @@ function classifyTraceError(error) {
   return new TraceError('trace_failed', message, 500);
 }
 
+function interpretTraceResult(result) {
+  const firstStep = result.chain[0] || null;
+  const statusCode = firstStep ? firstStep.status_code : null;
+
+  if (result.terminated_reason !== 'completed') {
+    return result;
+  }
+
+  if (result.redirect_count === 0 && statusCode === 403) {
+    return {
+      ...result,
+      terminated_reason: 'access_denied',
+      terminated_message:
+        'The target site returned 403 Access Denied. It may be blocking bots, non-browser traffic, or requests without the expected cookies, headers, or app context.'
+    };
+  }
+
+  if (result.redirect_count === 0 && statusCode === 404) {
+    return {
+      ...result,
+      terminated_reason: 'invalid_target',
+      terminated_message:
+        'The target site returned 404 Not Found. The short link may be invalid, expired, or only usable in a specific app context.'
+    };
+  }
+
+  if (result.redirect_count === 0 && statusCode >= 400 && statusCode < 500) {
+    return {
+      ...result,
+      terminated_reason: 'client_error_response',
+      terminated_message: `The target site returned HTTP ${statusCode} before any redirect was observed.`
+    };
+  }
+
+  if (result.redirect_count === 0 && statusCode >= 500) {
+    return {
+      ...result,
+      terminated_reason: 'upstream_server_error',
+      terminated_message: `The target site returned HTTP ${statusCode} before any redirect was observed.`
+    };
+  }
+
+  return result;
+}
+
 async function traceUrl(inputUrl) {
   const browser = await chromium.launch({
     headless: true,
@@ -402,15 +447,23 @@ async function traceUrl(inputUrl) {
       });
     }
 
-    return {
+    const pageTitle = await page.title().catch(() => '');
+    const pageExcerpt = await page
+      .evaluate(() => (document.body && document.body.innerText ? document.body.innerText.trim() : ''))
+      .then((text) => text.replace(/\s+/g, ' ').slice(0, 240))
+      .catch(() => '');
+
+    return interpretTraceResult({
       final_url: finalUrl,
       input_url: inputUrl,
       redirect_count: Math.max(0, chain.length - 1),
       chain,
       terminated_reason: stopReason || 'completed',
       terminated_message: stopMessage,
-      loop_detected: stopReason === 'redirect_loop' || stopReason === 'max_redirect_steps'
-    };
+      loop_detected: stopReason === 'redirect_loop' || stopReason === 'max_redirect_steps',
+      page_title: pageTitle || null,
+      page_excerpt: pageExcerpt || null
+    });
   } finally {
     await context.close();
     await browser.close();
