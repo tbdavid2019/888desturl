@@ -10,6 +10,8 @@ const SETTLE_WINDOW_MS = 1200;
 const MAX_REDIRECT_STEPS = 20;
 const MAX_REPEAT_URL_VISITS = 3;
 const MAX_REPEAT_TRANSITIONS = 2;
+const LINE_IOS_USER_AGENT =
+  'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Safari/604.1 Line/14.8.0';
 
 const app = Fastify({
   logger: true,
@@ -60,6 +62,19 @@ function getBaseUrl(request) {
   return `${protocol}://${host}`;
 }
 
+function normalizeTraceContext(input) {
+  if (typeof input !== 'string' || input.trim() === '') {
+    return 'default';
+  }
+
+  const normalized = input.trim().toLowerCase();
+  if (normalized === 'line') {
+    return 'line';
+  }
+
+  return 'default';
+}
+
 function buildSkillMarkdown(baseUrl) {
   const apiUrl = `${baseUrl}/api/trace`;
   const finalUrlApi = `${baseUrl}/api/final`;
@@ -78,6 +93,7 @@ description: Use when you need to trace a URL through HTTP redirects, meta refre
 - **Trace Endpoint**: \`${apiUrl}?url=<encoded_target_url>\`
 - **Final-Only Endpoint**: \`${finalUrlApi}?url=<encoded_target_url>\`
 - **Short CLI Endpoint**: \`${shortFinalApi}?url=<encoded_target_url>\`
+- **Optional Context**: add \`&context=line\` for LINE-like mobile tracing when a link only works inside the LINE in-app browser
 - **Method**: \`GET\`
 - **Content Type**: \`application/json\`
 
@@ -94,15 +110,16 @@ Use this skill when the user wants to:
 
 1. Validate that the input is a full \`http://\` or \`https://\` URL.
 2. URL-encode the target URL.
-3. If the user is in a shell or wants the shortest possible response, call:
+3. If the URL appears to depend on the LINE app or LIFF, add \`context=line\`.
+4. If the user is in a shell or wants the shortest possible response, call:
    \`${shortFinalApi}?url=<encoded_target_url>\`
-4. If the user only wants the destination, call:
+5. If the user only wants the destination, call:
    \`${finalUrlApi}?url=<encoded_target_url>\`
-5. If the user wants the full redirect chain, call:
+6. If the user wants the full redirect chain, call:
    \`${apiUrl}?url=<encoded_target_url>\`
-6. Read \`final_url\` first and present it as the main answer.
-7. Summarize \`redirect_count\` when using the trace endpoint.
-8. If the user wants more detail, explain the ordered \`chain\`.
+7. Read \`final_url\` first and present it as the main answer.
+8. Summarize \`redirect_count\` when using the trace endpoint.
+9. If the user wants more detail, explain the ordered \`chain\`.
 
 ## Response Shape
 
@@ -134,6 +151,7 @@ Error responses may include:
 
 - \`error_code\`
 - \`error_message\`
+- \`trace_context\`
 
 ## Output Guidance
 
@@ -152,6 +170,12 @@ GET ${apiUrl}?url=https%3A%2F%2Fliff.line.me%2F1654038149-8ALRMLrb%2Fhuc7r%2F%3F
 
 \`\`\`text
 curl -s "${shortFinalApi}?url=https://aiurl.tw/104"
+\`\`\`
+
+## LINE Context Example
+
+\`\`\`text
+GET ${apiUrl}?url=https%3A%2F%2Fmaac.io%2Fexample&context=line
 \`\`\`
 `;
 }
@@ -232,7 +256,35 @@ function interpretTraceResult(result) {
   return result;
 }
 
-async function traceUrl(inputUrl) {
+function buildTraceContextOptions(traceContext) {
+  if (traceContext !== 'line') {
+    return {
+      browserContextOptions: {
+        ignoreHTTPSErrors: true,
+        javaScriptEnabled: true
+      },
+      extraHTTPHeaders: {}
+    };
+  }
+
+  return {
+    browserContextOptions: {
+      ignoreHTTPSErrors: true,
+      javaScriptEnabled: true,
+      userAgent: LINE_IOS_USER_AGENT,
+      viewport: { width: 390, height: 844 },
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      locale: 'zh-TW'
+    },
+    extraHTTPHeaders: {
+      'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7'
+    }
+  };
+}
+
+async function traceUrl(inputUrl, traceContext = 'default') {
   const browser = await chromium.launch({
     headless: true,
     args: [
@@ -253,10 +305,11 @@ async function traceUrl(inputUrl) {
     ]
   });
 
-  const context = await browser.newContext({
-    ignoreHTTPSErrors: true,
-    javaScriptEnabled: true
-  });
+  const traceContextOptions = buildTraceContextOptions(traceContext);
+  const context = await browser.newContext(traceContextOptions.browserContextOptions);
+  if (Object.keys(traceContextOptions.extraHTTPHeaders).length > 0) {
+    await context.setExtraHTTPHeaders(traceContextOptions.extraHTTPHeaders);
+  }
   const page = await context.newPage();
 
   const navigationResponses = [];
@@ -456,6 +509,7 @@ async function traceUrl(inputUrl) {
     return interpretTraceResult({
       final_url: finalUrl,
       input_url: inputUrl,
+      trace_context: traceContext,
       redirect_count: Math.max(0, chain.length - 1),
       chain,
       terminated_reason: stopReason || 'completed',
@@ -472,18 +526,20 @@ async function traceUrl(inputUrl) {
 
 app.get('/api/trace', async (request, reply) => {
   const targetUrl = normalizeUrl(request.query.url);
+  const traceContext = normalizeTraceContext(request.query.context);
 
   if (!targetUrl) {
     reply.code(400);
     return {
       error: 'Invalid or missing url query parameter. Use a full http(s) URL.',
       error_code: 'invalid_url',
-      error_message: 'Invalid or missing url query parameter. Use a full http(s) URL.'
+      error_message: 'Invalid or missing url query parameter. Use a full http(s) URL.',
+      trace_context: traceContext
     };
   }
 
   try {
-    return await traceUrl(targetUrl);
+    return await traceUrl(targetUrl, traceContext);
   } catch (error) {
     const classified = classifyTraceError(error);
     request.log.error({ err: error, classified, targetUrl }, 'Trace failed');
@@ -493,6 +549,7 @@ app.get('/api/trace', async (request, reply) => {
       error_code: classified.code,
       error_message: classified.message,
       input_url: targetUrl,
+      trace_context: traceContext,
       final_url: null,
       redirect_count: 0,
       chain: [],
@@ -504,6 +561,7 @@ app.get('/api/trace', async (request, reply) => {
 async function handleFinalLookup(request, reply) {
   const targetUrl = normalizeUrl(request.query.url);
   const format = typeof request.query.format === 'string' ? request.query.format.toLowerCase() : 'text';
+  const traceContext = normalizeTraceContext(request.query.context);
 
   if (!targetUrl) {
     reply.code(400);
@@ -511,7 +569,8 @@ async function handleFinalLookup(request, reply) {
       return {
         error: 'Invalid or missing url query parameter. Use a full http(s) URL.',
         error_code: 'invalid_url',
-        error_message: 'Invalid or missing url query parameter. Use a full http(s) URL.'
+        error_message: 'Invalid or missing url query parameter. Use a full http(s) URL.',
+        trace_context: traceContext
       };
     }
 
@@ -520,12 +579,13 @@ async function handleFinalLookup(request, reply) {
   }
 
   try {
-    const result = await traceUrl(targetUrl);
+    const result = await traceUrl(targetUrl, traceContext);
 
     if (format === 'json') {
       return {
         final_url: result.final_url,
         input_url: result.input_url,
+        trace_context: result.trace_context,
         redirect_count: result.redirect_count,
         terminated_reason: result.terminated_reason,
         terminated_message: result.terminated_message,
@@ -550,6 +610,7 @@ async function handleFinalLookup(request, reply) {
         error_code: classified.code,
         error_message: classified.message,
         input_url: targetUrl,
+        trace_context: traceContext,
         final_url: null,
         details: error.message
       };

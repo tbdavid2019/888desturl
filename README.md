@@ -65,6 +65,7 @@ Full redirect diagnostics.
 Query:
 
 - `url`: required full `http://` or `https://` URL
+- `context`: optional, supports `line` for LINE-like mobile tracing
 
 Response:
 
@@ -92,6 +93,12 @@ Response:
 ```
 
 Use this when you need the full chain.
+
+LINE context example:
+
+```bash
+curl -s "https://url.create360.ai/api/trace?url=https://maac.io/6oqDe/jNGkx&context=line"
+```
 
 Safety behavior:
 
@@ -124,6 +131,7 @@ Query:
 
 - `url`: required full `http://` or `https://` URL
 - `format`: optional, default `text`, supports `json`
+- `context`: optional, supports `line`
 
 Examples:
 
@@ -137,6 +145,10 @@ https://calendly.com/david360ai/45min?month=2026-05
 
 ```bash
 curl -s "https://url.create360.ai/api/final?url=https://aiurl.tw/104&format=json"
+```
+
+```bash
+curl -s "https://url.create360.ai/api/final?url=https://maac.io/6oqDe/jNGkx&context=line&format=json"
 ```
 
 ```json
@@ -166,6 +178,10 @@ curl -s "https://url.create360.ai/api/f?url=https://aiurl.tw/104"
 
 ```bash
 curl -s "https://url.create360.ai/api/f?url=https://aiurl.tw/104&format=json"
+```
+
+```bash
+curl -s "https://url.create360.ai/api/f?url=https://maac.io/6oqDe/jNGkx&context=line"
 ```
 
 ### `GET /ai-agent-skill`

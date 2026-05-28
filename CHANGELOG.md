@@ -11,6 +11,7 @@
 - Added multilingual UI switching with browser-language detection
 - Added loop protection and termination reporting for repeated redirects
 - Added user-facing error explanations for invalid URLs, DNS errors, SSL errors, refused connections, and timeouts
+- Added optional `context=line` tracing mode for links that depend on the LINE in-app browser context
 
 ### Changed
 
@@ -18,6 +19,7 @@
 - Updated the hero title layout to use controlled line breaks instead of browser-driven wrapping
 - Updated documentation to explain the CLI-focused endpoints and dynamic skill behavior
 - Updated trace responses to expose `terminated_reason`, `terminated_message`, and `loop_detected`
+- Updated API and skill docs to describe LINE-context tracing
 
 ### Deployment
 
