@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirect Trace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: '#101828',
+              mist: '#f5f7fb',
+              accent: '#0f766e',
+              accentSoft: '#ccfbf1',
+              signal: '#dcfce7'
+            },
+            boxShadow: {
+              panel: '0 24px 80px rgba(15, 23, 42, 0.14)'
+            }
+          }
+        }
+      };
+    </script>
+  </head>
+  <body class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(20,184,166,0.18),_transparent_30%),linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] text-ink">
+    <main class="mx-auto flex min-h-screen w-full max-w-6xl items-center px-4 py-10 sm:px-6 lg:px-8">
+      <div class="w-full">
+        <section class="mx-auto max-w-3xl rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-panel backdrop-blur md:p-8">
+          <div class="mb-8 text-center">
+            <p class="mb-3 inline-flex rounded-full bg-accentSoft px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-accent">
+              Redirect Trace
+            </p>
+            <h1 class="text-3xl font-black tracking-tight sm:text-4xl">追蹤網址真正的最終目的地</h1>
+            <p class="mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
+              使用 Headless Chromium 模擬真實瀏覽器，抓出 HTTP 轉址、meta refresh 與 JavaScript 導向。
+            </p>
+          </div>
+
+          <form id="trace-form" class="space-y-4" novalidate>
+            <label for="url-input" class="block text-sm font-semibold text-slate-700">目標網址</label>
+            <div class="flex flex-col gap-3 sm:flex-row">
+              <input
+                id="url-input"
+                name="url"
+                type="url"
+                required
+                placeholder="https://example.com"
+                class="min-h-14 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-base outline-none transition focus:border-accent focus:ring-4 focus:ring-accent/10"
+              />
+              <button
+                id="submit-button"
+                type="submit"
+                class="inline-flex min-h-14 items-center justify-center rounded-2xl bg-ink px-6 font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-300 disabled:cursor-not-allowed disabled:bg-slate-400"
+              >
+                <span id="submit-text">開始追蹤</span>
+              </button>
+            </div>
+            <p id="form-hint" class="text-sm text-slate-500">輸入完整的 `http://` 或 `https://` 網址。</p>
+          </form>
+
+          <section id="feedback" class="mt-6 hidden rounded-2xl border px-4 py-3 text-sm"></section>
+
+          <section id="results" class="mt-8 hidden space-y-6">
+            <article class="overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 p-[1px] shadow-panel">
+              <div class="rounded-[1.7rem] bg-slate-950/95 p-6 text-white md:p-7">
+                <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                  <div class="min-w-0">
+                    <p class="text-xs font-bold uppercase tracking-[0.28em] text-emerald-200">Final URL</p>
+                    <h2 class="mt-2 text-2xl font-black tracking-tight md:text-3xl">最終目的地網址</h2>
+                    <a
+                      id="final-url"
+                      href="#"
+                      target="_blank"
+                      rel="noreferrer"
+                      class="mt-4 block break-all text-base font-medium text-cyan-200 underline decoration-cyan-400/60 underline-offset-4 hover:text-white"
+                    ></a>
+                  </div>
+                  <button
+                    id="copy-button"
+                    type="button"
+                    class="inline-flex shrink-0 items-center justify-center rounded-2xl bg-white/12 px-4 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/20"
+                  >
+                    複製網址
+                  </button>
+                </div>
+                <div class="mt-5 grid gap-3 sm:grid-cols-3">
+                  <div class="rounded-2xl bg-white/10 px-4 py-3">
+                    <p class="text-xs uppercase tracking-[0.2em] text-emerald-100">Input</p>
+                    <p id="input-url" class="mt-2 break-all text-sm text-white/90"></p>
+                  </div>
+                  <div class="rounded-2xl bg-white/10 px-4 py-3">
+                    <p class="text-xs uppercase tracking-[0.2em] text-emerald-100">Redirects</p>
+                    <p id="redirect-count" class="mt-2 text-2xl font-black"></p>
+                  </div>
+                  <div class="rounded-2xl bg-white/10 px-4 py-3">
+                    <p class="text-xs uppercase tracking-[0.2em] text-emerald-100">Steps</p>
+                    <p id="step-count" class="mt-2 text-2xl font-black"></p>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="rounded-[1.75rem] border border-slate-200/70 bg-white/90 p-5 shadow-lg shadow-slate-200/60">
+              <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div>
+                  <h3 class="text-xl font-bold tracking-tight">Redirect Chain</h3>
+                  <p class="text-sm text-slate-500">完整跳轉過程與每個節點的細節。</p>
+                </div>
+              </div>
+              <div id="chain-list" class="mt-5 space-y-4"></div>
+            </article>
+          </section>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      const form = document.getElementById('trace-form');
+      const urlInput = document.getElementById('url-input');
+      const submitButton = document.getElementById('submit-button');
+      const submitText = document.getElementById('submit-text');
+      const feedback = document.getElementById('feedback');
+      const results = document.getElementById('results');
+      const finalUrlLink = document.getElementById('final-url');
+      const inputUrl = document.getElementById('input-url');
+      const redirectCount = document.getElementById('redirect-count');
+      const stepCount = document.getElementById('step-count');
+      const chainList = document.getElementById('chain-list');
+      const copyButton = document.getElementById('copy-button');
+
+      let latestFinalUrl = '';
+
+      function setLoading(isLoading) {
+        submitButton.disabled = isLoading;
+        submitText.textContent = isLoading ? '追蹤中...' : '開始追蹤';
+      }
+
+      function showFeedback(message, type) {
+        feedback.className =
+          'mt-6 rounded-2xl border px-4 py-3 text-sm ' +
+          (type === 'error'
+            ? 'border-red-200 bg-red-50 text-red-700'
+            : 'border-emerald-200 bg-emerald-50 text-emerald-700');
+        feedback.textContent = message;
+        feedback.classList.remove('hidden');
+      }
+
+      function hideFeedback() {
+        feedback.classList.add('hidden');
+        feedback.textContent = '';
+      }
+
+      function badgeClass(type) {
+        if (type === 'http_redirect') return 'bg-amber-100 text-amber-800';
+        if (type === 'client_redirect') return 'bg-sky-100 text-sky-800';
+        return 'bg-slate-100 text-slate-800';
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#39;');
+      }
+
+      function renderChain(chain) {
+        chainList.innerHTML = chain
+          .map((item) => {
+            const duration = item.duration_ms === null ? 'N/A' : `${item.duration_ms} ms`;
+            const status = item.status_code === null ? 'N/A' : `${item.status_code} ${item.status_text || ''}`.trim();
+            const fromUrl = item.from_url
+              ? `<p class="mt-2 break-all text-xs text-slate-500">from: ${escapeHtml(item.from_url)}</p>`
+              : '';
+
+            return `
+              <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+                <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                  <div class="min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-slate-900 px-2 text-sm font-bold text-white">${item.step}</span>
+                      <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ${badgeClass(item.type)}">${escapeHtml(item.type)}</span>
+                    </div>
+                    <p class="mt-3 break-all text-sm font-semibold text-slate-900">${escapeHtml(item.url)}</p>
+                    ${fromUrl}
+                  </div>
+                  <div class="grid shrink-0 grid-cols-2 gap-3 text-sm text-slate-600 md:min-w-56">
+                    <div class="rounded-xl bg-white px-3 py-2">
+                      <p class="text-xs uppercase tracking-wide text-slate-400">Status</p>
+                      <p class="mt-1 font-semibold text-slate-800">${escapeHtml(status)}</p>
+                    </div>
+                    <div class="rounded-xl bg-white px-3 py-2">
+                      <p class="text-xs uppercase tracking-wide text-slate-400">Time</p>
+                      <p class="mt-1 font-semibold text-slate-800">${escapeHtml(duration)}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+      }
+
+      copyButton.addEventListener('click', async () => {
+        if (!latestFinalUrl) return;
+
+        try {
+          await navigator.clipboard.writeText(latestFinalUrl);
+          const originalText = copyButton.textContent;
+          copyButton.textContent = '已複製';
+          setTimeout(() => {
+            copyButton.textContent = originalText;
+          }, 1600);
+        } catch {
+          showFeedback('無法複製到剪貼簿，請手動複製最終網址。', 'error');
+        }
+      });
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        hideFeedback();
+        results.classList.add('hidden');
+
+        const value = urlInput.value.trim();
+        if (!value) {
+          showFeedback('請先輸入完整網址。', 'error');
+          return;
+        }
+
+        setLoading(true);
+        try {
+          const response = await fetch(`/api/trace?url=${encodeURIComponent(value)}`);
+          const payload = await response.json();
+
+          if (!response.ok) {
+            throw new Error(payload.error || 'Trace failed');
+          }
+
+          latestFinalUrl = payload.final_url;
+          finalUrlLink.textContent = payload.final_url;
+          finalUrlLink.href = payload.final_url;
+          inputUrl.textContent = payload.input_url;
+          redirectCount.textContent = String(payload.redirect_count);
+          stepCount.textContent = String(payload.chain.length);
+          renderChain(payload.chain);
+          results.classList.remove('hidden');
+          showFeedback('追蹤完成。最終網址已在上方醒目區塊顯示。', 'success');
+        } catch (error) {
+          showFeedback(error.message || '發生未預期錯誤。', 'error');
+        } finally {
+          setLoading(false);
+        }
+      });
+    </script>
+  </body>
+</html>
