@@ -10,6 +10,7 @@ const SETTLE_WINDOW_MS = 1200;
 const MAX_REDIRECT_STEPS = 20;
 const MAX_REPEAT_URL_VISITS = 3;
 const MAX_REPEAT_TRANSITIONS = 2;
+const MAX_LINE_INTERMEDIATE_CLICKS = 2;
 const LINE_IOS_USER_AGENT =
   'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Safari/604.1 Line/14.8.0';
 
@@ -94,6 +95,7 @@ description: Use when you need to trace a URL through HTTP redirects, meta refre
 - **Final-Only Endpoint**: \`${finalUrlApi}?url=<encoded_target_url>\`
 - **Short CLI Endpoint**: \`${shortFinalApi}?url=<encoded_target_url>\`
 - **Optional Context**: add \`&context=line\` for LINE-like mobile tracing when a link only works inside the LINE in-app browser
+- **LINE CTA Assist**: in \`context=line\`, the tracer also attempts to click obvious "continue/open page" buttons on LINE-style intermediary pages
 - **Method**: \`GET\`
 - **Content Type**: \`application/json\`
 
@@ -284,6 +286,78 @@ function buildTraceContextOptions(traceContext) {
   };
 }
 
+async function waitForPageToSettle(page, getLastNavigationAt, deadline, shouldStop) {
+  while (Date.now() < deadline) {
+    if (shouldStop()) {
+      return false;
+    }
+
+    const idleFor = Date.now() - getLastNavigationAt();
+    const networkIdleReached = await page
+      .waitForLoadState('networkidle', { timeout: 500 })
+      .then(() => true)
+      .catch(() => false);
+
+    if (idleFor >= SETTLE_WINDOW_MS && networkIdleReached) {
+      return true;
+    }
+
+    await wait(250);
+  }
+
+  return false;
+}
+
+async function maybeContinueLineIntermediate(page, traceContext) {
+  if (traceContext !== 'line') {
+    return false;
+  }
+
+  const title = await page.title().catch(() => '');
+  const bodyText = await page
+    .evaluate(() => (document.body && document.body.innerText ? document.body.innerText.trim() : ''))
+    .catch(() => '');
+  const snapshot = `${title}\n${bodyText}`.replace(/\s+/g, ' ');
+  const isLikelyLineIntermediate =
+    snapshot.includes('前往你的頁面') ||
+    snapshot.includes('點擊下方按鈕前往頁面') ||
+    snapshot.includes('返回 LINE') ||
+    snapshot.includes('Open the page') ||
+    snapshot.includes('Continue in LINE');
+
+  if (!isLikelyLineIntermediate) {
+    return false;
+  }
+
+  const ctaPatterns = [/前往頁面/i, /打開頁面/i, /繼續/i, /\bopen\b/i, /\bcontinue\b/i];
+  const selectors = ['a', 'button', 'input[type="button"]', 'input[type="submit"]'];
+
+  for (const selector of selectors) {
+    const elements = await page.locator(selector).elementHandles();
+    for (const element of elements) {
+      const text = (
+        (await element.textContent().catch(() => '')) ||
+        (await element.getAttribute('value').catch(() => '')) ||
+        ''
+      ).trim();
+
+      if (!text || !ctaPatterns.some((pattern) => pattern.test(text))) {
+        continue;
+      }
+
+      const visible = await element.isVisible().catch(() => false);
+      if (!visible) {
+        continue;
+      }
+
+      await element.click({ timeout: 2000 }).catch(() => {});
+      return true;
+    }
+  }
+
+  return false;
+}
+
 async function traceUrl(inputUrl, traceContext = 'default') {
   const browser = await chromium.launch({
     headless: true,
@@ -320,6 +394,7 @@ async function traceUrl(inputUrl, traceContext = 'default') {
   let lastNavigationAt = Date.now();
   let stopReason = null;
   let stopMessage = null;
+  let lineIntermediateClicks = 0;
 
   function markTermination(reason, message) {
     if (!stopReason) {
@@ -429,22 +504,33 @@ async function traceUrl(inputUrl, traceContext = 'default') {
     }
 
     const deadline = Date.now() + TRACE_TIMEOUT_MS;
-    while (Date.now() < deadline) {
+    while (Date.now() < deadline && !stopReason) {
+      const settled = await waitForPageToSettle(
+        page,
+        () => lastNavigationAt,
+        deadline,
+        () => Boolean(stopReason)
+      );
+
       if (stopReason) {
         break;
       }
 
-      const idleFor = Date.now() - lastNavigationAt;
-      const networkIdleReached = await page
-        .waitForLoadState('networkidle', { timeout: 500 })
-        .then(() => true)
-        .catch(() => false);
-
-      if (idleFor >= SETTLE_WINDOW_MS && networkIdleReached) {
+      if (!settled) {
         break;
       }
 
-      await wait(250);
+      if (lineIntermediateClicks >= MAX_LINE_INTERMEDIATE_CLICKS) {
+        break;
+      }
+
+      const clickedIntermediate = await maybeContinueLineIntermediate(page, traceContext);
+      if (!clickedIntermediate) {
+        break;
+      }
+
+      lineIntermediateClicks += 1;
+      lastNavigationAt = Date.now();
     }
 
     if (!stopReason && Date.now() >= deadline) {

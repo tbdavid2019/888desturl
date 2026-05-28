@@ -66,6 +66,7 @@ Query:
 
 - `url`: required full `http://` or `https://` URL
 - `context`: optional, supports `line` for LINE-like mobile tracing
+  - In `line` context, the tracer also tries to click obvious "open page" or "continue" CTA buttons on LINE-style intermediary pages
 
 Response:
 
@@ -132,6 +133,7 @@ Query:
 - `url`: required full `http://` or `https://` URL
 - `format`: optional, default `text`, supports `json`
 - `context`: optional, supports `line`
+  - In `line` context, the tracer may continue through intermediary CTA pages before returning the best-known final URL
 
 Examples:
 
@@ -194,6 +196,8 @@ Example:
 - On `https://url.david888.com`, the generated skill will automatically use `https://url.david888.com`
 
 This avoids hardcoded deployment domains.
+
+The generated skill also documents the optional `context=line` mode and its intermediary-page CTA assist behavior.
 
 ### `GET /health`
 
