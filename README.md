@@ -212,6 +212,7 @@ Health check:
 - The web UI auto-detects the browser language
 - Traditional Chinese is selected for `zh-*` browsers
 - English is selected otherwise
+- The web UI automatically retries with `context=line` when a pasted link looks like an app-only redirect that failed in standard browser context
 - The footer `AI Agent Skills` link opens the live dynamic skill in a new tab
 
 ## Main Files

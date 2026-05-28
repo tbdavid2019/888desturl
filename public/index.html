@@ -268,7 +268,9 @@
           accessDeniedReason: '目標網站回傳 403 Access Denied，可能在阻擋機器流量，或需要特定 cookie、標頭、登入狀態或 App 內上下文。',
           invalidTargetReason: '目標網站回傳 404 Not Found，這個短連結可能已失效、過期，或只能在特定 App 內使用。',
           clientErrorResponseReason: '目標網站在任何跳轉發生前就回傳了 4xx 錯誤。',
-          upstreamServerErrorReason: '目標網站在任何跳轉發生前就回傳了 5xx 錯誤。'
+          upstreamServerErrorReason: '目標網站在任何跳轉發生前就回傳了 5xx 錯誤。',
+          autoLineRetry: '偵測到這可能是 App 內連結，已自動改用 LINE 模式重試。',
+          lineContextApplied: '已自動使用 LINE 模式完成追蹤。'
         },
         en: {
           pageTitle: '888desturl - Trace the Real Final Destination of Any URL',
@@ -313,7 +315,9 @@
           accessDeniedReason: 'The target site returned 403 Access Denied. It may be blocking bot traffic or require specific cookies, headers, login state, or app context.',
           invalidTargetReason: 'The target site returned 404 Not Found. The short link may be invalid, expired, or only usable inside a specific app context.',
           clientErrorResponseReason: 'The target site returned a 4xx response before any redirect was observed.',
-          upstreamServerErrorReason: 'The target site returned a 5xx response before any redirect was observed.'
+          upstreamServerErrorReason: 'The target site returned a 5xx response before any redirect was observed.',
+          autoLineRetry: 'This looks like an app-only link. Retrying automatically with LINE context.',
+          lineContextApplied: 'Tracing completed after automatically switching to LINE context.'
         }
       };
 
@@ -420,6 +424,28 @@
 
         const key = keyMap[code];
         return key ? t(key) : fallback || t('unexpectedError');
+      }
+
+      function shouldRetryWithLineContext(payload) {
+        if (!payload || payload.trace_context === 'line') {
+          return false;
+        }
+
+        return (
+          payload.redirect_count === 0 &&
+          ['invalid_target', 'access_denied', 'client_error_response'].includes(payload.terminated_reason)
+        );
+      }
+
+      async function traceRequest(url, context = '') {
+        const query = new URLSearchParams({ url });
+        if (context) {
+          query.set('context', context);
+        }
+
+        const response = await fetch(`/api/trace?${query.toString()}`);
+        const payload = await response.json();
+        return { response, payload };
       }
 
       function renderChain(chain) {
@@ -535,8 +561,14 @@
 
         setLoading(true);
         try {
-          const response = await fetch(`/api/trace?url=${encodeURIComponent(value)}`);
-          const payload = await response.json();
+          let autoRetriedWithLine = false;
+          let { response, payload } = await traceRequest(value);
+
+          if (response.ok && shouldRetryWithLineContext(payload)) {
+            showFeedback(t('autoLineRetry'), 'warning', 'autoLineRetry');
+            ({ response, payload } = await traceRequest(value, 'line'));
+            autoRetriedWithLine = true;
+          }
 
           if (!response.ok) {
             const reason = reasonMessageFromCode(payload.error_code, payload.error_message || payload.error);
@@ -559,6 +591,8 @@
               payload.terminated_message || t('tracePartial')
             );
             showFeedback(`${t('tracePartial')} ${reason}`, 'warning');
+          } else if (autoRetriedWithLine && payload.trace_context === 'line') {
+            showFeedback(t('lineContextApplied'), 'success', 'lineContextApplied');
           } else {
             showFeedback(t('traceSuccess'), 'success', 'traceSuccess');
           }

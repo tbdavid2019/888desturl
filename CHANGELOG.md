@@ -13,6 +13,7 @@
 - Added user-facing error explanations for invalid URLs, DNS errors, SSL errors, refused connections, and timeouts
 - Added optional `context=line` tracing mode for links that depend on the LINE in-app browser context
 - Added automatic CTA clicking for `context=line` on LINE-style intermediary pages such as "前往頁面" flows
+- Added automatic Web UI fallback to retry with `context=line` when standard tracing looks like an app-only link failure
 
 ### Changed
 
