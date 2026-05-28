@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Redirect Trace</title>
+    <title>888desturl - 追蹤網址真正的最終目的地</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -11,10 +11,8 @@
           extend: {
             colors: {
               ink: '#101828',
-              mist: '#f5f7fb',
               accent: '#0f766e',
-              accentSoft: '#ccfbf1',
-              signal: '#dcfce7'
+              accentSoft: '#ccfbf1'
             },
             boxShadow: {
               panel: '0 24px 80px rgba(15, 23, 42, 0.14)'
@@ -27,19 +25,61 @@
   <body class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(20,184,166,0.18),_transparent_30%),linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] text-ink">
     <main class="mx-auto flex min-h-screen w-full max-w-6xl items-center px-4 py-10 sm:px-6 lg:px-8">
       <div class="w-full">
-        <section class="mx-auto max-w-3xl rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-panel backdrop-blur md:p-8">
-          <div class="mb-8 text-center">
-            <p class="mb-3 inline-flex rounded-full bg-accentSoft px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-accent">
-              Redirect Trace
-            </p>
-            <h1 class="text-3xl font-black tracking-tight sm:text-4xl">追蹤網址真正的最終目的地</h1>
-            <p class="mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-              使用 Headless Chromium 模擬真實瀏覽器，抓出 HTTP 轉址、meta refresh 與 JavaScript 導向。
-            </p>
+        <section class="mx-auto max-w-4xl rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-panel backdrop-blur md:p-10">
+          <div class="relative mb-10">
+            <div class="mb-5 flex justify-center sm:mb-0 sm:absolute sm:right-0 sm:top-0">
+              <div class="flex shrink-0 gap-2 rounded-2xl border border-slate-200 bg-white/90 p-1 shadow-sm">
+                <button
+                  id="lang-zh"
+                  type="button"
+                  data-lang="zh-TW"
+                  class="rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 transition"
+                >
+                  繁中
+                </button>
+                <button
+                  id="lang-en"
+                  type="button"
+                  data-lang="en"
+                  class="rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 transition"
+                >
+                  EN
+                </button>
+              </div>
+            </div>
+            <div class="text-center sm:px-16">
+              <p
+                data-i18n="eyebrow"
+                class="mb-3 inline-flex rounded-full bg-accentSoft px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-accent"
+              >
+                Redirect Trace
+              </p>
+              <h1
+                data-i18n-html="heroTitle"
+                class="mx-auto max-w-3xl text-4xl font-black leading-[0.98] tracking-[-0.04em] text-slate-950 sm:text-5xl md:text-6xl"
+              >
+                <span class="block">888desturl</span>
+                <span class="mt-2 block text-[0.68em] font-extrabold tracking-[-0.03em] sm:text-[0.62em]">
+                  追蹤網址真正的最終目的地
+                </span>
+              </h1>
+              <p
+                data-i18n="heroDescription"
+                class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-lg"
+              >
+                使用 Headless Chromium 模擬真實瀏覽器，抓出 HTTP 轉址、meta refresh 與 JavaScript 導向。
+              </p>
+            </div>
           </div>
 
           <form id="trace-form" class="space-y-4" novalidate>
-            <label for="url-input" class="block text-sm font-semibold text-slate-700">目標網址</label>
+            <label
+              for="url-input"
+              data-i18n="urlLabel"
+              class="block text-sm font-semibold text-slate-700"
+            >
+              目標網址
+            </label>
             <div class="flex flex-col gap-3 sm:flex-row">
               <input
                 id="url-input"
@@ -57,7 +97,13 @@
                 <span id="submit-text">開始追蹤</span>
               </button>
             </div>
-            <p id="form-hint" class="text-sm text-slate-500">輸入完整的 `http://` 或 `https://` 網址。</p>
+            <p
+              id="form-hint"
+              data-i18n="formHint"
+              class="text-sm text-slate-500"
+            >
+              輸入完整的 `http://` 或 `https://` 網址。
+            </p>
           </form>
 
           <section id="feedback" class="mt-6 hidden rounded-2xl border px-4 py-3 text-sm"></section>
@@ -67,8 +113,18 @@
               <div class="rounded-[1.7rem] bg-slate-950/95 p-6 text-white md:p-7">
                 <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div class="min-w-0">
-                    <p class="text-xs font-bold uppercase tracking-[0.28em] text-emerald-200">Final URL</p>
-                    <h2 class="mt-2 text-2xl font-black tracking-tight md:text-3xl">最終目的地網址</h2>
+                    <p
+                      data-i18n="finalUrlEyebrow"
+                      class="text-xs font-bold uppercase tracking-[0.28em] text-emerald-200"
+                    >
+                      Final URL
+                    </p>
+                    <h2
+                      data-i18n="finalUrlTitle"
+                      class="mt-2 text-2xl font-black tracking-tight md:text-3xl"
+                    >
+                      最終目的地網址
+                    </h2>
                     <a
                       id="final-url"
                       href="#"
@@ -80,6 +136,7 @@
                   <button
                     id="copy-button"
                     type="button"
+                    data-i18n="copyButton"
                     class="inline-flex shrink-0 items-center justify-center rounded-2xl bg-white/12 px-4 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/20"
                   >
                     複製網址
@@ -87,15 +144,30 @@
                 </div>
                 <div class="mt-5 grid gap-3 sm:grid-cols-3">
                   <div class="rounded-2xl bg-white/10 px-4 py-3">
-                    <p class="text-xs uppercase tracking-[0.2em] text-emerald-100">Input</p>
+                    <p
+                      data-i18n="inputStat"
+                      class="text-xs uppercase tracking-[0.2em] text-emerald-100"
+                    >
+                      Input
+                    </p>
                     <p id="input-url" class="mt-2 break-all text-sm text-white/90"></p>
                   </div>
                   <div class="rounded-2xl bg-white/10 px-4 py-3">
-                    <p class="text-xs uppercase tracking-[0.2em] text-emerald-100">Redirects</p>
+                    <p
+                      data-i18n="redirectStat"
+                      class="text-xs uppercase tracking-[0.2em] text-emerald-100"
+                    >
+                      Redirects
+                    </p>
                     <p id="redirect-count" class="mt-2 text-2xl font-black"></p>
                   </div>
                   <div class="rounded-2xl bg-white/10 px-4 py-3">
-                    <p class="text-xs uppercase tracking-[0.2em] text-emerald-100">Steps</p>
+                    <p
+                      data-i18n="stepsStat"
+                      class="text-xs uppercase tracking-[0.2em] text-emerald-100"
+                    >
+                      Steps
+                    </p>
                     <p id="step-count" class="mt-2 text-2xl font-black"></p>
                   </div>
                 </div>
@@ -105,18 +177,138 @@
             <article class="rounded-[1.75rem] border border-slate-200/70 bg-white/90 p-5 shadow-lg shadow-slate-200/60">
               <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
-                  <h3 class="text-xl font-bold tracking-tight">Redirect Chain</h3>
-                  <p class="text-sm text-slate-500">完整跳轉過程與每個節點的細節。</p>
+                  <h3
+                    data-i18n="chainTitle"
+                    class="text-xl font-bold tracking-tight"
+                  >
+                    Redirect Chain
+                  </h3>
+                  <p
+                    data-i18n="chainDescription"
+                    class="text-sm text-slate-500"
+                  >
+                    完整跳轉過程與每個節點的細節。
+                  </p>
                 </div>
               </div>
               <div id="chain-list" class="mt-5 space-y-4"></div>
             </article>
           </section>
+
+          <footer class="mt-10 border-t border-slate-200 pt-6 text-center text-sm text-slate-500">
+            <p>© 2026 888desturl. All rights reserved.</p>
+            <p class="mt-2">
+              Created by
+              <a
+                href="https://david888.com"
+                target="_blank"
+                rel="noreferrer"
+                class="font-semibold text-accent underline decoration-accent/40 underline-offset-4"
+              >
+                DAVID888
+              </a>
+              <span>|</span>
+              <a
+                id="skill-link"
+                href="/ai-agent-skill"
+                target="_blank"
+                rel="noreferrer"
+                class="font-semibold text-accent underline decoration-accent/40 underline-offset-4"
+              >
+                AI Agent Skills
+              </a>
+            </p>
+          </footer>
         </section>
       </div>
     </main>
 
     <script>
+      const translations = {
+        'zh-TW': {
+          pageTitle: '888desturl - 追蹤網址真正的最終目的地',
+          eyebrow: 'Redirect Trace',
+          heroTitle:
+            '<span class="block">888desturl</span><span class="mt-2 block text-[0.68em] font-extrabold tracking-[-0.03em] sm:text-[0.62em]">追蹤網址真正的最終目的地</span>',
+          heroDescription:
+            '使用 Headless Chromium 模擬真實瀏覽器，抓出 HTTP 轉址、meta refresh 與 JavaScript 導向。',
+          urlLabel: '目標網址',
+          submitIdle: '開始追蹤',
+          submitLoading: '追蹤中...',
+          formHint: '輸入完整的 `http://` 或 `https://` 網址。',
+          finalUrlEyebrow: 'Final URL',
+          finalUrlTitle: '最終目的地網址',
+          copyButton: '複製網址',
+          copied: '已複製',
+          inputStat: 'Input',
+          redirectStat: 'Redirects',
+          stepsStat: 'Steps',
+          chainTitle: 'Redirect Chain',
+          chainDescription: '完整跳轉過程與每個節點的細節。',
+          statusLabel: '狀態',
+          timeLabel: '耗時',
+          fromLabel: '來源',
+          invalidUrl: '請先輸入完整網址。',
+          copyFailed: '無法複製到剪貼簿，請手動複製最終網址。',
+          traceSuccess: '追蹤完成。最終網址已在上方醒目區塊顯示。',
+          tracePartial: '追蹤已停止，以下結果可能是部分結果。',
+          unexpectedError: '發生未預期錯誤。',
+          notAvailable: '無',
+          typeInitial: '起始',
+          typeHttpRedirect: 'HTTP 轉址',
+          typeClientRedirect: '前端轉址',
+          invalidUrlReason: '網址格式無效，請輸入完整的 http:// 或 https:// 網址。',
+          dnsErrorReason: '網域名稱無法解析，請確認網址是否正確。',
+          connectionRefusedReason: '目標伺服器拒絕連線。',
+          sslErrorReason: '目標網站的 SSL/TLS 驗證失敗。',
+          timeoutReason: '追蹤逾時，頁面在限制時間內沒有穩定下來。',
+          redirectLoopReason: '偵測到重複跳轉，疑似無窮迴圈，系統已主動停止。',
+          maxRedirectStepsReason: '跳轉步數過多，系統已停止追蹤以避免無窮迴圈。',
+          traceFailedReason: '追蹤失敗，請稍後再試或檢查網址。'
+        },
+        en: {
+          pageTitle: '888desturl - Trace the Real Final Destination of Any URL',
+          eyebrow: 'Redirect Trace',
+          heroTitle:
+            '<span class="block">888desturl</span><span class="mt-2 block text-[0.56em] font-extrabold tracking-[-0.03em] sm:text-[0.5em]">Trace the Real Final Destination of Any URL</span>',
+          heroDescription:
+            'Use Headless Chromium to simulate a real browser and capture HTTP redirects, meta refresh, and JavaScript navigation.',
+          urlLabel: 'Target URL',
+          submitIdle: 'Start Trace',
+          submitLoading: 'Tracing...',
+          formHint: 'Enter a full `http://` or `https://` URL.',
+          finalUrlEyebrow: 'Final URL',
+          finalUrlTitle: 'Final Destination URL',
+          copyButton: 'Copy URL',
+          copied: 'Copied',
+          inputStat: 'Input',
+          redirectStat: 'Redirects',
+          stepsStat: 'Steps',
+          chainTitle: 'Redirect Chain',
+          chainDescription: 'Review the full chain with status codes and timing details.',
+          statusLabel: 'Status',
+          timeLabel: 'Time',
+          fromLabel: 'From',
+          invalidUrl: 'Please enter a complete URL first.',
+          copyFailed: 'Clipboard copy failed. Please copy the final URL manually.',
+          traceSuccess: 'Trace complete. The final URL is highlighted above.',
+          tracePartial: 'Tracing stopped early. The result below may be partial.',
+          unexpectedError: 'An unexpected error occurred.',
+          notAvailable: 'N/A',
+          typeInitial: 'Initial',
+          typeHttpRedirect: 'HTTP Redirect',
+          typeClientRedirect: 'Client Redirect',
+          invalidUrlReason: 'The URL is invalid. Please enter a full http:// or https:// URL.',
+          dnsErrorReason: 'The domain name could not be resolved.',
+          connectionRefusedReason: 'The target server refused the connection.',
+          sslErrorReason: 'The target site failed SSL/TLS validation.',
+          timeoutReason: 'The trace timed out before the page settled.',
+          redirectLoopReason: 'A repeating redirect pattern was detected, so tracing was stopped.',
+          maxRedirectStepsReason: 'Too many redirect steps were observed, so tracing was stopped.',
+          traceFailedReason: 'Tracing failed. Please retry or verify the URL.'
+        }
+      };
+
       const form = document.getElementById('trace-form');
       const urlInput = document.getElementById('url-input');
       const submitButton = document.getElementById('submit-button');
@@ -129,33 +321,27 @@
       const stepCount = document.getElementById('step-count');
       const chainList = document.getElementById('chain-list');
       const copyButton = document.getElementById('copy-button');
+      const langButtons = document.querySelectorAll('[data-lang]');
+      const skillLink = document.getElementById('skill-link');
 
       let latestFinalUrl = '';
+      let currentLanguage = 'zh-TW';
+      let isLoading = false;
+      let lastFeedbackType = null;
+      let lastFeedbackMessageKey = '';
+      let lastFeedbackMessageText = '';
+      let lastChain = [];
 
-      function setLoading(isLoading) {
-        submitButton.disabled = isLoading;
-        submitText.textContent = isLoading ? '追蹤中...' : '開始追蹤';
+      function detectLanguage() {
+        const browserLanguage = (navigator.language || '').toLowerCase();
+        if (browserLanguage.startsWith('zh')) {
+          return 'zh-TW';
+        }
+        return 'en';
       }
 
-      function showFeedback(message, type) {
-        feedback.className =
-          'mt-6 rounded-2xl border px-4 py-3 text-sm ' +
-          (type === 'error'
-            ? 'border-red-200 bg-red-50 text-red-700'
-            : 'border-emerald-200 bg-emerald-50 text-emerald-700');
-        feedback.textContent = message;
-        feedback.classList.remove('hidden');
-      }
-
-      function hideFeedback() {
-        feedback.classList.add('hidden');
-        feedback.textContent = '';
-      }
-
-      function badgeClass(type) {
-        if (type === 'http_redirect') return 'bg-amber-100 text-amber-800';
-        if (type === 'client_redirect') return 'bg-sky-100 text-sky-800';
-        return 'bg-slate-100 text-slate-800';
+      function t(key) {
+        return translations[currentLanguage][key] || key;
       }
 
       function escapeHtml(value) {
@@ -167,13 +353,74 @@
           .replaceAll("'", '&#39;');
       }
 
+      function badgeClass(type) {
+        if (type === 'http_redirect') return 'bg-amber-100 text-amber-800';
+        if (type === 'client_redirect') return 'bg-sky-100 text-sky-800';
+        return 'bg-slate-100 text-slate-800';
+      }
+
+      function localizedType(type) {
+        if (type === 'http_redirect') return t('typeHttpRedirect');
+        if (type === 'client_redirect') return t('typeClientRedirect');
+        return t('typeInitial');
+      }
+
+      function setLoading(nextLoading) {
+        isLoading = nextLoading;
+        submitButton.disabled = nextLoading;
+        submitText.textContent = nextLoading ? t('submitLoading') : t('submitIdle');
+      }
+
+      function showFeedback(message, type, messageKey = '') {
+        lastFeedbackType = type;
+        lastFeedbackMessageKey = messageKey;
+        lastFeedbackMessageText = message;
+        feedback.className =
+          'mt-6 rounded-2xl border px-4 py-3 text-sm ' +
+          (type === 'error'
+            ? 'border-red-200 bg-red-50 text-red-700'
+            : type === 'warning'
+              ? 'border-amber-200 bg-amber-50 text-amber-800'
+              : 'border-emerald-200 bg-emerald-50 text-emerald-700');
+        feedback.textContent = message;
+        feedback.classList.remove('hidden');
+      }
+
+      function hideFeedback() {
+        lastFeedbackType = null;
+        lastFeedbackMessageKey = '';
+        lastFeedbackMessageText = '';
+        feedback.classList.add('hidden');
+        feedback.textContent = '';
+      }
+
+      function reasonMessageFromCode(code, fallback) {
+        const keyMap = {
+          invalid_url: 'invalidUrlReason',
+          dns_error: 'dnsErrorReason',
+          connection_refused: 'connectionRefusedReason',
+          ssl_error: 'sslErrorReason',
+          timeout: 'timeoutReason',
+          redirect_loop: 'redirectLoopReason',
+          max_redirect_steps: 'maxRedirectStepsReason',
+          trace_failed: 'traceFailedReason'
+        };
+
+        const key = keyMap[code];
+        return key ? t(key) : fallback || t('unexpectedError');
+      }
+
       function renderChain(chain) {
         chainList.innerHTML = chain
           .map((item) => {
-            const duration = item.duration_ms === null ? 'N/A' : `${item.duration_ms} ms`;
-            const status = item.status_code === null ? 'N/A' : `${item.status_code} ${item.status_text || ''}`.trim();
+            const duration =
+              item.duration_ms === null ? t('notAvailable') : `${item.duration_ms} ms`;
+            const status =
+              item.status_code === null
+                ? t('notAvailable')
+                : `${item.status_code} ${item.status_text || ''}`.trim();
             const fromUrl = item.from_url
-              ? `<p class="mt-2 break-all text-xs text-slate-500">from: ${escapeHtml(item.from_url)}</p>`
+              ? `<p class="mt-2 break-all text-xs text-slate-500">${escapeHtml(t('fromLabel'))}: ${escapeHtml(item.from_url)}</p>`
               : '';
 
             return `
@@ -182,18 +429,18 @@
                   <div class="min-w-0">
                     <div class="flex flex-wrap items-center gap-2">
                       <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-slate-900 px-2 text-sm font-bold text-white">${item.step}</span>
-                      <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ${badgeClass(item.type)}">${escapeHtml(item.type)}</span>
+                      <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ${badgeClass(item.type)}">${escapeHtml(localizedType(item.type))}</span>
                     </div>
                     <p class="mt-3 break-all text-sm font-semibold text-slate-900">${escapeHtml(item.url)}</p>
                     ${fromUrl}
                   </div>
                   <div class="grid shrink-0 grid-cols-2 gap-3 text-sm text-slate-600 md:min-w-56">
                     <div class="rounded-xl bg-white px-3 py-2">
-                      <p class="text-xs uppercase tracking-wide text-slate-400">Status</p>
+                      <p class="text-xs uppercase tracking-wide text-slate-400">${escapeHtml(t('statusLabel'))}</p>
                       <p class="mt-1 font-semibold text-slate-800">${escapeHtml(status)}</p>
                     </div>
                     <div class="rounded-xl bg-white px-3 py-2">
-                      <p class="text-xs uppercase tracking-wide text-slate-400">Time</p>
+                      <p class="text-xs uppercase tracking-wide text-slate-400">${escapeHtml(t('timeLabel'))}</p>
                       <p class="mt-1 font-semibold text-slate-800">${escapeHtml(duration)}</p>
                     </div>
                   </div>
@@ -204,18 +451,62 @@
           .join('');
       }
 
+      function updateLanguageButtons() {
+        langButtons.forEach((button) => {
+          const isActive = button.dataset.lang === currentLanguage;
+          button.className = isActive
+            ? 'rounded-xl bg-ink px-3 py-2 text-sm font-semibold text-white transition'
+            : 'rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100';
+        });
+      }
+
+      function applyTranslations() {
+        document.documentElement.lang = currentLanguage === 'zh-TW' ? 'zh-Hant' : 'en';
+        document.title = t('pageTitle');
+
+        document.querySelectorAll('[data-i18n]').forEach((element) => {
+          element.textContent = t(element.dataset.i18n);
+        });
+
+        document.querySelectorAll('[data-i18n-html]').forEach((element) => {
+          element.innerHTML = t(element.dataset.i18nHtml);
+        });
+
+        urlInput.placeholder = 'https://example.com';
+        skillLink.href = '/ai-agent-skill';
+        setLoading(isLoading);
+        copyButton.textContent = t('copyButton');
+        updateLanguageButtons();
+
+        if (lastFeedbackType && (lastFeedbackMessageKey || lastFeedbackMessageText)) {
+          const nextMessage = lastFeedbackMessageKey ? t(lastFeedbackMessageKey) : lastFeedbackMessageText;
+          showFeedback(nextMessage, lastFeedbackType, lastFeedbackMessageKey);
+        }
+
+        if (lastChain.length > 0) {
+          renderChain(lastChain);
+        }
+      }
+
+      langButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          currentLanguage = button.dataset.lang;
+          applyTranslations();
+        });
+      });
+
       copyButton.addEventListener('click', async () => {
         if (!latestFinalUrl) return;
 
         try {
           await navigator.clipboard.writeText(latestFinalUrl);
-          const originalText = copyButton.textContent;
-          copyButton.textContent = '已複製';
+          const copiedText = t('copied');
+          copyButton.textContent = copiedText;
           setTimeout(() => {
-            copyButton.textContent = originalText;
+            copyButton.textContent = t('copyButton');
           }, 1600);
         } catch {
-          showFeedback('無法複製到剪貼簿，請手動複製最終網址。', 'error');
+          showFeedback(t('copyFailed'), 'error', 'copyFailed');
         }
       });
 
@@ -226,7 +517,7 @@
 
         const value = urlInput.value.trim();
         if (!value) {
-          showFeedback('請先輸入完整網址。', 'error');
+          showFeedback(t('invalidUrl'), 'error', 'invalidUrl');
           return;
         }
 
@@ -236,10 +527,12 @@
           const payload = await response.json();
 
           if (!response.ok) {
-            throw new Error(payload.error || 'Trace failed');
+            const reason = reasonMessageFromCode(payload.error_code, payload.error_message || payload.error);
+            throw new Error(reason);
           }
 
           latestFinalUrl = payload.final_url;
+          lastChain = payload.chain;
           finalUrlLink.textContent = payload.final_url;
           finalUrlLink.href = payload.final_url;
           inputUrl.textContent = payload.input_url;
@@ -247,13 +540,25 @@
           stepCount.textContent = String(payload.chain.length);
           renderChain(payload.chain);
           results.classList.remove('hidden');
-          showFeedback('追蹤完成。最終網址已在上方醒目區塊顯示。', 'success');
+
+          if (payload.terminated_reason && payload.terminated_reason !== 'completed') {
+            const reason = reasonMessageFromCode(
+              payload.terminated_reason,
+              payload.terminated_message || t('tracePartial')
+            );
+            showFeedback(`${t('tracePartial')} ${reason}`, 'warning');
+          } else {
+            showFeedback(t('traceSuccess'), 'success', 'traceSuccess');
+          }
         } catch (error) {
-          showFeedback(error.message || '發生未預期錯誤。', 'error');
+          showFeedback(error.message || t('unexpectedError'), 'error');
         } finally {
           setLoading(false);
         }
       });
+
+      currentLanguage = detectLanguage();
+      applyTranslations();
     </script>
   </body>
 </html>
