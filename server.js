@@ -976,7 +976,7 @@ app.get('/ai-agent-skill', async (request, reply) => {
 });
 
 app.get('/admin', async (request, reply) => {
-  reply.sendFile('admin.html');
+  return reply.sendFile('admin.html');
 });
 
 app.get('/health', async () => ({
