@@ -865,6 +865,8 @@ async function handleFinalLookup(request, reply) {
 
     if (format === 'json') {
       return {
+        result_id: result.result_id || null,
+        result_url: result.result_url || null,
         final_url: result.final_url,
         input_url: result.input_url,
         trace_context: result.trace_context,
@@ -891,6 +893,7 @@ async function handleFinalLookup(request, reply) {
 
     if (format === 'json') {
       return enrichResultWithPublicUrls({
+        result_id: persisted ? persisted.result_id : null,
         error: classified.message,
         error_code: classified.code,
         error_message: classified.message,
