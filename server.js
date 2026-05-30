@@ -35,6 +35,7 @@ const app = Fastify({
 });
 
 let historyStore = null;
+const resultTemplatePath = path.join(PUBLIC_DIR, 'result.html');
 
 fs.mkdirSync(PREVIEW_DIR, { recursive: true });
 
@@ -463,6 +464,82 @@ function buildResultUrl(baseUrl, resultId) {
   }
 
   return `${baseUrl}/result/${encodeURIComponent(resultId)}`;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function toAbsoluteUrl(baseUrl, maybeRelativeUrl) {
+  if (!maybeRelativeUrl) {
+    return null;
+  }
+
+  try {
+    return new URL(maybeRelativeUrl, baseUrl).toString();
+  } catch {
+    return null;
+  }
+}
+
+function getSecuritySummary(status) {
+  if (status === 'safe') {
+    return '✓ 安全';
+  }
+
+  if (status === 'flagged') {
+    return '⚠ 已知風險';
+  }
+
+  return '？ 無法判斷';
+}
+
+function buildResultMeta(result, baseUrl) {
+  if (!result) {
+    const title = '888desturl Result';
+    const description = 'Trace result not found.';
+    return {
+      title,
+      description,
+      canonicalUrl: baseUrl,
+      ogImageUrl: '',
+      resultJson: 'null'
+    };
+  }
+
+  const securitySummary = getSecuritySummary(result.security_status);
+  const title = `${securitySummary} | 888desturl`;
+  const description = `${result.final_url || 'N/A'} | Redirects ${result.redirect_count || 0} | Result ${result.result_id || ''}`.trim();
+  const canonicalUrl = buildResultUrl(baseUrl, result.result_id) || baseUrl;
+  const ogImageUrl = toAbsoluteUrl(baseUrl, result.preview_url) || '';
+
+  return {
+    title,
+    description,
+    canonicalUrl,
+    ogImageUrl,
+    resultJson: JSON.stringify(enrichResultWithPublicUrls(result, baseUrl)).replaceAll('</script', '<\\/script')
+  };
+}
+
+function renderResultPageHtml(result, baseUrl) {
+  const template = fs.readFileSync(resultTemplatePath, 'utf8');
+  const meta = buildResultMeta(result, baseUrl);
+  const ogImageMeta = meta.ogImageUrl
+    ? `  <meta property="og:image" content="${escapeHtml(meta.ogImageUrl)}" />\n  <meta name="twitter:image" content="${escapeHtml(meta.ogImageUrl)}" />`
+    : '';
+
+  return template
+    .replaceAll('__META_TITLE__', escapeHtml(meta.title))
+    .replaceAll('__META_DESCRIPTION__', escapeHtml(meta.description))
+    .replaceAll('__CANONICAL_URL__', escapeHtml(meta.canonicalUrl))
+    .replaceAll('__OG_IMAGE_META__', ogImageMeta)
+    .replaceAll('__RESULT_JSON__', meta.resultJson);
 }
 
 function enrichResultWithPublicUrls(result, baseUrl) {
@@ -1031,7 +1108,19 @@ app.get('/admin', async (request, reply) => {
 });
 
 app.get('/result/:resultId', async (request, reply) => {
-  return reply.sendFile('result.html');
+  if (!historyStore || !historyStore.enabled) {
+    reply.code(503).type('text/html; charset=utf-8');
+    return renderResultPageHtml(null, getBaseUrl(request));
+  }
+
+  const result = await historyStore.getResultById(request.params.resultId);
+  if (!result) {
+    reply.code(404).type('text/html; charset=utf-8');
+    return renderResultPageHtml(null, getBaseUrl(request));
+  }
+
+  reply.type('text/html; charset=utf-8');
+  return renderResultPageHtml(result, getBaseUrl(request));
 });
 
 app.get('/r/:resultId', async (request, reply) => {

@@ -3,7 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>888desturl Result</title>
+    <title>__META_TITLE__</title>
+    <meta name="description" content="__META_DESCRIPTION__" />
+    <link rel="canonical" href="__CANONICAL_URL__" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="__META_TITLE__" />
+    <meta property="og:description" content="__META_DESCRIPTION__" />
+    <meta property="og:url" content="__CANONICAL_URL__" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="__META_TITLE__" />
+    <meta name="twitter:description" content="__META_DESCRIPTION__" />
+__OG_IMAGE_META__
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -47,6 +57,9 @@
               <p id="input-url" class="mt-3 break-all text-sm text-slate-500"></p>
             </div>
             <div class="flex flex-wrap gap-3">
+              <button id="copy-result-link-button" type="button" class="inline-flex items-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                複製結果頁連結
+              </button>
               <span id="security-badge" class="inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold"></span>
               <span id="redirect-badge" class="inline-flex items-center rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700"></span>
             </div>
@@ -107,9 +120,11 @@
     </main>
 
     <script>
+      window.__RESULT_DATA__ = __RESULT_JSON__;
       const finalUrl = document.getElementById('final-url');
       const inputUrl = document.getElementById('input-url');
       const resultMeta = document.getElementById('result-meta');
+      const copyResultLinkButton = document.getElementById('copy-result-link-button');
       const securityBadge = document.getElementById('security-badge');
       const redirectBadge = document.getElementById('redirect-badge');
       const securityMessage = document.getElementById('security-message');
@@ -122,6 +137,7 @@
       const terminatedReason = document.getElementById('terminated-reason');
       const pageTitle = document.getElementById('page-title');
       const chainList = document.getElementById('chain-list');
+      let activeResultUrl = '';
 
       function escapeHtml(value) {
         return String(value)
@@ -208,11 +224,13 @@
           .join('');
       }
 
-      async function loadResult() {
-        const pathParts = window.location.pathname.split('/').filter(Boolean);
-        const resultId = decodeURIComponent(pathParts[pathParts.length - 1] || '');
-        if (!resultId) {
-          throw new Error('Missing result id.');
+      async function fetchResultById(resultId) {
+        if (
+          window.__RESULT_DATA__ &&
+          typeof window.__RESULT_DATA__ === 'object' &&
+          window.__RESULT_DATA__.result_id === resultId
+        ) {
+          return window.__RESULT_DATA__;
         }
 
         const response = await fetch(`/api/results/${encodeURIComponent(resultId)}`);
@@ -221,8 +239,21 @@
           throw new Error(payload.error || 'Result not found.');
         }
 
+        return payload;
+      }
+
+      async function loadResult() {
+        const pathParts = window.location.pathname.split('/').filter(Boolean);
+        const resultId = decodeURIComponent(pathParts[pathParts.length - 1] || '');
+        if (!resultId) {
+          throw new Error('Missing result id.');
+        }
+
+        const payload = await fetchResultById(resultId);
+
         document.title = `888desturl Result ${payload.result_id}`;
         resultMeta.textContent = `建立時間 ${new Date(payload.created_at).toLocaleString()} | Client ${payload.client_type}`;
+        activeResultUrl = payload.result_url || window.location.href;
         resultIdElement.textContent = payload.result_id || 'N/A';
         traceContext.textContent = payload.trace_context || 'default';
         terminatedReason.textContent = payload.terminated_reason || 'completed';
@@ -235,6 +266,25 @@
         renderSecurity(payload);
         renderChain(payload.chain);
       }
+
+      copyResultLinkButton.addEventListener('click', async () => {
+        if (!activeResultUrl) {
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(activeResultUrl);
+          copyResultLinkButton.textContent = '已複製結果頁連結';
+          setTimeout(() => {
+            copyResultLinkButton.textContent = '複製結果頁連結';
+          }, 1600);
+        } catch {
+          copyResultLinkButton.textContent = '複製失敗';
+          setTimeout(() => {
+            copyResultLinkButton.textContent = '複製結果頁連結';
+          }, 1600);
+        }
+      });
 
       loadResult().catch((error) => {
         document.title = '888desturl Result';

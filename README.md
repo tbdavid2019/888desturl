@@ -5,6 +5,7 @@
 - final-only Google Web Risk 檢查
 - final 頁面截圖預覽
 - 每次 trace 的獨立結果頁
+- 可分享的結果頁 metadata 與結果頁連結複製
 - 7 天預覽圖保留與自動清理
 - browser localStorage 最近查詢紀錄
 - SQLite server history / usage stats
@@ -238,6 +239,9 @@ Public result URLs:
 Behavior:
 
 - the page reads data from `GET /api/results/:resultId`
+- the result page includes shareable metadata for social previews
+- the result page can copy its own standalone URL
+- admin history links directly to the standalone result page
 - preview images may disappear after the preview retention window
 - the result row itself remains available until history retention removes it
 - if the history record expires, the result page returns not found
