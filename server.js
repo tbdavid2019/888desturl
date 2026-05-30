@@ -1,7 +1,14 @@
 const path = require('node:path');
+const fs = require('node:fs');
+const crypto = require('node:crypto');
 const Fastify = require('fastify');
 const fastifyStatic = require('@fastify/static');
 const { chromium } = require('playwright');
+const { loadEnvFile } = require('./lib/env');
+const { createHistoryStore } = require('./lib/storage');
+const { createAdminAuth } = require('./lib/admin-auth');
+
+loadEnvFile(path.join(__dirname, '.env'));
 
 const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || '0.0.0.0';
@@ -11,6 +18,14 @@ const MAX_REDIRECT_STEPS = 20;
 const MAX_REPEAT_URL_VISITS = 3;
 const MAX_REPEAT_TRANSITIONS = 2;
 const MAX_LINE_INTERMEDIATE_CLICKS = 2;
+const CLEANUP_INTERVAL_MS = 12 * 60 * 60 * 1000;
+const PREVIEW_RETENTION_DAYS = Number(process.env.PREVIEW_RETENTION_DAYS || 7);
+const HISTORY_RETENTION_DAYS = Number(process.env.HISTORY_RETENTION_DAYS || 90);
+const DATA_DIR = path.resolve(__dirname, process.env.DATA_DIR || './data');
+const PUBLIC_DIR = path.join(__dirname, 'public');
+const PREVIEW_DIR = path.join(DATA_DIR, 'previews');
+const WEB_RISK_API_KEY = process.env.GOOGLE_WEB_RISK_API_KEY || '';
+const WEB_RISK_THREAT_TYPES = ['MALWARE', 'SOCIAL_ENGINEERING', 'UNWANTED_SOFTWARE'];
 const LINE_IOS_USER_AGENT =
   'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Safari/604.1 Line/14.8.0';
 
@@ -19,9 +34,25 @@ const app = Fastify({
   trustProxy: true
 });
 
+let historyStore = null;
+
+fs.mkdirSync(PREVIEW_DIR, { recursive: true });
+
+const adminAuth = createAdminAuth({
+  username: process.env.ADMIN_USERNAME || '',
+  password: process.env.ADMIN_PASSWORD || '',
+  sessionTtlMs: Number(process.env.ADMIN_SESSION_TTL_HOURS || 24) * 60 * 60 * 1000
+});
+
 app.register(fastifyStatic, {
-  root: path.join(__dirname, 'public'),
+  root: PUBLIC_DIR,
   prefix: '/'
+});
+
+app.register(fastifyStatic, {
+  root: PREVIEW_DIR,
+  prefix: '/previews/',
+  decorateReply: false
 });
 
 function normalizeUrl(input) {
@@ -63,6 +94,14 @@ function getBaseUrl(request) {
   return `${protocol}://${host}`;
 }
 
+function getRequestPath(request) {
+  return request.raw.url ? request.raw.url.split('?')[0] : '/';
+}
+
+function getClientType(request) {
+  return request.headers['x-888desturl-client'] === 'web' ? 'web' : 'api';
+}
+
 function normalizeTraceContext(input) {
   if (typeof input !== 'string' || input.trim() === '') {
     return 'default';
@@ -95,90 +134,28 @@ description: Use when you need to trace a URL through HTTP redirects, meta refre
 - **Final-Only Endpoint**: \`${finalUrlApi}?url=<encoded_target_url>\`
 - **Short CLI Endpoint**: \`${shortFinalApi}?url=<encoded_target_url>\`
 - **Optional Context**: add \`&context=line\` for LINE-like mobile tracing when a link only works inside the LINE in-app browser
-- **LINE CTA Assist**: in \`context=line\`, the tracer also attempts to click obvious "continue/open page" buttons on LINE-style intermediary pages
 - **Method**: \`GET\`
 - **Content Type**: \`application/json\`
-
-## When To Use
-
-Use this skill when the user wants to:
-
-- find the final destination of a shortened or redirected URL
-- inspect LIFF URLs or frontend-driven redirect flows
-- verify whether a redirect is HTTP-based or browser-driven
-- debug a redirect chain with status codes and timing details
 
 ## Workflow
 
 1. Validate that the input is a full \`http://\` or \`https://\` URL.
 2. URL-encode the target URL.
 3. If the URL appears to depend on the LINE app or LIFF, add \`context=line\`.
-4. If the user is in a shell or wants the shortest possible response, call:
-   \`${shortFinalApi}?url=<encoded_target_url>\`
-5. If the user only wants the destination, call:
-   \`${finalUrlApi}?url=<encoded_target_url>\`
-6. If the user wants the full redirect chain, call:
-   \`${apiUrl}?url=<encoded_target_url>\`
+4. Call \`${shortFinalApi}?url=<encoded_target_url>\` for a short CLI response.
+5. Call \`${finalUrlApi}?url=<encoded_target_url>&format=json\` when you need the final URL plus metadata.
+6. Call \`${apiUrl}?url=<encoded_target_url>\` when you need the full chain.
 7. Read \`final_url\` first and present it as the main answer.
-8. Summarize \`redirect_count\` when using the trace endpoint.
-9. If the user wants more detail, explain the ordered \`chain\`.
+8. Summarize \`redirect_count\`.
+9. If present, surface \`security.status\` and \`preview_url\`.
 
 ## Response Shape
 
-Top-level fields:
-
 - \`final_url\`
-- \`input_url\`
 - \`redirect_count\`
 - \`chain\`
-
-Each \`chain\` item may contain:
-
-- \`step\`
-- \`url\`
-- \`from_url\`
-- \`type\`
-- \`status_code\`
-- \`status_text\`
-- \`method\`
-- \`duration_ms\`
-
-Trace responses may also include:
-
-- \`terminated_reason\`
-- \`terminated_message\`
-- \`loop_detected\`
-
-Error responses may include:
-
-- \`error_code\`
-- \`error_message\`
-- \`trace_context\`
-
-## Output Guidance
-
-- Lead with \`final_url\`.
-- Treat \`client_redirect\` as an important signal that the redirect happened in the browser, such as \`meta refresh\` or JavaScript navigation.
-- If \`terminated_reason\` is not \`completed\`, explain that the result is partial and surface \`terminated_message\`.
-- If the API returns an error, surface the error clearly and do not invent redirect results.
-
-## Example
-
-\`\`\`text
-GET ${apiUrl}?url=https%3A%2F%2Fliff.line.me%2F1654038149-8ALRMLrb%2Fhuc7r%2F%3Furl%3Dstore
-\`\`\`
-
-## CLI Shortcut Example
-
-\`\`\`text
-curl -s "${shortFinalApi}?url=https://aiurl.tw/104"
-\`\`\`
-
-## LINE Context Example
-
-\`\`\`text
-GET ${apiUrl}?url=https%3A%2F%2Fmaac.io%2Fexample&context=line
-\`\`\`
+- \`preview_url\`
+- \`security\`
 `;
 }
 
@@ -358,7 +335,138 @@ async function maybeContinueLineIntermediate(page, traceContext) {
   return false;
 }
 
-async function traceUrl(inputUrl, traceContext = 'default') {
+async function capturePreview(page, previewDir, inputUrl, finalUrl) {
+  if (!previewDir || !finalUrl || !/^https?:/i.test(finalUrl)) {
+    return null;
+  }
+
+  const now = new Date();
+  const year = String(now.getUTCFullYear());
+  const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(now.getUTCDate()).padStart(2, '0');
+  const digest = crypto
+    .createHash('sha256')
+    .update(`${inputUrl}|${finalUrl}|${now.toISOString()}`)
+    .digest('hex')
+    .slice(0, 16);
+  const relativePath = path.join(year, month, day, `${digest}.jpg`);
+  const absolutePath = path.join(previewDir, relativePath);
+
+  await fs.promises.mkdir(path.dirname(absolutePath), { recursive: true });
+  await page.screenshot({
+    path: absolutePath,
+    type: 'jpeg',
+    quality: 72,
+    fullPage: false,
+    animations: 'disabled'
+  });
+
+  return relativePath;
+}
+
+async function lookupWebRisk(finalUrl) {
+  if (!finalUrl) {
+    return {
+      status: 'unknown',
+      source: 'google_webrisk',
+      checked_url: null,
+      checked_at: new Date().toISOString(),
+      message: 'No final URL was available for a Web Risk lookup.',
+      threat_types: []
+    };
+  }
+
+  if (!WEB_RISK_API_KEY) {
+    return {
+      status: 'unknown',
+      source: 'google_webrisk',
+      checked_url: finalUrl,
+      checked_at: new Date().toISOString(),
+      message: 'Google Web Risk is not configured.',
+      threat_types: []
+    };
+  }
+
+  const query = new URLSearchParams({
+    uri: finalUrl,
+    key: WEB_RISK_API_KEY
+  });
+  for (const threatType of WEB_RISK_THREAT_TYPES) {
+    query.append('threatTypes', threatType);
+  }
+
+  try {
+    const response = await fetch(`https://webrisk.googleapis.com/v1/uris:search?${query.toString()}`);
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      return {
+        status: 'unknown',
+        source: 'google_webrisk',
+        checked_url: finalUrl,
+        checked_at: new Date().toISOString(),
+        message: payload.error && payload.error.message ? payload.error.message : 'Web Risk lookup failed.',
+        threat_types: []
+      };
+    }
+
+    const threatTypes = Array.isArray(payload?.threat?.threatTypes)
+      ? payload.threat.threatTypes
+      : [];
+
+    if (threatTypes.length > 0) {
+      return {
+        status: 'flagged',
+        source: 'google_webrisk',
+        checked_url: finalUrl,
+        checked_at: new Date().toISOString(),
+        message: 'The final destination matched a Google Web Risk list.',
+        threat_types: threatTypes
+      };
+    }
+
+    return {
+      status: 'safe',
+      source: 'google_webrisk',
+      checked_url: finalUrl,
+      checked_at: new Date().toISOString(),
+      message: 'No Google Web Risk match was found for the final destination.',
+      threat_types: []
+    };
+  } catch (error) {
+    return {
+      status: 'unknown',
+      source: 'google_webrisk',
+      checked_url: finalUrl,
+      checked_at: new Date().toISOString(),
+      message: error.message || 'Web Risk lookup failed.',
+      threat_types: []
+    };
+  }
+}
+
+function toPublicSecurity(security) {
+  return {
+    status: security.status,
+    source: security.source,
+    checked_url: security.checked_url,
+    checked_at: security.checked_at,
+    message: security.message
+  };
+}
+
+async function persistTraceRecord(record) {
+  if (!historyStore) {
+    return;
+  }
+
+  try {
+    await historyStore.recordTrace(record);
+  } catch (error) {
+    app.log.error({ err: error, record }, 'Failed to persist trace record');
+  }
+}
+
+async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
   const browser = await chromium.launch({
     headless: true,
     args: [
@@ -520,49 +628,40 @@ async function traceUrl(inputUrl, traceContext = 'default') {
         break;
       }
 
-      if (lineIntermediateClicks >= MAX_LINE_INTERMEDIATE_CLICKS) {
-        break;
-      }
-
-      const clickedIntermediate = await maybeContinueLineIntermediate(page, traceContext);
-      if (!clickedIntermediate) {
+      const clicked = await maybeContinueLineIntermediate(page, traceContext);
+      if (!clicked) {
         break;
       }
 
       lineIntermediateClicks += 1;
       lastNavigationAt = Date.now();
+      if (lineIntermediateClicks > MAX_LINE_INTERMEDIATE_CLICKS) {
+        markTermination(
+          'line_intermediate_limit',
+          `Stopped after ${MAX_LINE_INTERMEDIATE_CLICKS} LINE-style continuation clicks.`
+        );
+      }
     }
 
     if (!stopReason && Date.now() >= deadline) {
-      stopReason = 'timeout';
-      stopMessage = `Stopped tracing after ${TRACE_TIMEOUT_MS / 1000} seconds before navigation settled.`;
+      markTermination('timeout', 'The trace timed out before navigation settled.');
     }
 
-    const seen = new Set();
-    const responses = [...navigationResponses];
     const chain = [];
     let previousUrl = null;
-
     for (const event of navigationEvents) {
-      const normalizedEventUrl = event.url.split('#')[0];
-      const dedupeKey = `${previousUrl || 'root'}->${event.url}`;
-      if (seen.has(dedupeKey)) {
-        continue;
-      }
-      seen.add(dedupeKey);
-
-      const responseIndex = responses.findIndex(
-        (entry) => entry.url.split('#')[0] === normalizedEventUrl
-      );
-      const response = responseIndex >= 0 ? responses.splice(responseIndex, 1)[0] : null;
-      const isHttpRedirect = response && response.status >= 300 && response.status < 400;
+      const response = navigationResponses.find((item) => item.url === event.url) || null;
+      const isHttpRedirect =
+        response &&
+        response.status >= 300 &&
+        response.status < 400 &&
+        typeof response.statusText === 'string';
 
       chain.push({
         step: chain.length + 1,
         url: event.url,
         from_url: previousUrl,
-        type:
-          chain.length === 0 ? 'initial' : isHttpRedirect ? 'http_redirect' : 'client_redirect',
+        type: chain.length === 0 ? 'initial' : isHttpRedirect ? 'http_redirect' : 'client_redirect',
         status_code: response ? response.status : null,
         status_text: response ? response.statusText : null,
         method: response ? response.method : null,
@@ -591,6 +690,7 @@ async function traceUrl(inputUrl, traceContext = 'default') {
       .evaluate(() => (document.body && document.body.innerText ? document.body.innerText.trim() : ''))
       .then((text) => text.replace(/\s+/g, ' ').slice(0, 240))
       .catch(() => '');
+    const previewPath = await capturePreview(page, options.previewDir, inputUrl, finalUrl).catch(() => null);
 
     return interpretTraceResult({
       final_url: finalUrl,
@@ -602,12 +702,71 @@ async function traceUrl(inputUrl, traceContext = 'default') {
       terminated_message: stopMessage,
       loop_detected: stopReason === 'redirect_loop' || stopReason === 'max_redirect_steps',
       page_title: pageTitle || null,
-      page_excerpt: pageExcerpt || null
+      page_excerpt: pageExcerpt || null,
+      preview_path: previewPath,
+      preview_url: options.toPublicPreviewUrl ? options.toPublicPreviewUrl(previewPath) : null
     });
   } finally {
     await context.close();
     await browser.close();
   }
+}
+
+async function buildTracePayload(request, targetUrl, traceContext) {
+  const traceResult = await traceUrl(targetUrl, traceContext, {
+    previewDir: historyStore ? historyStore.previewDir : PREVIEW_DIR,
+    toPublicPreviewUrl: historyStore ? historyStore.toPublicPreviewUrl : null
+  });
+  const securityCheck = await lookupWebRisk(traceResult.final_url);
+
+  await persistTraceRecord({
+    created_at: new Date().toISOString(),
+    input_url: traceResult.input_url,
+    final_url: traceResult.final_url,
+    client_type: getClientType(request),
+    request_path: getRequestPath(request),
+    redirect_count: traceResult.redirect_count,
+    step_count: traceResult.chain.length,
+    terminated_reason: traceResult.terminated_reason,
+    terminated_message: traceResult.terminated_message,
+    trace_context: traceResult.trace_context,
+    page_title: traceResult.page_title,
+    page_excerpt: traceResult.page_excerpt,
+    preview_path: traceResult.preview_path,
+    security_status: securityCheck.status,
+    security_message: securityCheck.message,
+    security_checked_url: securityCheck.checked_url,
+    threat_types: securityCheck.threat_types,
+    loop_detected: traceResult.loop_detected
+  });
+
+  return {
+    ...traceResult,
+    security: toPublicSecurity(securityCheck)
+  };
+}
+
+async function persistFailure(request, targetUrl, traceContext, classified) {
+  await persistTraceRecord({
+    created_at: new Date().toISOString(),
+    input_url: targetUrl,
+    final_url: null,
+    client_type: getClientType(request),
+    request_path: getRequestPath(request),
+    redirect_count: 0,
+    step_count: 0,
+    terminated_reason: classified.code,
+    terminated_message: classified.message,
+    trace_context: traceContext,
+    page_title: null,
+    page_excerpt: null,
+    preview_path: null,
+    security_status: 'unknown',
+    security_message: null,
+    security_checked_url: null,
+    threat_types: [],
+    loop_detected: false
+  });
 }
 
 app.get('/api/trace', async (request, reply) => {
@@ -625,10 +784,11 @@ app.get('/api/trace', async (request, reply) => {
   }
 
   try {
-    return await traceUrl(targetUrl, traceContext);
+    return await buildTracePayload(request, targetUrl, traceContext);
   } catch (error) {
     const classified = classifyTraceError(error);
     request.log.error({ err: error, classified, targetUrl }, 'Trace failed');
+    await persistFailure(request, targetUrl, traceContext, classified);
     reply.code(classified.statusCode);
     return {
       error: classified.message,
@@ -639,6 +799,14 @@ app.get('/api/trace', async (request, reply) => {
       final_url: null,
       redirect_count: 0,
       chain: [],
+      preview_url: null,
+      security: toPublicSecurity({
+        status: 'unknown',
+        source: 'google_webrisk',
+        checked_url: null,
+        checked_at: new Date().toISOString(),
+        message: 'Trace failed before a final URL could be checked.'
+      }),
       details: error.message
     };
   }
@@ -665,7 +833,7 @@ async function handleFinalLookup(request, reply) {
   }
 
   try {
-    const result = await traceUrl(targetUrl, traceContext);
+    const result = await buildTracePayload(request, targetUrl, traceContext);
 
     if (format === 'json') {
       return {
@@ -675,7 +843,9 @@ async function handleFinalLookup(request, reply) {
         redirect_count: result.redirect_count,
         terminated_reason: result.terminated_reason,
         terminated_message: result.terminated_message,
-        loop_detected: result.loop_detected
+        loop_detected: result.loop_detected,
+        preview_url: result.preview_url,
+        security: result.security
       };
     }
 
@@ -688,6 +858,7 @@ async function handleFinalLookup(request, reply) {
   } catch (error) {
     const classified = classifyTraceError(error);
     request.log.error({ err: error, classified, targetUrl }, 'Final URL lookup failed');
+    await persistFailure(request, targetUrl, traceContext, classified);
     reply.code(classified.statusCode);
 
     if (format === 'json') {
@@ -698,6 +869,14 @@ async function handleFinalLookup(request, reply) {
         input_url: targetUrl,
         trace_context: traceContext,
         final_url: null,
+        preview_url: null,
+        security: toPublicSecurity({
+          status: 'unknown',
+          source: 'google_webrisk',
+          checked_url: null,
+          checked_at: new Date().toISOString(),
+          message: 'Final URL lookup failed before a Web Risk check could run.'
+        }),
         details: error.message
       };
     }
@@ -708,8 +887,82 @@ async function handleFinalLookup(request, reply) {
 }
 
 app.get('/api/final', handleFinalLookup);
-
 app.get('/api/f', handleFinalLookup);
+
+app.get('/api/admin/session', async (request) => {
+  const session = adminAuth.getSession(request);
+  return {
+    enabled: adminAuth.enabled,
+    authenticated: Boolean(session),
+    session,
+    storage_enabled: Boolean(historyStore && historyStore.enabled),
+    login_rate_limit: {
+      max_attempts: adminAuth.maxAttempts,
+      window_ms: adminAuth.windowMs,
+      remaining_attempts: adminAuth.getRemainingAttempts(adminAuth.getClientIp(request))
+    }
+  };
+});
+
+app.post('/api/admin/login', async (request, reply) => {
+  const body = request.body && typeof request.body === 'object' ? request.body : {};
+  const result = adminAuth.authenticate(request, body.username, body.password);
+
+  if (!result.ok) {
+    reply.code(result.statusCode);
+    return {
+      error: result.message,
+      remaining_attempts: result.remaining_attempts
+    };
+  }
+
+  adminAuth.createSession(reply, request);
+  return {
+    ok: true,
+    username: process.env.ADMIN_USERNAME
+  };
+});
+
+app.post('/api/admin/logout', async (request, reply) => {
+  adminAuth.clearSession(reply, request);
+  return { ok: true };
+});
+
+app.get('/api/admin/stats', async (request, reply) => {
+  const session = adminAuth.requireSession(request, reply);
+  if (!session) {
+    return { error: 'Authentication required.' };
+  }
+
+  if (!historyStore || !historyStore.enabled) {
+    reply.code(503);
+    return {
+      error: 'Server history is not available until the sqlite3 dependency is installed in the deployment environment.'
+    };
+  }
+
+  return historyStore.getStats();
+});
+
+app.get('/api/admin/history', async (request, reply) => {
+  const session = adminAuth.requireSession(request, reply);
+  if (!session) {
+    return { error: 'Authentication required.' };
+  }
+
+  if (!historyStore || !historyStore.enabled) {
+    reply.code(503);
+    return {
+      error: 'Server history is not available until the sqlite3 dependency is installed in the deployment environment.'
+    };
+  }
+
+  return historyStore.getHistory({
+    client_type: request.query.client_type,
+    limit: request.query.limit,
+    offset: request.query.offset
+  });
+});
 
 app.get('/ai-agent-skill', async (request, reply) => {
   const baseUrl = getBaseUrl(request);
@@ -722,8 +975,14 @@ app.get('/ai-agent-skill', async (request, reply) => {
   return markdown;
 });
 
+app.get('/admin', async (request, reply) => {
+  reply.sendFile('admin.html');
+});
+
 app.get('/health', async () => ({
-  ok: true
+  ok: true,
+  storage_enabled: Boolean(historyStore && historyStore.enabled),
+  web_risk_enabled: Boolean(WEB_RISK_API_KEY)
 }));
 
 app.setNotFoundHandler((request, reply) => {
@@ -735,7 +994,29 @@ app.setNotFoundHandler((request, reply) => {
   reply.sendFile('index.html');
 });
 
-app.listen({ port: PORT, host: HOST }).catch((error) => {
+async function start() {
+  await fs.promises.mkdir(PREVIEW_DIR, { recursive: true });
+  historyStore = await createHistoryStore({
+    dataDir: DATA_DIR,
+    logger: app.log,
+    previewRetentionDays: PREVIEW_RETENTION_DAYS,
+    historyRetentionDays: HISTORY_RETENTION_DAYS
+  });
+  await historyStore.initialize();
+  await historyStore.cleanup().catch((error) => {
+    app.log.error({ err: error }, 'Initial history cleanup failed');
+  });
+
+  setInterval(() => {
+    historyStore.cleanup().catch((error) => {
+      app.log.error({ err: error }, 'Scheduled history cleanup failed');
+    });
+  }, CLEANUP_INTERVAL_MS).unref();
+
+  await app.listen({ port: PORT, host: HOST });
+}
+
+start().catch((error) => {
   app.log.error(error);
   process.exit(1);
 });

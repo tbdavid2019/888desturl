@@ -25,7 +25,7 @@
   <body class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(20,184,166,0.18),_transparent_30%),linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] text-ink">
     <main class="mx-auto flex min-h-screen w-full max-w-6xl items-center px-4 py-10 sm:px-6 lg:px-8">
       <div class="w-full">
-        <section class="mx-auto max-w-4xl rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-panel backdrop-blur md:p-10">
+        <section class="mx-auto max-w-5xl rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-panel backdrop-blur md:p-10">
           <div class="relative mb-10">
             <div class="mb-5 flex justify-center sm:mb-0 sm:absolute sm:right-0 sm:top-0">
               <div class="flex shrink-0 gap-2 rounded-2xl border border-slate-200 bg-white/90 p-1 shadow-sm">
@@ -174,6 +174,62 @@
               </div>
             </article>
 
+            <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+              <article class="overflow-hidden rounded-[1.75rem] border border-slate-200/70 bg-white/90 shadow-lg shadow-slate-200/60">
+                <div class="border-b border-slate-100 px-5 py-4">
+                  <h3 data-i18n="previewTitle" class="text-xl font-bold tracking-tight">
+                    Final Preview
+                  </h3>
+                  <p data-i18n="previewDescription" class="text-sm text-slate-500">
+                    使用最終頁面的即時截圖做預覽。
+                  </p>
+                </div>
+                <div class="p-5">
+                  <div
+                    id="preview-empty"
+                    data-i18n="previewUnavailable"
+                    class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-12 text-center text-sm text-slate-500"
+                  >
+                    目前沒有可用的頁面預覽。
+                  </div>
+                  <a
+                    id="preview-link"
+                    href="#"
+                    target="_blank"
+                    rel="noreferrer"
+                    class="hidden overflow-hidden rounded-2xl border border-slate-200 bg-slate-100"
+                  >
+                    <img
+                      id="preview-image"
+                      alt="Final preview"
+                      class="aspect-[16/10] w-full object-cover"
+                    />
+                  </a>
+                </div>
+              </article>
+
+              <article class="rounded-[1.75rem] border border-slate-200/70 bg-white/90 p-5 shadow-lg shadow-slate-200/60">
+                <div class="border-b border-slate-100 pb-4">
+                  <h3 data-i18n="securityTitle" class="text-xl font-bold tracking-tight">
+                    Safety Check
+                  </h3>
+                  <p data-i18n="securityDescription" class="text-sm text-slate-500">
+                    依 final URL 執行 Google Web Risk final-only 檢查。
+                  </p>
+                </div>
+                <div id="security-card" class="mt-5 rounded-2xl border px-4 py-4">
+                  <div class="flex items-center justify-between gap-3">
+                    <p data-i18n="securityStatusLabel" class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                      Security
+                    </p>
+                    <span id="security-status-badge" class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"></span>
+                  </div>
+                  <p id="security-message" class="mt-3 text-sm leading-6 text-slate-700"></p>
+                  <p id="security-checked-url" class="mt-3 break-all text-xs text-slate-500"></p>
+                </div>
+              </article>
+            </div>
+
             <article class="rounded-[1.75rem] border border-slate-200/70 bg-white/90 p-5 shadow-lg shadow-slate-200/60">
               <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
@@ -193,6 +249,35 @@
               </div>
               <div id="chain-list" class="mt-5 space-y-4"></div>
             </article>
+          </section>
+
+          <section class="mt-8 rounded-[1.75rem] border border-slate-200/70 bg-white/90 p-5 shadow-lg shadow-slate-200/60">
+            <div class="flex flex-col gap-3 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 data-i18n="historyTitle" class="text-xl font-bold tracking-tight">
+                  Recent Searches
+                </h3>
+                <p data-i18n="historyDescription" class="text-sm text-slate-500">
+                  僅存在你的瀏覽器 localStorage 的最近查詢紀錄。
+                </p>
+              </div>
+              <button
+                id="clear-history-button"
+                type="button"
+                data-i18n="clearHistory"
+                class="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+              >
+                清除紀錄
+              </button>
+            </div>
+            <div
+              id="history-empty"
+              data-i18n="historyEmpty"
+              class="mt-5 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500"
+            >
+              還沒有最近查詢紀錄。
+            </div>
+            <div id="history-list" class="mt-5 grid gap-4 md:grid-cols-2"></div>
           </section>
 
           <footer class="mt-10 border-t border-slate-200 pt-6 text-center text-sm text-slate-500">
@@ -217,6 +302,13 @@
               >
                 AI Agent Skills
               </a>
+              <span>|</span>
+              <a
+                href="/admin"
+                class="font-semibold text-accent underline decoration-accent/40 underline-offset-4"
+              >
+                Admin
+              </a>
             </p>
           </footer>
         </section>
@@ -224,6 +316,9 @@
     </main>
 
     <script>
+      const LOCAL_HISTORY_KEY = '888desturl-recent-history';
+      const LOCAL_HISTORY_LIMIT = 20;
+
       const translations = {
         'zh-TW': {
           pageTitle: '888desturl - 追蹤網址真正的最終目的地',
@@ -243,8 +338,24 @@
           inputStat: 'Input',
           redirectStat: 'Redirects',
           stepsStat: 'Steps',
+          previewTitle: 'Final 頁面預覽',
+          previewDescription: '使用最終頁面的即時截圖做預覽。',
+          previewUnavailable: '目前沒有可用的頁面預覽。',
+          securityTitle: '安全檢查',
+          securityDescription: '依 final URL 執行 Google Web Risk final-only 檢查。',
+          securityStatusLabel: 'Security',
+          securitySafe: '安全',
+          securityFlagged: '警示',
+          securityUnknown: '未知',
           chainTitle: 'Redirect Chain',
           chainDescription: '完整跳轉過程與每個節點的細節。',
+          historyTitle: '最近查詢',
+          historyDescription: '僅存在你的瀏覽器 localStorage 的最近查詢紀錄。',
+          clearHistory: '清除紀錄',
+          historyEmpty: '還沒有最近查詢紀錄。',
+          historyQueriedAt: '查詢時間',
+          historyRedirects: '跳轉次數',
+          historyOpen: '開啟最終網址',
           statusLabel: '狀態',
           timeLabel: '耗時',
           fromLabel: '來源',
@@ -290,8 +401,24 @@
           inputStat: 'Input',
           redirectStat: 'Redirects',
           stepsStat: 'Steps',
+          previewTitle: 'Final Preview',
+          previewDescription: 'A screenshot taken from the final destination page.',
+          previewUnavailable: 'No preview image is available for this result.',
+          securityTitle: 'Safety Check',
+          securityDescription: 'Google Web Risk is checked against the final URL only.',
+          securityStatusLabel: 'Security',
+          securitySafe: 'Safe',
+          securityFlagged: 'Flagged',
+          securityUnknown: 'Unknown',
           chainTitle: 'Redirect Chain',
           chainDescription: 'Review the full chain with status codes and timing details.',
+          historyTitle: 'Recent Searches',
+          historyDescription: 'Stored only in your browser localStorage.',
+          clearHistory: 'Clear History',
+          historyEmpty: 'No recent searches yet.',
+          historyQueriedAt: 'Queried',
+          historyRedirects: 'Redirects',
+          historyOpen: 'Open final URL',
           statusLabel: 'Status',
           timeLabel: 'Time',
           fromLabel: 'From',
@@ -335,6 +462,16 @@
       const copyButton = document.getElementById('copy-button');
       const langButtons = document.querySelectorAll('[data-lang]');
       const skillLink = document.getElementById('skill-link');
+      const previewEmpty = document.getElementById('preview-empty');
+      const previewLink = document.getElementById('preview-link');
+      const previewImage = document.getElementById('preview-image');
+      const securityCard = document.getElementById('security-card');
+      const securityStatusBadge = document.getElementById('security-status-badge');
+      const securityMessage = document.getElementById('security-message');
+      const securityCheckedUrl = document.getElementById('security-checked-url');
+      const historyList = document.getElementById('history-list');
+      const historyEmpty = document.getElementById('history-empty');
+      const clearHistoryButton = document.getElementById('clear-history-button');
 
       let latestFinalUrl = '';
       let currentLanguage = 'zh-TW';
@@ -443,7 +580,11 @@
           query.set('context', context);
         }
 
-        const response = await fetch(`/api/trace?${query.toString()}`);
+        const response = await fetch(`/api/trace?${query.toString()}`, {
+          headers: {
+            'x-888desturl-client': 'web'
+          }
+        });
         const payload = await response.json();
         return { response, payload };
       }
@@ -489,6 +630,135 @@
           .join('');
       }
 
+      function renderPreview(previewUrl) {
+        if (!previewUrl) {
+          previewLink.classList.add('hidden');
+          previewLink.removeAttribute('href');
+          previewImage.removeAttribute('src');
+          previewEmpty.classList.remove('hidden');
+          return;
+        }
+
+        previewImage.src = previewUrl;
+        previewLink.href = previewUrl;
+        previewEmpty.classList.add('hidden');
+        previewLink.classList.remove('hidden');
+      }
+
+      function renderSecurity(security) {
+        const status = security && security.status ? security.status : 'unknown';
+        const labelKey =
+          status === 'safe'
+            ? 'securitySafe'
+            : status === 'flagged'
+              ? 'securityFlagged'
+              : 'securityUnknown';
+        const badgeClassName =
+          status === 'safe'
+            ? 'bg-emerald-100 text-emerald-800'
+            : status === 'flagged'
+              ? 'bg-red-100 text-red-800'
+              : 'bg-amber-100 text-amber-800';
+        const cardClassName =
+          status === 'safe'
+            ? 'mt-5 rounded-2xl border border-emerald-200 bg-emerald-50/50 px-4 py-4'
+            : status === 'flagged'
+              ? 'mt-5 rounded-2xl border border-red-200 bg-red-50/60 px-4 py-4'
+              : 'mt-5 rounded-2xl border border-amber-200 bg-amber-50/60 px-4 py-4';
+
+        securityCard.className = cardClassName;
+        securityStatusBadge.className = `inline-flex rounded-full px-3 py-1 text-xs font-semibold ${badgeClassName}`;
+        securityStatusBadge.textContent = t(labelKey);
+        securityMessage.textContent = security && security.message ? security.message : t('unexpectedError');
+        securityCheckedUrl.textContent =
+          security && security.checked_url ? security.checked_url : t('notAvailable');
+      }
+
+      function getStoredHistory() {
+        try {
+          const raw = localStorage.getItem(LOCAL_HISTORY_KEY);
+          if (!raw) {
+            return [];
+          }
+
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function saveStoredHistory(items) {
+        localStorage.setItem(LOCAL_HISTORY_KEY, JSON.stringify(items.slice(0, LOCAL_HISTORY_LIMIT)));
+      }
+
+      function renderHistory() {
+        const items = getStoredHistory();
+        if (items.length === 0) {
+          historyEmpty.classList.remove('hidden');
+          historyList.innerHTML = '';
+          return;
+        }
+
+        historyEmpty.classList.add('hidden');
+        historyList.innerHTML = items
+          .map((item) => {
+            const preview = item.preview_url
+              ? `<img src="${escapeHtml(item.preview_url)}" alt="" class="h-24 w-32 rounded-xl object-cover" />`
+              : `<div class="flex h-24 w-32 items-center justify-center rounded-xl bg-slate-100 text-xs text-slate-400">${escapeHtml(t('previewUnavailable'))}</div>`;
+
+            const securityClass =
+              item.security_status === 'safe'
+                ? 'bg-emerald-100 text-emerald-800'
+                : item.security_status === 'flagged'
+                  ? 'bg-red-100 text-red-800'
+                  : 'bg-amber-100 text-amber-800';
+            const securityLabel =
+              item.security_status === 'safe'
+                ? t('securitySafe')
+                : item.security_status === 'flagged'
+                  ? t('securityFlagged')
+                  : t('securityUnknown');
+
+            return `
+              <article class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+                <div class="flex gap-4">
+                  ${preview}
+                  <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ${securityClass}">${escapeHtml(securityLabel)}</span>
+                      <span class="text-xs text-slate-500">${escapeHtml(t('historyRedirects'))}: ${escapeHtml(String(item.redirect_count))}</span>
+                    </div>
+                    <p class="mt-3 break-all text-sm font-semibold text-slate-900">${escapeHtml(item.final_url)}</p>
+                    <p class="mt-2 break-all text-xs text-slate-500">${escapeHtml(item.input_url)}</p>
+                    <p class="mt-3 text-xs text-slate-500">${escapeHtml(t('historyQueriedAt'))}: ${escapeHtml(new Date(item.queried_at).toLocaleString())}</p>
+                    <a href="${escapeHtml(item.final_url)}" target="_blank" rel="noreferrer" class="mt-3 inline-flex text-sm font-semibold text-accent underline decoration-accent/30 underline-offset-4">${escapeHtml(t('historyOpen'))}</a>
+                  </div>
+                </div>
+              </article>
+            `;
+          })
+          .join('');
+      }
+
+      function saveHistoryEntry(payload) {
+        const existing = getStoredHistory().filter(
+          (item) => !(item.input_url === payload.input_url && item.final_url === payload.final_url)
+        );
+
+        existing.unshift({
+          input_url: payload.input_url,
+          final_url: payload.final_url,
+          redirect_count: payload.redirect_count,
+          preview_url: payload.preview_url,
+          security_status: payload.security && payload.security.status ? payload.security.status : 'unknown',
+          queried_at: new Date().toISOString()
+        });
+
+        saveStoredHistory(existing);
+        renderHistory();
+      }
+
       function updateLanguageButtons() {
         langButtons.forEach((button) => {
           const isActive = button.dataset.lang === currentLanguage;
@@ -515,6 +785,7 @@
         setLoading(isLoading);
         copyButton.textContent = t('copyButton');
         updateLanguageButtons();
+        renderHistory();
 
         if (lastFeedbackType && (lastFeedbackMessageKey || lastFeedbackMessageText)) {
           const nextMessage = lastFeedbackMessageKey ? t(lastFeedbackMessageKey) : lastFeedbackMessageText;
@@ -531,6 +802,11 @@
           currentLanguage = button.dataset.lang;
           applyTranslations();
         });
+      });
+
+      clearHistoryButton.addEventListener('click', () => {
+        localStorage.removeItem(LOCAL_HISTORY_KEY);
+        renderHistory();
       });
 
       copyButton.addEventListener('click', async () => {
@@ -582,7 +858,10 @@
           inputUrl.textContent = payload.input_url;
           redirectCount.textContent = String(payload.redirect_count);
           stepCount.textContent = String(payload.chain.length);
+          renderPreview(payload.preview_url);
+          renderSecurity(payload.security);
           renderChain(payload.chain);
+          saveHistoryEntry(payload);
           results.classList.remove('hidden');
 
           if (payload.terminated_reason && payload.terminated_reason !== 'completed') {
@@ -605,6 +884,7 @@
 
       currentLanguage = detectLanguage();
       applyTranslations();
+      renderHistory();
     </script>
   </body>
 </html>

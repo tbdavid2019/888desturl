@@ -9,6 +9,7 @@
   "dependencies": {
     "@fastify/static": "^7.0.4",
     "fastify": "^4.28.1",
-    "playwright": "1.44.1"
+    "playwright": "1.44.1",
+    "sqlite3": "^5.1.7"
   }
 }

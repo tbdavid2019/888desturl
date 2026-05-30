@@ -4,10 +4,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    env_file:
+      - .env
     ports:
       - "${BIND_ADDR:-0.0.0.0}:${HOST_PORT:-3000}:3000"
     environment:
       NODE_ENV: production
       PORT: 3000
+    volumes:
+      - ./data:/app/data
     shm_size: "1gb"
     restart: unless-stopped

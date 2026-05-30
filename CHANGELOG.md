@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-05-30
+
+### Added
+
+- Added final-only Google Web Risk checks after redirect tracing completes
+- Added final-page screenshot previews with 7-day retention and scheduled cleanup
+- Added browser localStorage recent-search history on the main web UI
+- Added SQLite-backed server history and usage statistics plumbing
+- Added an admin login flow, rate-limited login attempts, and an admin dashboard
+- Added `.env.example` plus documented setup for Web Risk and admin credentials
+
+### Changed
+
+- Updated `/api/trace` and `/api/final?format=json` to return `preview_url` and `security`
+- Updated Docker Compose to load `.env` and persist `./data` into the container
+- Updated repository ignores so secrets and runtime data stay out of git and Docker image context
+
 ## 2026-05-28
 
 ### Added
