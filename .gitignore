@@ -41,6 +41,7 @@ dist/
 build/
 out/
 data/
+url.*.conf
 
 # Local-only notes
 .local-deploy-notes.md
