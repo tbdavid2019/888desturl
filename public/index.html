@@ -142,6 +142,18 @@
                     複製網址
                   </button>
                 </div>
+                <div class="mt-4">
+                  <a
+                    id="result-link-button"
+                    href="#"
+                    target="_blank"
+                    rel="noreferrer"
+                    data-i18n="resultPageButton"
+                    class="hidden inline-flex items-center justify-center rounded-2xl bg-white/12 px-4 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/20"
+                  >
+                    查看結果頁
+                  </a>
+                </div>
                 <div class="mt-5 grid gap-3 sm:grid-cols-3">
                   <div class="rounded-2xl bg-white/10 px-4 py-3">
                     <p
@@ -344,6 +356,7 @@
           securityFlaggedMessage: '這個最終網址已被列入 Google Web Risk 已知風險名單，請不要輕易開啟或輸入個資。',
           securityUnknownMessage: '這次暫時無法完成風險判斷，請稍後再試。',
           securityCheckedUrlLabel: '檢查對象',
+          resultPageButton: '查看結果頁',
           chainTitle: 'Redirect Chain',
           chainDescription: '完整跳轉過程與每個節點的細節。',
           historyTitle: '最近查詢',
@@ -353,6 +366,7 @@
           historyQueriedAt: '查詢時間',
           historyRedirects: '跳轉次數',
           historyOpen: '開啟最終網址',
+          historyResult: '開啟結果頁',
           statusLabel: '狀態',
           timeLabel: '耗時',
           fromLabel: '來源',
@@ -411,6 +425,7 @@
           securityFlaggedMessage: 'This final URL is listed in Google Web Risk known-risk lists. Do not open it casually or enter personal data.',
           securityUnknownMessage: 'The risk check could not be completed this time. Please try again later.',
           securityCheckedUrlLabel: 'Checked URL',
+          resultPageButton: 'Open Result Page',
           chainTitle: 'Redirect Chain',
           chainDescription: 'Review the full chain with status codes and timing details.',
           historyTitle: 'Recent Searches',
@@ -420,6 +435,7 @@
           historyQueriedAt: 'Queried',
           historyRedirects: 'Redirects',
           historyOpen: 'Open final URL',
+          historyResult: 'Open result page',
           statusLabel: 'Status',
           timeLabel: 'Time',
           fromLabel: 'From',
@@ -461,6 +477,7 @@
       const stepCount = document.getElementById('step-count');
       const chainList = document.getElementById('chain-list');
       const copyButton = document.getElementById('copy-button');
+      const resultLinkButton = document.getElementById('result-link-button');
       const langButtons = document.querySelectorAll('[data-lang]');
       const skillLink = document.getElementById('skill-link');
       const previewEmpty = document.getElementById('preview-empty');
@@ -475,6 +492,7 @@
       const clearHistoryButton = document.getElementById('clear-history-button');
 
       let latestFinalUrl = '';
+      let latestResultUrl = '';
       let currentLanguage = 'zh-TW';
       let isLoading = false;
       let lastFeedbackType = null;
@@ -739,7 +757,10 @@
                     <p class="mt-3 break-all text-sm font-semibold text-slate-900">${escapeHtml(item.final_url)}</p>
                     <p class="mt-2 break-all text-xs text-slate-500">${escapeHtml(item.input_url)}</p>
                     <p class="mt-3 text-xs text-slate-500">${escapeHtml(t('historyQueriedAt'))}: ${escapeHtml(new Date(item.queried_at).toLocaleString())}</p>
-                    <a href="${escapeHtml(item.final_url)}" target="_blank" rel="noreferrer" class="mt-3 inline-flex text-sm font-semibold text-accent underline decoration-accent/30 underline-offset-4">${escapeHtml(t('historyOpen'))}</a>
+                    <div class="mt-3 flex flex-wrap gap-3">
+                      <a href="${escapeHtml(item.final_url)}" target="_blank" rel="noreferrer" class="inline-flex text-sm font-semibold text-accent underline decoration-accent/30 underline-offset-4">${escapeHtml(t('historyOpen'))}</a>
+                      ${item.result_url ? `<a href="${escapeHtml(item.result_url)}" target="_blank" rel="noreferrer" class="inline-flex text-sm font-semibold text-slate-700 underline decoration-slate-300 underline-offset-4">${escapeHtml(t('historyResult'))}</a>` : ''}
+                    </div>
                   </div>
                 </div>
               </article>
@@ -758,6 +779,7 @@
           final_url: payload.final_url,
           redirect_count: payload.redirect_count,
           preview_url: payload.preview_url,
+          result_url: payload.result_url || null,
           security_status: payload.security && payload.security.status ? payload.security.status : 'unknown',
           queried_at: new Date().toISOString()
         });
@@ -791,6 +813,9 @@
         skillLink.href = '/ai-agent-skill';
         setLoading(isLoading);
         copyButton.textContent = t('copyButton');
+        if (!resultLinkButton.classList.contains('hidden')) {
+          resultLinkButton.textContent = t('resultPageButton');
+        }
         updateLanguageButtons();
         renderHistory();
 
@@ -835,6 +860,9 @@
         event.preventDefault();
         hideFeedback();
         results.classList.add('hidden');
+        latestResultUrl = '';
+        resultLinkButton.classList.add('hidden');
+        resultLinkButton.removeAttribute('href');
 
         const value = urlInput.value.trim();
         if (!value) {
@@ -859,9 +887,18 @@
           }
 
           latestFinalUrl = payload.final_url;
+          latestResultUrl = payload.result_url || '';
           lastChain = payload.chain;
           finalUrlLink.textContent = payload.final_url;
           finalUrlLink.href = payload.final_url;
+          if (latestResultUrl) {
+            resultLinkButton.href = latestResultUrl;
+            resultLinkButton.textContent = t('resultPageButton');
+            resultLinkButton.classList.remove('hidden');
+          } else {
+            resultLinkButton.classList.add('hidden');
+            resultLinkButton.removeAttribute('href');
+          }
           inputUrl.textContent = payload.input_url;
           redirectCount.textContent = String(payload.redirect_count);
           stepCount.textContent = String(payload.chain.length);

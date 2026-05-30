@@ -4,6 +4,7 @@
 
 - final-only Google Web Risk 檢查
 - final 頁面截圖預覽
+- 每次 trace 的獨立結果頁
 - 7 天預覽圖保留與自動清理
 - browser localStorage 最近查詢紀錄
 - SQLite server history / usage stats
@@ -128,6 +129,8 @@ Response highlights:
 {
   "final_url": "https://example.com/final",
   "input_url": "https://example.com/start",
+  "result_id": "AbCdEf123456",
+  "result_url": "https://url.david888.com/result/AbCdEf123456",
   "redirect_count": 2,
   "preview_url": "/previews/2026/05/30/abcd1234.jpg",
   "security": {
@@ -155,12 +158,35 @@ Query:
 
 `format=json` also includes:
 
+- `result_id`
+- `result_url`
 - `preview_url`
 - `security`
 
 ### `GET /api/f`
 
 Short CLI alias for `/api/final`.
+
+### `GET /api/results/:resultId`
+
+Public result lookup for one previously recorded trace result.
+
+Use this when:
+
+- you want to render a standalone result page
+- you want to revisit one trace later
+- you want a shareable detail URL without re-running the trace
+
+Response includes:
+
+- `result_id`
+- `result_url`
+- `created_at`
+- `input_url`
+- `final_url`
+- `preview_url`
+- `security_status`
+- `chain`
 
 ### `GET /health`
 
@@ -200,6 +226,22 @@ Current limitation:
 - restarting the service logs out admin users
 - multi-instance deployments would need shared session storage later
 
+## Result Pages
+
+Every stored trace result now gets a stable `result_id`.
+
+Public result URLs:
+
+- `GET /result/:resultId`
+- `GET /r/:resultId`
+
+Behavior:
+
+- the page reads data from `GET /api/results/:resultId`
+- preview images may disappear after the preview retention window
+- the result row itself remains available until history retention removes it
+- if the history record expires, the result page returns not found
+
 ## Retention
 
 - preview screenshots: 7 days by default
@@ -225,6 +267,7 @@ When a preview expires:
 ├── package.json
 ├── public/
 │   ├── admin.html
-│   └── index.html
+│   ├── index.html
+│   └── result.html
 └── server.js
 ```

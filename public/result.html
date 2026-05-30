@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>888desturl Result</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: '#101828',
+              accent: '#0f766e'
+            },
+            boxShadow: {
+              panel: '0 24px 80px rgba(15, 23, 42, 0.14)'
+            }
+          }
+        }
+      };
+    </script>
+  </head>
+  <body class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(20,184,166,0.18),_transparent_30%),linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] text-ink">
+    <main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+      <div class="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-panel backdrop-blur md:p-10">
+        <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p class="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-accent">
+              Trace Result
+            </p>
+            <h1 class="mt-4 text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
+              888desturl 結果頁
+            </h1>
+            <p id="result-meta" class="mt-3 text-sm text-slate-500"></p>
+          </div>
+          <a href="/" class="inline-flex rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+            返回查詢首頁
+          </a>
+        </div>
+
+        <section id="status-card" class="mt-8 rounded-[1.75rem] border border-slate-200 bg-slate-50/70 p-5">
+          <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div class="min-w-0">
+              <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Final URL</p>
+              <a id="final-url" href="#" target="_blank" rel="noreferrer" class="mt-3 block break-all text-lg font-bold text-accent underline decoration-accent/30 underline-offset-4"></a>
+              <p id="input-url" class="mt-3 break-all text-sm text-slate-500"></p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <span id="security-badge" class="inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold"></span>
+              <span id="redirect-badge" class="inline-flex items-center rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700"></span>
+            </div>
+          </div>
+          <p id="security-message" class="mt-4 text-sm leading-6 text-slate-700"></p>
+          <p id="checked-url" class="mt-2 break-all text-xs text-slate-500"></p>
+        </section>
+
+        <section class="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <article class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+            <div class="border-b border-slate-100 px-5 py-4">
+              <h2 class="text-xl font-bold tracking-tight">Final 頁面預覽</h2>
+              <p class="text-sm text-slate-500">若預覽圖已超過保存期限，這裡會顯示為不可用。</p>
+            </div>
+            <div class="p-5">
+              <div id="preview-empty" class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-12 text-center text-sm text-slate-500">
+                目前沒有可用的頁面預覽。
+              </div>
+              <a id="preview-link" href="#" target="_blank" rel="noreferrer" class="hidden overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
+                <img id="preview-image" alt="Result preview" class="aspect-[16/10] w-full object-cover" />
+              </a>
+            </div>
+          </article>
+
+          <article class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/60">
+            <div class="border-b border-slate-100 pb-4">
+              <h2 class="text-xl font-bold tracking-tight">結果摘要</h2>
+            </div>
+            <div class="mt-5 space-y-4 text-sm text-slate-600">
+              <div class="rounded-2xl bg-slate-50 px-4 py-3">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Result ID</p>
+                <p id="result-id" class="mt-2 break-all font-semibold text-slate-800"></p>
+              </div>
+              <div class="rounded-2xl bg-slate-50 px-4 py-3">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Trace Context</p>
+                <p id="trace-context" class="mt-2 font-semibold text-slate-800"></p>
+              </div>
+              <div class="rounded-2xl bg-slate-50 px-4 py-3">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Terminated Reason</p>
+                <p id="terminated-reason" class="mt-2 font-semibold text-slate-800"></p>
+              </div>
+              <div class="rounded-2xl bg-slate-50 px-4 py-3">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Page Title</p>
+                <p id="page-title" class="mt-2 font-semibold text-slate-800"></p>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="mt-8 rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/60">
+          <div class="border-b border-slate-100 pb-4">
+            <h2 class="text-xl font-bold tracking-tight">Redirect Chain</h2>
+            <p class="text-sm text-slate-500">這筆查詢的完整跳轉過程。</p>
+          </div>
+          <div id="chain-list" class="mt-5 space-y-4"></div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      const finalUrl = document.getElementById('final-url');
+      const inputUrl = document.getElementById('input-url');
+      const resultMeta = document.getElementById('result-meta');
+      const securityBadge = document.getElementById('security-badge');
+      const redirectBadge = document.getElementById('redirect-badge');
+      const securityMessage = document.getElementById('security-message');
+      const checkedUrl = document.getElementById('checked-url');
+      const previewEmpty = document.getElementById('preview-empty');
+      const previewLink = document.getElementById('preview-link');
+      const previewImage = document.getElementById('preview-image');
+      const resultIdElement = document.getElementById('result-id');
+      const traceContext = document.getElementById('trace-context');
+      const terminatedReason = document.getElementById('terminated-reason');
+      const pageTitle = document.getElementById('page-title');
+      const chainList = document.getElementById('chain-list');
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#39;');
+      }
+
+      function renderPreview(previewUrl) {
+        if (!previewUrl) {
+          previewLink.classList.add('hidden');
+          previewLink.removeAttribute('href');
+          previewImage.removeAttribute('src');
+          previewEmpty.classList.remove('hidden');
+          return;
+        }
+
+        previewImage.src = previewUrl;
+        previewLink.href = previewUrl;
+        previewLink.classList.remove('hidden');
+        previewEmpty.classList.add('hidden');
+      }
+
+      function renderSecurity(result) {
+        const status = result.security_status || 'unknown';
+        if (status === 'safe') {
+          securityBadge.className = 'inline-flex items-center rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-800';
+          securityBadge.textContent = '✓ 安全';
+          securityMessage.textContent = '這個最終網址目前未被列入 Google Web Risk 已知風險名單。';
+        } else if (status === 'flagged') {
+          securityBadge.className = 'inline-flex items-center rounded-full bg-red-100 px-4 py-2 text-sm font-semibold text-red-800';
+          securityBadge.textContent = '⚠ 已知風險';
+          securityMessage.textContent = '這個最終網址已被列入 Google Web Risk 已知風險名單，請不要輕易開啟或輸入個資。';
+        } else {
+          securityBadge.className = 'inline-flex items-center rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-800';
+          securityBadge.textContent = '？ 無法判斷';
+          securityMessage.textContent = '這次暫時無法完成風險判斷，請稍後再試。';
+        }
+
+        checkedUrl.textContent = `檢查對象: ${result.security_checked_url || '無'}`;
+      }
+
+      function renderChain(chain) {
+        if (!Array.isArray(chain) || chain.length === 0) {
+          chainList.innerHTML = '<p class="text-sm text-slate-500">這筆結果沒有可用的跳轉節點。</p>';
+          return;
+        }
+
+        chainList.innerHTML = chain
+          .map((item) => {
+            const status =
+              item.status_code === null
+                ? 'N/A'
+                : `${item.status_code} ${item.status_text || ''}`.trim();
+            const duration = item.duration_ms === null ? 'N/A' : `${item.duration_ms} ms`;
+
+            return `
+              <article class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+                <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                  <div class="min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-slate-900 px-2 text-sm font-bold text-white">${item.step}</span>
+                      <span class="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700">${escapeHtml(item.type)}</span>
+                    </div>
+                    <p class="mt-3 break-all text-sm font-semibold text-slate-900">${escapeHtml(item.url)}</p>
+                    ${item.from_url ? `<p class="mt-2 break-all text-xs text-slate-500">From: ${escapeHtml(item.from_url)}</p>` : ''}
+                  </div>
+                  <div class="grid shrink-0 grid-cols-2 gap-3 text-sm text-slate-600 md:min-w-56">
+                    <div class="rounded-xl bg-white px-3 py-2">
+                      <p class="text-xs uppercase tracking-wide text-slate-400">Status</p>
+                      <p class="mt-1 font-semibold text-slate-800">${escapeHtml(status)}</p>
+                    </div>
+                    <div class="rounded-xl bg-white px-3 py-2">
+                      <p class="text-xs uppercase tracking-wide text-slate-400">Time</p>
+                      <p class="mt-1 font-semibold text-slate-800">${escapeHtml(duration)}</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            `;
+          })
+          .join('');
+      }
+
+      async function loadResult() {
+        const pathParts = window.location.pathname.split('/').filter(Boolean);
+        const resultId = decodeURIComponent(pathParts[pathParts.length - 1] || '');
+        if (!resultId) {
+          throw new Error('Missing result id.');
+        }
+
+        const response = await fetch(`/api/results/${encodeURIComponent(resultId)}`);
+        const payload = await response.json();
+        if (!response.ok) {
+          throw new Error(payload.error || 'Result not found.');
+        }
+
+        document.title = `888desturl Result ${payload.result_id}`;
+        resultMeta.textContent = `建立時間 ${new Date(payload.created_at).toLocaleString()} | Client ${payload.client_type}`;
+        resultIdElement.textContent = payload.result_id || 'N/A';
+        traceContext.textContent = payload.trace_context || 'default';
+        terminatedReason.textContent = payload.terminated_reason || 'completed';
+        pageTitle.textContent = payload.page_title || 'N/A';
+        finalUrl.textContent = payload.final_url || 'N/A';
+        finalUrl.href = payload.final_url || '#';
+        inputUrl.textContent = payload.input_url || '';
+        redirectBadge.textContent = `Redirects ${payload.redirect_count || 0} | Steps ${payload.step_count || 0}`;
+        renderPreview(payload.preview_url);
+        renderSecurity(payload);
+        renderChain(payload.chain);
+      }
+
+      loadResult().catch((error) => {
+        document.title = '888desturl Result';
+        resultMeta.textContent = error.message;
+        finalUrl.textContent = '找不到這筆結果';
+        finalUrl.removeAttribute('href');
+        inputUrl.textContent = '';
+        redirectBadge.textContent = 'Result unavailable';
+        securityBadge.className = 'inline-flex items-center rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-800';
+        securityBadge.textContent = '？ 無法載入';
+        securityMessage.textContent = error.message;
+        checkedUrl.textContent = '';
+        renderChain([]);
+      });
+    </script>
+  </body>
+</html>

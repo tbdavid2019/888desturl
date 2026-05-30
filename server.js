@@ -119,6 +119,7 @@ function buildSkillMarkdown(baseUrl) {
   const apiUrl = `${baseUrl}/api/trace`;
   const finalUrlApi = `${baseUrl}/api/final`;
   const shortFinalApi = `${baseUrl}/api/f`;
+  const resultPageUrl = `${baseUrl}/result/<result_id>`;
 
   return `---
 name: 888desturl-url-trace
@@ -133,6 +134,7 @@ description: Use when you need to trace a URL through HTTP redirects, meta refre
 - **Trace Endpoint**: \`${apiUrl}?url=<encoded_target_url>\`
 - **Final-Only Endpoint**: \`${finalUrlApi}?url=<encoded_target_url>\`
 - **Short CLI Endpoint**: \`${shortFinalApi}?url=<encoded_target_url>\`
+- **Result Page Pattern**: \`${resultPageUrl}\`
 - **Optional Context**: add \`&context=line\` for LINE-like mobile tracing when a link only works inside the LINE in-app browser
 - **Method**: \`GET\`
 - **Content Type**: \`application/json\`
@@ -147,7 +149,7 @@ description: Use when you need to trace a URL through HTTP redirects, meta refre
 6. Call \`${apiUrl}?url=<encoded_target_url>\` when you need the full chain.
 7. Read \`final_url\` first and present it as the main answer.
 8. Summarize \`redirect_count\`.
-9. If present, surface \`security.status\` and \`preview_url\`.
+9. If present, surface \`security.status\`, \`preview_url\`, and \`result_url\`.
 
 ## Response Shape
 
@@ -156,6 +158,7 @@ description: Use when you need to trace a URL through HTTP redirects, meta refre
 - \`chain\`
 - \`preview_url\`
 - \`security\`
+- \`result_url\`
 `;
 }
 
@@ -454,15 +457,35 @@ function toPublicSecurity(security) {
   };
 }
 
+function buildResultUrl(baseUrl, resultId) {
+  if (!resultId) {
+    return null;
+  }
+
+  return `${baseUrl}/result/${encodeURIComponent(resultId)}`;
+}
+
+function enrichResultWithPublicUrls(result, baseUrl) {
+  if (!result) {
+    return result;
+  }
+
+  return {
+    ...result,
+    result_url: buildResultUrl(baseUrl, result.result_id)
+  };
+}
+
 async function persistTraceRecord(record) {
   if (!historyStore) {
-    return;
+    return null;
   }
 
   try {
-    await historyStore.recordTrace(record);
+    return await historyStore.recordTrace(record);
   } catch (error) {
     app.log.error({ err: error, record }, 'Failed to persist trace record');
+    return null;
   }
 }
 
@@ -713,13 +736,14 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
 }
 
 async function buildTracePayload(request, targetUrl, traceContext) {
+  const baseUrl = getBaseUrl(request);
   const traceResult = await traceUrl(targetUrl, traceContext, {
     previewDir: historyStore ? historyStore.previewDir : PREVIEW_DIR,
     toPublicPreviewUrl: historyStore ? historyStore.toPublicPreviewUrl : null
   });
   const securityCheck = await lookupWebRisk(traceResult.final_url);
 
-  await persistTraceRecord({
+  const persisted = await persistTraceRecord({
     created_at: new Date().toISOString(),
     input_url: traceResult.input_url,
     final_url: traceResult.final_url,
@@ -737,17 +761,19 @@ async function buildTracePayload(request, targetUrl, traceContext) {
     security_message: securityCheck.message,
     security_checked_url: securityCheck.checked_url,
     threat_types: securityCheck.threat_types,
-    loop_detected: traceResult.loop_detected
+    loop_detected: traceResult.loop_detected,
+    chain: traceResult.chain
   });
 
-  return {
+  return enrichResultWithPublicUrls({
     ...traceResult,
+    result_id: persisted ? persisted.result_id : null,
     security: toPublicSecurity(securityCheck)
-  };
+  }, baseUrl);
 }
 
 async function persistFailure(request, targetUrl, traceContext, classified) {
-  await persistTraceRecord({
+  return persistTraceRecord({
     created_at: new Date().toISOString(),
     input_url: targetUrl,
     final_url: null,
@@ -765,7 +791,8 @@ async function persistFailure(request, targetUrl, traceContext, classified) {
     security_message: null,
     security_checked_url: null,
     threat_types: [],
-    loop_detected: false
+    loop_detected: false,
+    chain: []
   });
 }
 
@@ -788,9 +815,9 @@ app.get('/api/trace', async (request, reply) => {
   } catch (error) {
     const classified = classifyTraceError(error);
     request.log.error({ err: error, classified, targetUrl }, 'Trace failed');
-    await persistFailure(request, targetUrl, traceContext, classified);
+    const persisted = await persistFailure(request, targetUrl, traceContext, classified);
     reply.code(classified.statusCode);
-    return {
+    return enrichResultWithPublicUrls({
       error: classified.message,
       error_code: classified.code,
       error_message: classified.message,
@@ -800,6 +827,7 @@ app.get('/api/trace', async (request, reply) => {
       redirect_count: 0,
       chain: [],
       preview_url: null,
+      result_id: persisted ? persisted.result_id : null,
       security: toPublicSecurity({
         status: 'unknown',
         source: 'google_webrisk',
@@ -808,7 +836,7 @@ app.get('/api/trace', async (request, reply) => {
         message: 'Trace failed before a final URL could be checked.'
       }),
       details: error.message
-    };
+    }, getBaseUrl(request));
   }
 });
 
@@ -858,11 +886,11 @@ async function handleFinalLookup(request, reply) {
   } catch (error) {
     const classified = classifyTraceError(error);
     request.log.error({ err: error, classified, targetUrl }, 'Final URL lookup failed');
-    await persistFailure(request, targetUrl, traceContext, classified);
+    const persisted = await persistFailure(request, targetUrl, traceContext, classified);
     reply.code(classified.statusCode);
 
     if (format === 'json') {
-      return {
+      return enrichResultWithPublicUrls({
         error: classified.message,
         error_code: classified.code,
         error_message: classified.message,
@@ -870,6 +898,7 @@ async function handleFinalLookup(request, reply) {
         trace_context: traceContext,
         final_url: null,
         preview_url: null,
+        result_id: persisted ? persisted.result_id : null,
         security: toPublicSecurity({
           status: 'unknown',
           source: 'google_webrisk',
@@ -878,7 +907,7 @@ async function handleFinalLookup(request, reply) {
           message: 'Final URL lookup failed before a Web Risk check could run.'
         }),
         details: error.message
-      };
+      }, getBaseUrl(request));
     }
 
     reply.type('text/plain; charset=utf-8');
@@ -888,6 +917,25 @@ async function handleFinalLookup(request, reply) {
 
 app.get('/api/final', handleFinalLookup);
 app.get('/api/f', handleFinalLookup);
+
+app.get('/api/results/:resultId', async (request, reply) => {
+  if (!historyStore || !historyStore.enabled) {
+    reply.code(503);
+    return {
+      error: 'Result pages are not available until SQLite storage is enabled in the deployment environment.'
+    };
+  }
+
+  const result = await historyStore.getResultById(request.params.resultId);
+  if (!result) {
+    reply.code(404);
+    return {
+      error: 'Result not found.'
+    };
+  }
+
+  return enrichResultWithPublicUrls(result, getBaseUrl(request));
+});
 
 app.get('/api/admin/session', async (request) => {
   const session = adminAuth.getSession(request);
@@ -977,6 +1025,14 @@ app.get('/ai-agent-skill', async (request, reply) => {
 
 app.get('/admin', async (request, reply) => {
   return reply.sendFile('admin.html');
+});
+
+app.get('/result/:resultId', async (request, reply) => {
+  return reply.sendFile('result.html');
+});
+
+app.get('/r/:resultId', async (request, reply) => {
+  return reply.redirect(`/result/${encodeURIComponent(request.params.resultId)}`);
 });
 
 app.get('/health', async () => ({
