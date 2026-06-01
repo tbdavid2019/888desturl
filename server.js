@@ -150,7 +150,7 @@ description: Use when you need to trace a URL through HTTP redirects, meta refre
 6. Call \`${apiUrl}?url=<encoded_target_url>\` when you need the full chain.
 7. Read \`final_url\` first and present it as the main answer.
 8. Summarize \`redirect_count\`.
-9. If present, surface \`security.status\`, \`preview_url\`, and \`result_url\`.
+9. If present, surface \`security.status\`, \`preview_url\`, \`final_image_url\`, and \`result_url\`.
 
 ## Response Shape
 
@@ -158,6 +158,7 @@ description: Use when you need to trace a URL through HTTP redirects, meta refre
 - \`redirect_count\`
 - \`chain\`
 - \`preview_url\`
+- \`final_image_url\`
 - \`security\`
 - \`result_url\`
 `;
@@ -450,11 +451,13 @@ async function lookupWebRisk(finalUrl) {
 
 function toPublicSecurity(security) {
   return {
-    status: security.status,
-    source: security.source,
-    checked_url: security.checked_url,
-    checked_at: security.checked_at,
-    message: security.message
+    status: security && security.status ? security.status : 'unknown',
+    source: security && security.source ? security.source : 'google_webrisk',
+    checked_url: security && security.checked_url ? security.checked_url : null,
+    checked_at: security && security.checked_at ? security.checked_at : null,
+    message: security && security.message ? security.message : null,
+    threat_types:
+      security && Array.isArray(security.threat_types) ? security.threat_types : []
   };
 }
 
@@ -547,10 +550,70 @@ function enrichResultWithPublicUrls(result, baseUrl) {
     return result;
   }
 
+  const previewUrl = result.final_image_url || result.preview_url || null;
+  const security = toPublicSecurity(
+    result.security || {
+      status: result.security_status,
+      source: result.security_source,
+      checked_url: result.security_checked_url,
+      checked_at: result.security_checked_at,
+      message: result.security_message,
+      threat_types: result.threat_types
+    }
+  );
+
   return {
     ...result,
+    preview_url: previewUrl,
+    final_image_url: previewUrl,
+    security_status: result.security_status || security.status,
+    security_source: result.security_source || security.source,
+    security_message: result.security_message || security.message,
+    security_checked_url: result.security_checked_url || security.checked_url,
+    security_checked_at: result.security_checked_at || security.checked_at,
+    threat_types: Array.isArray(result.threat_types) ? result.threat_types : security.threat_types,
+    security,
     result_url: buildResultUrl(baseUrl, result.result_id)
   };
+}
+
+function buildResultImagePayload(result) {
+  const finalImageUrl = result.final_image_url || result.preview_url || null;
+
+  return {
+    result_id: result.result_id || null,
+    available: Boolean(finalImageUrl),
+    status: finalImageUrl ? 'available' : 'unavailable',
+    final_image_url: finalImageUrl,
+    image_url: finalImageUrl,
+    mime_type: finalImageUrl ? 'image/jpeg' : null
+  };
+}
+
+function buildResultWebRiskPayload(result) {
+  return {
+    result_id: result.result_id || null,
+    security: toPublicSecurity(result.security)
+  };
+}
+
+async function getStoredResultOrReply(request, reply) {
+  if (!historyStore || !historyStore.enabled) {
+    reply.code(503);
+    return {
+      error: 'Result pages are not available until SQLite storage is enabled in the deployment environment.'
+    };
+  }
+
+  const result = await historyStore.getResultById(request.params.resultId);
+  if (!result) {
+    reply.code(404);
+    return {
+      error: 'Result not found.'
+    };
+  }
+
+  return enrichResultWithPublicUrls(result, getBaseUrl(request));
 }
 
 async function persistTraceRecord(record) {
@@ -835,8 +898,10 @@ async function buildTracePayload(request, targetUrl, traceContext) {
     page_excerpt: traceResult.page_excerpt,
     preview_path: traceResult.preview_path,
     security_status: securityCheck.status,
+    security_source: securityCheck.source,
     security_message: securityCheck.message,
     security_checked_url: securityCheck.checked_url,
+    security_checked_at: securityCheck.checked_at,
     threat_types: securityCheck.threat_types,
     loop_detected: traceResult.loop_detected,
     chain: traceResult.chain
@@ -865,8 +930,10 @@ async function persistFailure(request, targetUrl, traceContext, classified) {
     page_excerpt: null,
     preview_path: null,
     security_status: 'unknown',
+    security_source: 'google_webrisk',
     security_message: null,
     security_checked_url: null,
+    security_checked_at: null,
     threat_types: [],
     loop_detected: false,
     chain: []
@@ -952,6 +1019,7 @@ async function handleFinalLookup(request, reply) {
         terminated_message: result.terminated_message,
         loop_detected: result.loop_detected,
         preview_url: result.preview_url,
+        final_image_url: result.final_image_url,
         security: result.security
       };
     }
@@ -999,22 +1067,25 @@ app.get('/api/final', handleFinalLookup);
 app.get('/api/f', handleFinalLookup);
 
 app.get('/api/results/:resultId', async (request, reply) => {
-  if (!historyStore || !historyStore.enabled) {
-    reply.code(503);
-    return {
-      error: 'Result pages are not available until SQLite storage is enabled in the deployment environment.'
-    };
+  return getStoredResultOrReply(request, reply);
+});
+
+app.get('/api/results/:resultId/final-image', async (request, reply) => {
+  const result = await getStoredResultOrReply(request, reply);
+  if (reply.statusCode >= 400) {
+    return result;
   }
 
-  const result = await historyStore.getResultById(request.params.resultId);
-  if (!result) {
-    reply.code(404);
-    return {
-      error: 'Result not found.'
-    };
+  return buildResultImagePayload(result);
+});
+
+app.get('/api/results/:resultId/web-risk', async (request, reply) => {
+  const result = await getStoredResultOrReply(request, reply);
+  if (reply.statusCode >= 400) {
+    return result;
   }
 
-  return enrichResultWithPublicUrls(result, getBaseUrl(request));
+  return buildResultWebRiskPayload(result);
 });
 
 app.get('/api/admin/session', async (request) => {

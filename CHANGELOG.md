@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-06-01
+
+### Added
+
+- Added `GET /api/results/:resultId/final-image` for retrieving the stored final-image preview metadata
+- Added `GET /api/results/:resultId/web-risk` for retrieving the stored Web Risk result separately
+- Added `final_image_url` as a response alias for stored preview images
+
+### Changed
+
+- Updated `GET /api/results/:resultId` to return a nested `security` object in addition to legacy flat security fields
+- Updated public security responses to expose `source`, `checked_at`, and `threat_types`
+- Updated SQLite history storage to persist full Web Risk metadata for later result lookups
+
 ## 2026-05-30
 
 ### Added

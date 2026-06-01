@@ -117,7 +117,7 @@ Notes:
 
 ### `GET /api/trace`
 
-Full redirect diagnostics plus final-only security check and preview URL.
+Full redirect diagnostics plus final-only security check and final-image preview URL.
 
 Query:
 
@@ -134,12 +134,14 @@ Response highlights:
   "result_url": "https://url.david888.com/result/AbCdEf123456",
   "redirect_count": 2,
   "preview_url": "/previews/2026/05/30/abcd1234.jpg",
+  "final_image_url": "/previews/2026/05/30/abcd1234.jpg",
   "security": {
     "status": "safe",
     "source": "google_webrisk",
     "checked_url": "https://example.com/final",
     "checked_at": "2026-05-30T08:00:00.000Z",
-    "message": "No Google Web Risk match was found for the final destination."
+    "message": "No Google Web Risk match was found for the final destination.",
+    "threat_types": []
   },
   "chain": []
 }
@@ -162,6 +164,7 @@ Query:
 - `result_id`
 - `result_url`
 - `preview_url`
+- `final_image_url`
 - `security`
 
 ### `GET /api/f`
@@ -186,8 +189,39 @@ Response includes:
 - `input_url`
 - `final_url`
 - `preview_url`
+- `final_image_url`
+- `security`
 - `security_status`
 - `chain`
+
+Compatibility note:
+
+- `security_status`, `security_message`, `security_checked_url`, and `threat_types` are still returned for existing clients
+- new clients should prefer the nested `security` object
+
+### `GET /api/results/:resultId/final-image`
+
+Public final-image lookup for one stored trace result.
+
+Response includes:
+
+- `result_id`
+- `available`
+- `status`
+- `final_image_url`
+- `image_url`
+- `mime_type`
+
+If the trace result still exists but the preview image has already expired, this endpoint returns `available: false` and `status: "unavailable"`.
+
+### `GET /api/results/:resultId/web-risk`
+
+Public Web Risk lookup result for one stored trace result.
+
+Response includes:
+
+- `result_id`
+- `security`
 
 ### `GET /health`
 
