@@ -69,6 +69,62 @@ function normalizeUrl(input) {
   }
 }
 
+function unwrapRedirectUrl(urlStr) {
+  try {
+    const parsed = new URL(urlStr);
+    const hostname = parsed.hostname.toLowerCase();
+
+    // YouTube redirect
+    if ((hostname === 'youtube.com' || hostname.endsWith('.youtube.com')) && parsed.pathname === '/redirect') {
+      const q = parsed.searchParams.get('q');
+      if (q && (q.startsWith('http://') || q.startsWith('https://'))) {
+        return q;
+      }
+    }
+
+    // Facebook redirect
+    if ((hostname === 'facebook.com' || hostname.endsWith('.facebook.com')) && parsed.pathname === '/l.php') {
+      const u = parsed.searchParams.get('u');
+      if (u && (u.startsWith('http://') || u.startsWith('https://'))) {
+        return u;
+      }
+    }
+
+    // Google redirect
+    if ((hostname === 'google.com' || hostname.endsWith('.google.com')) && parsed.pathname === '/url') {
+      const q = parsed.searchParams.get('q') || parsed.searchParams.get('url');
+      if (q && (q.startsWith('http://') || q.startsWith('https://'))) {
+        return q;
+      }
+    }
+
+    // Slack redirect
+    if (hostname === 'slack-redir.net' && parsed.pathname === '/link') {
+      const urlParam = parsed.searchParams.get('url');
+      if (urlParam && (urlParam.startsWith('http://') || urlParam.startsWith('https://'))) {
+        return urlParam;
+      }
+    }
+  } catch {
+    // Ignore URL parsing errors
+  }
+  return null;
+}
+
+function unwrapRedirectUrlRecursively(urlStr) {
+  let currentUrl = urlStr;
+  let depth = 0;
+  while (depth < 5) {
+    const unwrapped = unwrapRedirectUrl(currentUrl);
+    if (!unwrapped) {
+      break;
+    }
+    currentUrl = unwrapped;
+    depth++;
+  }
+  return currentUrl;
+}
+
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -312,6 +368,58 @@ async function maybeContinueLineIntermediate(page, traceContext) {
   }
 
   const ctaPatterns = [/前往頁面/i, /打開頁面/i, /繼續/i, /\bopen\b/i, /\bcontinue\b/i];
+  const selectors = ['a', 'button', 'input[type="button"]', 'input[type="submit"]'];
+
+  for (const selector of selectors) {
+    const elements = await page.locator(selector).elementHandles();
+    for (const element of elements) {
+      const text = (
+        (await element.textContent().catch(() => '')) ||
+        (await element.getAttribute('value').catch(() => '')) ||
+        ''
+      ).trim();
+
+      if (!text || !ctaPatterns.some((pattern) => pattern.test(text))) {
+        continue;
+      }
+
+      const visible = await element.isVisible().catch(() => false);
+      if (!visible) {
+        continue;
+      }
+
+      await element.click({ timeout: 2000 }).catch(() => {});
+      return true;
+    }
+  }
+
+  return false;
+}
+
+async function maybeContinueYoutubeIntermediate(page) {
+  const title = await page.title().catch(() => '');
+  const bodyText = await page
+    .evaluate(() => (document.body && document.body.innerText ? document.body.innerText.trim() : ''))
+    .catch(() => '');
+  const snapshot = `${title}\n${bodyText}`.replace(/\s+/g, ' ');
+
+  const isLikelyYoutubeIntermediate =
+    snapshot.includes('leave YouTube') ||
+    snapshot.includes('離開 YouTube') ||
+    snapshot.includes('離開YouTube') ||
+    snapshot.includes('leave_youtube');
+
+  if (!isLikelyYoutubeIntermediate) {
+    return false;
+  }
+
+  const ctaPatterns = [
+    /go to site/i,
+    /前往網站/i,
+    /繼續前往/i,
+    /繼續/i,
+    /離開/i
+  ];
   const selectors = ['a', 'button', 'input[type="button"]', 'input[type="submit"]'];
 
   for (const selector of selectors) {
@@ -630,6 +738,7 @@ async function persistTraceRecord(record) {
 }
 
 async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
+  const unwrappedUrl = unwrapRedirectUrlRecursively(inputUrl);
   const browser = await chromium.launch({
     headless: true,
     args: [
@@ -764,7 +873,7 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
 
   try {
     try {
-      await page.goto(inputUrl, {
+      await page.goto(unwrappedUrl, {
         timeout: TRACE_TIMEOUT_MS,
         waitUntil: 'domcontentloaded'
       });
@@ -791,19 +900,26 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
         break;
       }
 
-      const clicked = await maybeContinueLineIntermediate(page, traceContext);
-      if (!clicked) {
-        break;
+      const clickedLine = await maybeContinueLineIntermediate(page, traceContext);
+      if (clickedLine) {
+        lineIntermediateClicks += 1;
+        lastNavigationAt = Date.now();
+        if (lineIntermediateClicks > MAX_LINE_INTERMEDIATE_CLICKS) {
+          markTermination(
+            'line_intermediate_limit',
+            `Stopped after ${MAX_LINE_INTERMEDIATE_CLICKS} LINE-style continuation clicks.`
+          );
+        }
+        continue;
       }
 
-      lineIntermediateClicks += 1;
-      lastNavigationAt = Date.now();
-      if (lineIntermediateClicks > MAX_LINE_INTERMEDIATE_CLICKS) {
-        markTermination(
-          'line_intermediate_limit',
-          `Stopped after ${MAX_LINE_INTERMEDIATE_CLICKS} LINE-style continuation clicks.`
-        );
+      const clickedYoutube = await maybeContinueYoutubeIntermediate(page);
+      if (clickedYoutube) {
+        lastNavigationAt = Date.now();
+        continue;
       }
+
+      break;
     }
 
     if (!stopReason && Date.now() >= deadline) {
@@ -812,6 +928,21 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
 
     const chain = [];
     let previousUrl = null;
+
+    if (unwrappedUrl !== inputUrl) {
+      chain.push({
+        step: 1,
+        url: inputUrl,
+        from_url: null,
+        type: 'initial',
+        status_code: 302,
+        status_text: 'Found (Static Unwrap)',
+        method: 'GET',
+        duration_ms: 0
+      });
+      previousUrl = inputUrl;
+    }
+
     for (const event of navigationEvents) {
       const response = navigationResponses.find((item) => item.url === event.url) || null;
       const isHttpRedirect =

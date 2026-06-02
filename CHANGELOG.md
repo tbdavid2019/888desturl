@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-06-02
+
+### Added
+
+- Added static redirect URL unwrapping (`unwrapRedirectUrlRecursively`) for YouTube, Facebook, Google, and Slack URLs to avoid warning interstitial screens and bot detection.
+- Added virtual static redirect steps (Status: `302 Found (Static Unwrap)`) to trace chains when static unwrapping resolves a target URL.
+- Added dynamic click bypass logic for YouTube redirect warning pages during navigation.
+
 ## 2026-06-01
 
 ### Added

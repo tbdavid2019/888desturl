@@ -2,6 +2,8 @@
 
 `888desturl` 是一個用來追蹤網址最終目的地的工具，基於 Node.js、Fastify 與 Playwright（Headless Chromium）建構。它不只追蹤傳統 HTTP 3xx，還能處理 `meta refresh` 與 JavaScript 導向，現在也支援：
 
+- 靜態轉址網址自動解包 (YouTube, Facebook, Google, Slack) 以加速追蹤並避免機器人阻擋
+- YouTube 中介警告頁面（"Are you sure you want to leave YouTube?"）自動點擊繞過機制
 - final-only Google Web Risk 檢查
 - final 頁面截圖預覽
 - 每次 trace 的獨立結果頁
