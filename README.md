@@ -131,6 +131,8 @@ Response highlights:
 ```json
 {
   "final_url": "https://example.com/final",
+  "clean_url": "https://example.com/final",
+  "removed_tracking_parameters": ["utm_source"],
   "input_url": "https://example.com/start",
   "result_id": "AbCdEf123456",
   "result_url": "https://url.david888.com/result/AbCdEf123456",
@@ -190,6 +192,7 @@ Response includes:
 - `created_at`
 - `input_url`
 - `final_url`
+- `clean_url` and `removed_tracking_parameters` (the copy-friendly URL analysis; the literal final URL is preserved)
 - `preview_url`
 - `final_image_url`
 - `security`

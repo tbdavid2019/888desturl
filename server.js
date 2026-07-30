@@ -7,6 +7,7 @@ const { chromium } = require('playwright');
 const { loadEnvFile } = require('./lib/env');
 const { createHistoryStore } = require('./lib/storage');
 const { createAdminAuth } = require('./lib/admin-auth');
+const { analyzeUrl } = require('./lib/url-cleaner');
 
 loadEnvFile(path.join(__dirname, '.env'));
 
@@ -204,13 +205,16 @@ description: Use when you need to trace a URL through HTTP redirects, meta refre
 4. Call \`${shortFinalApi}?url=<encoded_target_url>\` for a short CLI response.
 5. Call \`${finalUrlApi}?url=<encoded_target_url>&format=json\` when you need the final URL plus metadata.
 6. Call \`${apiUrl}?url=<encoded_target_url>\` when you need the full chain.
-7. Read \`final_url\` first and present it as the main answer.
-8. Summarize \`redirect_count\`.
-9. If present, surface \`security.status\`, \`preview_url\`, \`final_image_url\`, and \`result_url\`.
+7. Read \`final_url\` first and present it as the traced destination.
+8. If \`removed_tracking_parameters\` is non-empty, also present \`clean_url\` as the copy-friendly URL and state which tracking parameters were removed.
+9. Summarize \`redirect_count\`.
+10. If present, surface \`security.status\`, \`preview_url\`, \`final_image_url\`, and \`result_url\`.
 
 ## Response Shape
 
 - \`final_url\`
+- \`clean_url\`
+- \`removed_tracking_parameters\`
 - \`redirect_count\`
 - \`chain\`
 - \`preview_url\`
@@ -658,6 +662,7 @@ function enrichResultWithPublicUrls(result, baseUrl) {
     return result;
   }
 
+  const urlAnalysis = analyzeUrl(result.final_url);
   const previewUrl = result.final_image_url || result.preview_url || null;
   const security = toPublicSecurity(
     result.security || {
@@ -674,6 +679,8 @@ function enrichResultWithPublicUrls(result, baseUrl) {
     ...result,
     preview_url: previewUrl,
     final_image_url: previewUrl,
+    clean_url: urlAnalysis.clean_url,
+    removed_tracking_parameters: urlAnalysis.removed_tracking_parameters,
     security_status: result.security_status || security.status,
     security_source: result.security_source || security.source,
     security_message: result.security_message || security.message,
@@ -1143,6 +1150,8 @@ async function handleFinalLookup(request, reply) {
         result_id: result.result_id || null,
         result_url: result.result_url || null,
         final_url: result.final_url,
+        clean_url: result.clean_url,
+        removed_tracking_parameters: result.removed_tracking_parameters,
         input_url: result.input_url,
         trace_context: result.trace_context,
         redirect_count: result.redirect_count,

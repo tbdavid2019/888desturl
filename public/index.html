@@ -154,6 +154,27 @@
                     查看結果頁
                   </a>
                 </div>
+                <div id="clean-url-section" class="mt-5 hidden rounded-2xl bg-white/10 px-4 py-4">
+                  <p data-i18n="cleanUrlEyebrow" class="text-xs font-bold uppercase tracking-[0.2em] text-emerald-100">
+                    Clean URL
+                  </p>
+                  <a
+                    id="clean-url"
+                    href="#"
+                    target="_blank"
+                    rel="noreferrer"
+                    class="mt-2 block break-all text-sm font-semibold text-emerald-100 underline decoration-emerald-200/60 underline-offset-4 hover:text-white"
+                  ></a>
+                  <p id="removed-tracking-parameters" class="mt-2 break-all text-xs text-white/70"></p>
+                  <button
+                    id="copy-clean-button"
+                    type="button"
+                    data-i18n="copyCleanButton"
+                    class="mt-3 inline-flex items-center justify-center rounded-xl bg-white/12 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/20"
+                  >
+                    複製乾淨網址
+                  </button>
+                </div>
                 <div class="mt-5 grid gap-3 sm:grid-cols-3">
                   <div class="rounded-2xl bg-white/10 px-4 py-3">
                     <p
@@ -340,6 +361,10 @@
           finalUrlTitle: '最終目的地網址',
           copyButton: '複製網址',
           copied: '已複製',
+          cleanUrlEyebrow: 'Clean URL',
+          copyCleanButton: '複製乾淨網址',
+          cleanUrlCopied: '已複製乾淨網址',
+          removedTrackingParameters: '已移除追蹤參數：',
           inputStat: 'Input',
           redirectStat: 'Redirects',
           stepsStat: 'Steps',
@@ -409,6 +434,10 @@
           finalUrlTitle: 'Final Destination URL',
           copyButton: 'Copy URL',
           copied: 'Copied',
+          cleanUrlEyebrow: 'Clean URL',
+          copyCleanButton: 'Copy clean URL',
+          cleanUrlCopied: 'Clean URL copied',
+          removedTrackingParameters: 'Removed tracking parameters:',
           inputStat: 'Input',
           redirectStat: 'Redirects',
           stepsStat: 'Steps',
@@ -477,6 +506,10 @@
       const stepCount = document.getElementById('step-count');
       const chainList = document.getElementById('chain-list');
       const copyButton = document.getElementById('copy-button');
+      const cleanUrlSection = document.getElementById('clean-url-section');
+      const cleanUrlLink = document.getElementById('clean-url');
+      const removedTrackingParameters = document.getElementById('removed-tracking-parameters');
+      const copyCleanButton = document.getElementById('copy-clean-button');
       const resultLinkButton = document.getElementById('result-link-button');
       const langButtons = document.querySelectorAll('[data-lang]');
       const skillLink = document.getElementById('skill-link');
@@ -492,6 +525,7 @@
       const clearHistoryButton = document.getElementById('clear-history-button');
 
       let latestFinalUrl = '';
+      let latestCleanUrl = '';
       let latestResultUrl = '';
       let currentLanguage = 'zh-TW';
       let isLoading = false;
@@ -664,6 +698,28 @@
         previewLink.classList.remove('hidden');
       }
 
+      function renderCleanUrl(payload) {
+        const removedParameters = Array.isArray(payload.removed_tracking_parameters)
+          ? payload.removed_tracking_parameters
+          : [];
+        const cleanUrl = payload.clean_url || '';
+
+        if (!cleanUrl || removedParameters.length === 0) {
+          latestCleanUrl = '';
+          cleanUrlSection.classList.add('hidden');
+          cleanUrlLink.removeAttribute('href');
+          cleanUrlLink.textContent = '';
+          removedTrackingParameters.textContent = '';
+          return;
+        }
+
+        latestCleanUrl = cleanUrl;
+        cleanUrlLink.href = cleanUrl;
+        cleanUrlLink.textContent = cleanUrl;
+        removedTrackingParameters.textContent = `${t('removedTrackingParameters')} ${removedParameters.join(', ')}`;
+        cleanUrlSection.classList.remove('hidden');
+      }
+
       function renderSecurity(security) {
         const status = security && security.status ? security.status : 'unknown';
         const labelKey =
@@ -813,6 +869,7 @@
         skillLink.href = '/ai-agent-skill';
         setLoading(isLoading);
         copyButton.textContent = t('copyButton');
+        copyCleanButton.textContent = t('copyCleanButton');
         if (!resultLinkButton.classList.contains('hidden')) {
           resultLinkButton.textContent = t('resultPageButton');
         }
@@ -856,11 +913,26 @@
         }
       });
 
+      copyCleanButton.addEventListener('click', async () => {
+        if (!latestCleanUrl) return;
+
+        try {
+          await navigator.clipboard.writeText(latestCleanUrl);
+          copyCleanButton.textContent = t('cleanUrlCopied');
+          setTimeout(() => {
+            copyCleanButton.textContent = t('copyCleanButton');
+          }, 1600);
+        } catch {
+          showFeedback(t('copyFailed'), 'error', 'copyFailed');
+        }
+      });
+
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
         hideFeedback();
         results.classList.add('hidden');
         latestResultUrl = '';
+        latestCleanUrl = '';
         resultLinkButton.classList.add('hidden');
         resultLinkButton.removeAttribute('href');
 
@@ -891,6 +963,7 @@
           lastChain = payload.chain;
           finalUrlLink.textContent = payload.final_url;
           finalUrlLink.href = payload.final_url;
+          renderCleanUrl(payload);
           if (latestResultUrl) {
             resultLinkButton.href = latestResultUrl;
             resultLinkButton.textContent = t('resultPageButton');
