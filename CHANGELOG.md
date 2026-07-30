@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-07-30
+
+### Added
+
+- Added final-URL tracking-parameter analysis with `clean_url` and `removed_tracking_parameters` to `GET /api/trace`, `GET /api/final?format=json`, and `GET /api/results/:resultId`.
+- Added conservative removal rules for common tracking parameters (`utm_*`, click IDs, analytics IDs, and Mailchimp IDs), plus Threads-specific `xmt` and `slof` parameters.
+- Updated `GET /ai-agent-skill` to document the URL-cleaning response fields and the recommended presentation flow for agents.
+
+### Changed
+
+- Kept `final_url` unchanged for trace history, diagnostics, and Google Web Risk checks; only the additional `clean_url` is sanitised for sharing.
+- Updated the main and standalone result pages to present a single recommended share action when tracking parameters are removed, avoiding competing original-versus-clean URL copy controls.
+- Expanded README API documentation with the cleaning contract, exact rules, and plain-text `/api/final` compatibility behaviour.
+
+### Deployment
+
+- Deployed to `https://url.david888.com` and `https://url.create360.ai`.
+
 ## 2026-06-02
 
 ### Added

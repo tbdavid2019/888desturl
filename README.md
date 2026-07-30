@@ -8,6 +8,7 @@
 - final 頁面截圖預覽
 - 每次 trace 的獨立結果頁
 - 可分享的結果頁 metadata 與結果頁連結複製
+- 追蹤參數分析與可分享的乾淨網址（保留原始最終網址）
 - 7 天預覽圖保留與自動清理
 - browser localStorage 最近查詢紀錄
 - SQLite server history / usage stats
@@ -153,6 +154,18 @@ Response highlights:
 
 If the browser UI calls this endpoint, it sets header `x-888desturl-client: web`. Other callers are stored as `api` traffic in server history by default.
 
+### Final URL tracking-parameter analysis
+
+Every JSON trace result provides both the literal final destination and an optional copy-friendly version:
+
+- `final_url`: the exact final URL observed by Playwright. It remains the trace record and the URL used for Google Web Risk checks.
+- `clean_url`: the same URL with only recognised tracking parameters removed. It is `null` when no final URL is available.
+- `removed_tracking_parameters`: names of parameters removed from `clean_url`; values are intentionally not returned. It is an empty array when nothing was removed.
+
+The cleaner is deliberately conservative. It removes common identifiers such as `utm_*`, `fbclid`, `gclid`, `dclid`, `msclkid`, `_ga`, `_gl`, `igshid`, `mibextid`, `mc_cid`, and `mc_eid`. For `threads.com` it also removes `xmt` and `slof`. Other parameters, including `id`, `token`, `state`, and `ref`, are preserved because they can affect destination behaviour.
+
+When tracking parameters were removed, the web UI presents `clean_url` as the single recommended share action. The original final URL remains visible and can still be opened for diagnostics.
+
 ### `GET /api/final`
 
 Final destination only.
@@ -167,13 +180,21 @@ Query:
 
 - `result_id`
 - `result_url`
+- `clean_url`
+- `removed_tracking_parameters`
 - `preview_url`
 - `final_image_url`
 - `security`
 
+The default `text` response remains the literal `final_url` for CLI compatibility.
+
 ### `GET /api/f`
 
 Short CLI alias for `/api/final`.
+
+### `GET /ai-agent-skill`
+
+Returns a Markdown skill document for the current deployment host. It documents the trace endpoints and instructs agents to present `clean_url` as the copy-friendly URL whenever `removed_tracking_parameters` is non-empty.
 
 ### `GET /api/results/:resultId`
 
