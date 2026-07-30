@@ -4,7 +4,8 @@
   "description": "WhereGoes-like URL redirect tracer built with Fastify and Playwright",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --test"
   },
   "dependencies": {
     "@fastify/static": "^7.0.4",

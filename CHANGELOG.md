@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-07-31
+
+### Added
+
+- Added an installable PWA manifest with standard, maskable, and Apple touch icons.
+- Added a Service Worker with versioned App Shell caching, runtime static-asset caching, and a dedicated offline page.
+- Added a bilingual install action that appears when the browser exposes the native install prompt.
+- Added automated PWA contract tests for install metadata, cache boundaries, page metadata, and Service Worker registration.
+
+### Changed
+
+- Added PWA metadata and Service Worker registration to the main and standalone result pages.
+- Kept API, admin, preview-image, and health-check traffic outside the PWA cache.
+
 ## 2026-07-30
 
 ### Added

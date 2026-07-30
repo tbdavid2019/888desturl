@@ -13,6 +13,8 @@
 - browser localStorage 最近查詢紀錄
 - SQLite server history / usage stats
 - admin login 與 admin dashboard
+- 可安裝的 PWA（Web App Manifest、桌面／行動裝置圖示、Service Worker）
+- 首頁 App Shell 離線快取與離線提示頁
 
 ![alt text](image-1.png)
 ![alt text](image-2.png)
@@ -72,6 +74,19 @@ npm start
 ```
 
 Open `http://localhost:3000`.
+
+## PWA
+
+在支援 PWA 的瀏覽器中開啟 HTTPS 正式站後，可透過首頁的「安裝 App」按鈕或瀏覽器選單安裝。`localhost` 開發環境也可測試安裝流程。
+
+離線行為：
+
+- 首頁、manifest、App 圖示與離線提示頁會預先快取
+- 曾載入的靜態資源可由 runtime cache 提供
+- `/api/*`、`/admin`、`/previews/*` 與健康檢查不會寫入 PWA cache
+- 網址追蹤本身仍需連線；離線時會顯示專用提示頁
+
+修改 `public/service-worker.js` 的 App Shell 後，請同步調整 `CACHE_VERSION`，讓既有安裝更新快取。
 
 ## Docker
 
