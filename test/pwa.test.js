@@ -52,4 +52,7 @@ test('public pages expose PWA metadata and register the service worker', () => {
   }
   assert.match(indexHtml, /beforeinstallprompt/);
   assert.match(indexHtml, /id="install-button"/);
+  assert.match(indexHtml, /id="install-dialog"/);
+  assert.match(indexHtml, /showInstallDialog\(\)/);
+  assert.match(indexHtml, /id="install-dialog-confirm"/);
 });

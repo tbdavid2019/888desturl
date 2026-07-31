@@ -360,6 +360,37 @@
       </div>
     </main>
 
+    <section
+      id="install-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="install-dialog-title"
+      class="fixed inset-0 z-50 hidden items-end bg-slate-950/45 p-4 backdrop-blur-sm sm:items-center sm:justify-center"
+    >
+      <div class="w-full max-w-md rounded-[2rem] border border-white/70 bg-white p-6 shadow-2xl shadow-slate-950/25 sm:p-8">
+        <div class="flex items-start gap-4">
+          <img src="/icons/icon-192.png" alt="" width="56" height="56" class="h-14 w-14 rounded-2xl" />
+          <div>
+            <p data-i18n="installDialogEyebrow" class="text-xs font-bold uppercase tracking-[0.2em] text-accent">Install App</p>
+            <h2 id="install-dialog-title" data-i18n="installDialogTitle" class="mt-1 text-2xl font-black tracking-tight text-slate-950">
+              將 888desturl 加到主畫面？
+            </h2>
+          </div>
+        </div>
+        <p data-i18n="installDialogDescription" class="mt-5 text-sm leading-6 text-slate-600">
+          安裝後可從主畫面快速開啟，並保留更像 App 的使用體驗。
+        </p>
+        <div class="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <button id="install-dialog-dismiss" type="button" data-i18n="installDialogDismiss" class="min-h-12 rounded-2xl border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+            稍後再說
+          </button>
+          <button id="install-dialog-confirm" type="button" data-i18n="installDialogConfirm" class="min-h-12 rounded-2xl bg-ink px-5 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-300">
+            立即安裝
+          </button>
+        </div>
+      </div>
+    </section>
+
     <script>
       const LOCAL_HISTORY_KEY = '888desturl-recent-history';
       const LOCAL_HISTORY_LIMIT = 20;
@@ -437,7 +468,12 @@
           upstreamServerErrorReason: '目標網站在任何跳轉發生前就回傳了 5xx 錯誤。',
           autoLineRetry: '偵測到這可能是 App 內連結，已自動改用 LINE 模式重試。',
           lineContextApplied: '已自動使用 LINE 模式完成追蹤。',
-          installApp: '安裝 App'
+          installApp: '安裝 App',
+          installDialogEyebrow: 'Install App',
+          installDialogTitle: '將 888desturl 加到主畫面？',
+          installDialogDescription: '安裝後可從主畫面快速開啟，並保留更像 App 的使用體驗。',
+          installDialogConfirm: '立即安裝',
+          installDialogDismiss: '稍後再說'
         },
         en: {
           pageTitle: '888desturl - Trace the Real Final Destination of Any URL',
@@ -511,7 +547,12 @@
           upstreamServerErrorReason: 'The target site returned a 5xx response before any redirect was observed.',
           autoLineRetry: 'This looks like an app-only link. Retrying automatically with LINE context.',
           lineContextApplied: 'Tracing completed after automatically switching to LINE context.',
-          installApp: 'Install App'
+          installApp: 'Install App',
+          installDialogEyebrow: 'Install App',
+          installDialogTitle: 'Add 888desturl to your home screen?',
+          installDialogDescription: 'Open it quickly from your home screen with an app-like experience.',
+          installDialogConfirm: 'Install now',
+          installDialogDismiss: 'Not now'
         }
       };
 
@@ -535,6 +576,9 @@
       const langButtons = document.querySelectorAll('[data-lang]');
       const skillLink = document.getElementById('skill-link');
       const installButton = document.getElementById('install-button');
+      const installDialog = document.getElementById('install-dialog');
+      const installDialogConfirm = document.getElementById('install-dialog-confirm');
+      const installDialogDismiss = document.getElementById('install-dialog-dismiss');
       const previewEmpty = document.getElementById('preview-empty');
       const previewLink = document.getElementById('preview-link');
       const previewImage = document.getElementById('preview-image');
@@ -1030,24 +1074,43 @@
 
       let deferredInstallPrompt = null;
 
+      function showInstallDialog() {
+        installDialog.classList.remove('hidden');
+        installDialog.classList.add('flex');
+        installDialogConfirm.focus();
+      }
+
+      function hideInstallDialog() {
+        installDialog.classList.add('hidden');
+        installDialog.classList.remove('flex');
+      }
+
+      async function requestInstall() {
+        if (!deferredInstallPrompt) return;
+
+        const installPrompt = deferredInstallPrompt;
+        hideInstallDialog();
+        installPrompt.prompt();
+        await installPrompt.userChoice;
+        deferredInstallPrompt = null;
+        installButton.classList.add('hidden');
+      }
+
       window.addEventListener('beforeinstallprompt', (event) => {
         event.preventDefault();
         deferredInstallPrompt = event;
         installButton.classList.remove('hidden');
+        showInstallDialog();
       });
 
-      installButton.addEventListener('click', async () => {
-        if (!deferredInstallPrompt) return;
-
-        deferredInstallPrompt.prompt();
-        await deferredInstallPrompt.userChoice;
-        deferredInstallPrompt = null;
-        installButton.classList.add('hidden');
-      });
+      installButton.addEventListener('click', showInstallDialog);
+      installDialogConfirm.addEventListener('click', requestInstall);
+      installDialogDismiss.addEventListener('click', hideInstallDialog);
 
       window.addEventListener('appinstalled', () => {
         deferredInstallPrompt = null;
         installButton.classList.add('hidden');
+        hideInstallDialog();
       });
 
       if ('serviceWorker' in navigator) {
