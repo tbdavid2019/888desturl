@@ -1,7 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="888desturl">
-  <rect width="512" height="512" fill="#0f766e"/>
-  <circle cx="144" cy="152" r="48" fill="none" stroke="#ccfbf1" stroke-width="34"/>
-  <circle cx="144" cy="360" r="48" fill="none" stroke="#ccfbf1" stroke-width="34"/>
-  <path d="M192 152h64c62 0 112 46 112 104s-50 104-112 104h-64" fill="none" stroke="#fff" stroke-width="34" stroke-linecap="round"/>
-  <path d="m321 211 55 45-55 45" fill="none" stroke="#fff" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="888 URL">
+  <rect width="512" height="512" fill="#101828"/>
+  <text x="256" y="242" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="238" font-weight="900" letter-spacing="-22" text-anchor="middle">888</text>
+  <path d="M122 291h268" stroke="#14b8a6" stroke-linecap="round" stroke-width="14"/>
+  <text x="267" y="388" fill="#ccfbf1" font-family="Arial, Helvetica, sans-serif" font-size="102" font-weight="800" letter-spacing="22" text-anchor="middle">URL</text>
 </svg>

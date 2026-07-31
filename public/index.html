@@ -70,11 +70,13 @@
                 Redirect Trace
               </p>
               <h1
+                aria-label="888 URL"
                 data-i18n-html="heroTitle"
                 class="mx-auto max-w-3xl text-4xl font-black leading-[0.98] tracking-[-0.04em] text-slate-950 sm:text-5xl md:text-6xl"
               >
-                <span class="block">888desturl</span>
-                <span class="mt-2 block text-[0.68em] font-extrabold tracking-[-0.03em] sm:text-[0.62em]">
+                <span class="block text-[1.18em] leading-[0.8] tracking-[-0.04em]">888</span>
+                <span class="mt-3 block text-[0.34em] font-black tracking-[0.35em] text-accent">URL</span>
+                <span class="mt-5 block text-[0.54em] font-extrabold tracking-[-0.03em] sm:text-[0.5em]">
                   追蹤網址真正的最終目的地
                 </span>
               </h1>
@@ -378,7 +380,7 @@
           </div>
         </div>
         <p data-i18n="installDialogDescription" class="mt-5 text-sm leading-6 text-slate-600">
-          安裝後可從主畫面快速開啟，並保留更像 App 的使用體驗。
+          安裝後可從主畫面快速開啟，也能直接從 Threads 等 App 分享網址進來追蹤。
         </p>
         <div class="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <button id="install-dialog-dismiss" type="button" data-i18n="installDialogDismiss" class="min-h-12 rounded-2xl border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
@@ -400,7 +402,7 @@
           pageTitle: '888desturl - 追蹤網址真正的最終目的地',
           eyebrow: 'Redirect Trace',
           heroTitle:
-            '<span class="block">888desturl</span><span class="mt-2 block text-[0.68em] font-extrabold tracking-[-0.03em] sm:text-[0.62em]">追蹤網址真正的最終目的地</span>',
+            '<span class="block text-[1.18em] leading-[0.8] tracking-[-0.04em]">888</span><span class="mt-3 block text-[0.34em] font-black tracking-[0.35em] text-accent">URL</span><span class="mt-5 block text-[0.54em] font-extrabold tracking-[-0.03em] sm:text-[0.5em]">追蹤網址真正的最終目的地</span>',
           heroDescription:
             '使用 Headless Chromium 模擬真實瀏覽器，抓出 HTTP 轉址、meta refresh 與 JavaScript 導向。',
           urlLabel: '目標網址',
@@ -471,7 +473,7 @@
           installApp: '安裝 App',
           installDialogEyebrow: 'Install App',
           installDialogTitle: '將 888desturl 加到主畫面？',
-          installDialogDescription: '安裝後可從主畫面快速開啟，並保留更像 App 的使用體驗。',
+          installDialogDescription: '安裝後可從主畫面快速開啟，也能直接從 Threads 等 App 分享網址進來追蹤。',
           installDialogConfirm: '立即安裝',
           installDialogDismiss: '稍後再說'
         },
@@ -479,7 +481,7 @@
           pageTitle: '888desturl - Trace the Real Final Destination of Any URL',
           eyebrow: 'Redirect Trace',
           heroTitle:
-            '<span class="block">888desturl</span><span class="mt-2 block text-[0.56em] font-extrabold tracking-[-0.03em] sm:text-[0.5em]">Trace the Real Final Destination of Any URL</span>',
+            '<span class="block text-[1.18em] leading-[0.8] tracking-[-0.04em]">888</span><span class="mt-3 block text-[0.34em] font-black tracking-[0.35em] text-accent">URL</span><span class="mt-5 block text-[0.5em] font-extrabold tracking-[-0.03em] sm:text-[0.46em]">Trace the Real Final Destination of Any URL</span>',
           heroDescription:
             'Use Headless Chromium to simulate a real browser and capture HTTP redirects, meta refresh, and JavaScript navigation.',
           urlLabel: 'Target URL',
@@ -550,7 +552,7 @@
           installApp: 'Install App',
           installDialogEyebrow: 'Install App',
           installDialogTitle: 'Add 888desturl to your home screen?',
-          installDialogDescription: 'Open it quickly from your home screen with an app-like experience.',
+          installDialogDescription: 'Open it quickly from your home screen or share a URL from apps such as Threads straight into the tracer.',
           installDialogConfirm: 'Install now',
           installDialogDismiss: 'Not now'
         }
@@ -1068,9 +1070,43 @@
         }
       });
 
+      function sharedUrlFromCurrentLocation() {
+        const searchParams = new URL(window.location.href).searchParams;
+        const sharedCandidates = [
+          searchParams.get('shared_url'),
+          searchParams.get('shared_text')
+        ];
+
+        for (const candidate of sharedCandidates) {
+          const urlMatch = candidate && candidate.match(/https?:\/\/[^\s<>"']+/i);
+          if (!urlMatch) continue;
+
+          try {
+            const sharedUrl = new URL(urlMatch[0]);
+            if (sharedUrl.protocol === 'http:' || sharedUrl.protocol === 'https:') {
+              return sharedUrl.href;
+            }
+          } catch {
+            // Try the next share field when this candidate is not a valid URL.
+          }
+        }
+
+        return '';
+      }
+
+      function traceSharedUrl() {
+        const sharedUrl = sharedUrlFromCurrentLocation();
+        if (!sharedUrl) return;
+
+        urlInput.value = sharedUrl;
+        window.history.replaceState({}, document.title, window.location.pathname);
+        form.requestSubmit();
+      }
+
       currentLanguage = detectLanguage();
       applyTranslations();
       renderHistory();
+      traceSharedUrl();
 
       let deferredInstallPrompt = null;
 

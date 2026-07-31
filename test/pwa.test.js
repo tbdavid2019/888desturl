@@ -27,6 +27,16 @@ test('web app manifest contains the required install metadata and icons', () => 
   for (const icon of manifest.icons) {
     assert.ok(fs.existsSync(path.join(publicDir, icon.src.replace(/^\//, ''))));
   }
+
+  assert.deepEqual(manifest.share_target, {
+    action: '/',
+    method: 'GET',
+    params: {
+      title: 'shared_title',
+      text: 'shared_text',
+      url: 'shared_url'
+    }
+  });
 });
 
 test('service worker precaches the offline shell and never caches API requests', () => {
@@ -55,4 +65,16 @@ test('public pages expose PWA metadata and register the service worker', () => {
   assert.match(indexHtml, /id="install-dialog"/);
   assert.match(indexHtml, /showInstallDialog\(\)/);
   assert.match(indexHtml, /id="install-dialog-confirm"/);
+});
+
+test('homepage presents the 888 URL mark and traces URLs received from Android share sheets', () => {
+  const indexHtml = readPublicFile('index.html');
+
+  assert.match(indexHtml, /aria-label="888 URL"/);
+  assert.match(indexHtml, />888<\/span>/);
+  assert.match(indexHtml, />URL<\/span>/);
+  assert.match(indexHtml, /searchParams\.get\('shared_url'\)/);
+  assert.match(indexHtml, /searchParams\.get\('shared_text'\)/);
+  assert.match(indexHtml, /form\.requestSubmit\(\)/);
+  assert.match(indexHtml, /window\.history\.replaceState/);
 });
