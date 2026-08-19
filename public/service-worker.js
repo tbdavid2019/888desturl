@@ -46,6 +46,7 @@ self.addEventListener('fetch', (event) => {
   const isSameOrigin = url.origin === self.location.origin;
   const isPrivateOrDynamic =
     url.pathname.startsWith('/api/') ||
+    url.pathname.startsWith('/mcp') ||
     url.pathname.startsWith('/admin') ||
     url.pathname.startsWith('/previews/') ||
     url.pathname === '/health';

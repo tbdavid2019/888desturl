@@ -8,6 +8,7 @@ const { loadEnvFile } = require('./lib/env');
 const { createHistoryStore } = require('./lib/storage');
 const { createAdminAuth } = require('./lib/admin-auth');
 const { analyzeUrl } = require('./lib/url-cleaner');
+const { createMcpHandler } = require('./lib/mcp');
 
 loadEnvFile(path.join(__dirname, '.env'));
 
@@ -157,7 +158,13 @@ function getRequestPath(request) {
 }
 
 function getClientType(request) {
-  return request.headers['x-888desturl-client'] === 'web' ? 'web' : 'api';
+  if (request.headers['x-888desturl-client'] === 'web') {
+    return 'web';
+  }
+  if (request.raw.url && request.raw.url.startsWith('/mcp')) {
+    return 'mcp';
+  }
+  return 'api';
 }
 
 function normalizeTraceContext(input) {
@@ -177,11 +184,12 @@ function buildSkillMarkdown(baseUrl) {
   const apiUrl = `${baseUrl}/api/trace`;
   const finalUrlApi = `${baseUrl}/api/final`;
   const shortFinalApi = `${baseUrl}/api/f`;
+  const mcpUrl = `${baseUrl}/mcp`;
   const resultPageUrl = `${baseUrl}/result/<result_id>`;
 
   return `---
 name: 888desturl-url-trace
-description: Use when you need to trace a URL through HTTP redirects, meta refresh, or JavaScript navigation by calling the live 888desturl API for the current deployment. Supports final destination discovery, LIFF URL inspection, and redirect-chain debugging.
+description: Use when you need to trace a URL through HTTP redirects, meta refresh, or JavaScript navigation by calling the live 888desturl API or MCP server for the current deployment. Supports final destination discovery, LIFF URL inspection, redirect-chain debugging, and Cloudflare WebMCP integration.
 ---
 
 # 888desturl URL Trace
@@ -189,12 +197,13 @@ description: Use when you need to trace a URL through HTTP redirects, meta refre
 ## Environment Setup
 
 - **Base URL**: \`${baseUrl}\`
+- **MCP Endpoint**: \`${mcpUrl}\` (JSON-RPC 2.0 / WebMCP compatible)
 - **Trace Endpoint**: \`${apiUrl}?url=<encoded_target_url>\`
 - **Final-Only Endpoint**: \`${finalUrlApi}?url=<encoded_target_url>\`
 - **Short CLI Endpoint**: \`${shortFinalApi}?url=<encoded_target_url>\`
 - **Result Page Pattern**: \`${resultPageUrl}\`
 - **Optional Context**: add \`&context=line\` for LINE-like mobile tracing when a link only works inside the LINE in-app browser
-- **Method**: \`GET\`
+- **Method**: \`GET\` (REST) / \`POST\` (MCP)
 - **Content Type**: \`application/json\`
 
 ## Workflow
@@ -1344,8 +1353,95 @@ app.get('/health', async () => ({
   web_risk_enabled: Boolean(WEB_RISK_API_KEY)
 }));
 
+const mcpHandler = createMcpHandler({
+  onTrace: async (args, req) => {
+    const targetUrl = normalizeUrl(args && args.url);
+    const traceContext = normalizeTraceContext(args && args.context);
+    if (!targetUrl) {
+      throw new Error('Invalid or missing url argument. Use a full http(s) URL.');
+    }
+    try {
+      return await buildTracePayload(req, targetUrl, traceContext);
+    } catch (error) {
+      const classified = classifyTraceError(error);
+      req.log.error({ err: error, classified, targetUrl }, 'MCP Trace failed');
+      const persisted = await persistFailure(req, targetUrl, traceContext, classified);
+      const baseUrl = getBaseUrl(req);
+      return enrichResultWithPublicUrls({
+        error: classified.message,
+        error_code: classified.code,
+        error_message: classified.message,
+        input_url: targetUrl,
+        trace_context: traceContext,
+        final_url: null,
+        redirect_count: 0,
+        chain: [],
+        preview_url: null,
+        result_id: persisted ? persisted.result_id : null,
+        security: toPublicSecurity({
+          status: 'unknown',
+          source: 'google_webrisk',
+          checked_url: null,
+          checked_at: new Date().toISOString(),
+          message: 'Trace failed before a final URL could be checked.'
+        }),
+        details: error.message
+      }, baseUrl);
+    }
+  },
+  onClean: async (args) => {
+    if (!args || typeof args.url !== 'string' || !args.url.trim()) {
+      throw new Error('Invalid or missing url argument.');
+    }
+    const cleaned = analyzeUrl(args.url.trim());
+    return {
+      input_url: args.url.trim(),
+      clean_url: cleaned.clean_url,
+      has_tracking: (cleaned.removed_tracking_parameters || []).length > 0,
+      removed_tracking_parameters: cleaned.removed_tracking_parameters || []
+    };
+  }
+});
+
+app.options('/mcp', async (request, reply) => {
+  reply
+    .header('access-control-allow-origin', '*')
+    .header('access-control-allow-methods', 'GET, POST, OPTIONS')
+    .header('access-control-allow-headers', 'content-type, authorization, x-888desturl-client')
+    .code(204);
+  return '';
+});
+
+app.get('/mcp', async (request, reply) => {
+  reply
+    .header('access-control-allow-origin', '*')
+    .type('application/json; charset=utf-8');
+  return {
+    name: '888desturl-mcp',
+    version: '1.0.0',
+    protocolVersion: '2024-11-05',
+    transport: 'HTTP JSON-RPC 2.0',
+    endpoint: `${getBaseUrl(request)}/mcp`,
+    description: 'Model Context Protocol (MCP) server for 888desturl URL tracing and cleaning, compatible with Cloudflare WebMCP and MCP clients.',
+    tools: mcpHandler.getTools()
+  };
+});
+
+app.post('/mcp', async (request, reply) => {
+  reply
+    .header('access-control-allow-origin', '*')
+    .type('application/json; charset=utf-8');
+
+  const response = await mcpHandler.handleJsonRpc(request.body, request);
+  if (response === null) {
+    reply.code(204);
+    return '';
+  }
+  return response;
+});
+
 app.setNotFoundHandler((request, reply) => {
-  if (request.raw.url && request.raw.url.startsWith('/api/')) {
+  if (request.raw.url && (request.raw.url.startsWith('/api/') || request.raw.url.startsWith('/mcp'))) {
     reply.code(404).send({ error: 'Not found' });
     return;
   }

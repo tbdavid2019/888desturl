@@ -15,6 +15,8 @@
 - admin login 與 admin dashboard
 - 可安裝的 PWA（Web App Manifest、桌面／行動裝置圖示、Service Worker）
 - 首頁 App Shell 離線快取與離線提示頁
+- 支援 Model Context Protocol (MCP) 與 Cloudflare WebMCP 整合（提供 `/mcp` 端點）
+- 瀏覽器 AI Agent 直接調用（`trace_url`、`clean_url` 工具）
 
 ![alt text](image-1.png)
 ![alt text](image-2.png)
@@ -321,6 +323,38 @@ Behavior:
 - the result row itself remains available until history retention removes it
 - if the history record expires, the result page returns not found
 
+## Model Context Protocol (MCP) & WebMCP
+
+`888desturl` 提供符合 MCP JSON-RPC 2.0 規範的 `/mcp` 端點，支援 Cloudflare WebMCP 自動化橋接與外部 MCP 用戶端。
+
+- **Endpoint**: `POST /mcp`、`GET /mcp`、`OPTIONS /mcp`
+- **Protocol Version**: `2024-11-05`
+- **Cloudflare WebMCP**: 於 Cloudflare Dashboard 開啟 WebMCP 後，`mcp-server-client` pack 會自動將此端點的工具註冊至訪客瀏覽器的 `document.modelContext`。
+
+### 支援的 MCP 工具 (Tools)
+
+1. `trace_url`:
+   - 完整追蹤網址轉址歷程（HTTP 3xx、meta refresh、JavaScript 導向）
+   - 自動解包 YouTube/FB/Google/Slack 靜態轉址、Google Web Risk 安全檢查、清理追蹤參數
+   - 參數：`url` (string, 必要), `context` (string: `"default"` | `"line"`, 選填)
+2. `clean_url`:
+   - 快速解析並移除行銷/追蹤參數（如 `utm_*`、`fbclid`、`gclid`、`xmt` 等）
+   - 參數：`url` (string, 必要)
+
+### 呼叫範例
+
+```bash
+# 查詢 MCP 工具清單
+curl -s -X POST http://localhost:3000/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
+
+# 調用 trace_url 工具
+curl -s -X POST http://localhost:3000/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"trace_url","arguments":{"url":"https://short.link/xyz"}}}'
+```
+
 ## Retention
 
 - preview screenshots: 7 days by default
@@ -342,11 +376,16 @@ When a preview expires:
 ├── lib/
 │   ├── admin-auth.js
 │   ├── env.js
-│   └── storage.js
+│   ├── mcp.js
+│   ├── storage.js
+│   └── url-cleaner.js
 ├── package.json
 ├── public/
 │   ├── admin.html
 │   ├── index.html
 │   └── result.html
+├── test/
+│   ├── mcp.test.js
+│   └── pwa.test.js
 └── server.js
 ```

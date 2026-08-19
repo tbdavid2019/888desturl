@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-08-19
+
+### Added
+
+- Added standard Model Context Protocol (MCP) server endpoints (`POST /mcp`, `GET /mcp`, `OPTIONS /mcp`) with JSON-RPC 2.0 transport compatible with Cloudflare WebMCP bridge.
+- Added `trace_url` tool exposing full redirect tracing, security analysis, and parameter cleaning to browser AI agents and external MCP clients.
+- Added `clean_url` tool for instant offline marketing parameter stripping.
+- Added automated MCP contract and unit tests in `test/mcp.test.js`.
+- Added `mcp` client type tracking in server history, admin stats breakdown, and admin dashboard filters.
+
+### Changed
+
+- Updated Service Worker to exclude `/mcp` traffic from runtime and app shell caches.
+- Updated `/ai-agent-skill` endpoint to document MCP endpoint and capabilities.
+
 ## 2026-07-31
 
 ### Added
