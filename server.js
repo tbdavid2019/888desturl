@@ -8,6 +8,7 @@ const { loadEnvFile } = require('./lib/env');
 const { createHistoryStore } = require('./lib/storage');
 const { createAdminAuth } = require('./lib/admin-auth');
 const { analyzeUrl, normalizeUrl } = require('./lib/url-cleaner');
+const { extractPageMarkdown } = require('./lib/html-to-md');
 const { createMcpHandler } = require('./lib/mcp');
 loadEnvFile(path.join(__dirname, '.env'));
 
@@ -669,6 +670,7 @@ function enrichResultWithPublicUrls(result, baseUrl) {
 
   const urlAnalysis = analyzeUrl(result.final_url);
   const previewUrl = result.final_image_url || result.preview_url || null;
+  const markdownUrl = result.final_url ? `https://2md.aiurl.tw/${result.final_url}` : null;
   const security = toPublicSecurity(
     result.security || {
       status: result.security_status,
@@ -682,10 +684,13 @@ function enrichResultWithPublicUrls(result, baseUrl) {
 
   return {
     ...result,
+    total_duration_ms: typeof result.total_duration_ms === 'number' ? result.total_duration_ms : null,
     preview_url: previewUrl,
     final_image_url: previewUrl,
     clean_url: urlAnalysis.clean_url,
     removed_tracking_parameters: urlAnalysis.removed_tracking_parameters,
+    markdown_url: result.markdown_url || markdownUrl,
+    markdown_content: result.markdown_content || null,
     security_status: result.security_status || security.status,
     security_source: result.security_source || security.source,
     security_message: result.security_message || security.message,
@@ -750,6 +755,7 @@ async function persistTraceRecord(record) {
 }
 
 async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
+  const traceStartedAt = Date.now();
   const unwrappedUrl = unwrapRedirectUrlRecursively(inputUrl);
   const browser = await chromium.launch({
     headless: true,
@@ -872,7 +878,8 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
 
     navigationEvents.push({
       url: currentUrl,
-      observedAt: lastNavigationAt
+      observedAt: lastNavigationAt,
+      elapsedMs: Math.max(0, lastNavigationAt - traceStartedAt)
     });
 
     if (navigationEvents.length > MAX_REDIRECT_STEPS) {
@@ -940,6 +947,7 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
 
     const chain = [];
     let previousUrl = null;
+    let lastEventTime = traceStartedAt;
 
     if (unwrappedUrl !== inputUrl) {
       chain.push({
@@ -950,18 +958,26 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
         status_code: 302,
         status_text: 'Found (Static Unwrap)',
         method: 'GET',
-        duration_ms: 0
+        duration_ms: 0,
+        elapsed_ms: 0,
+        timestamp: new Date(traceStartedAt).toISOString()
       });
       previousUrl = inputUrl;
     }
 
-    for (const event of navigationEvents) {
+    for (let i = 0; i < navigationEvents.length; i++) {
+      const event = navigationEvents[i];
       const response = navigationResponses.find((item) => item.url === event.url) || null;
       const isHttpRedirect =
         response &&
         response.status >= 300 &&
         response.status < 400 &&
         typeof response.statusText === 'string';
+
+      const durationMs =
+        response && typeof response.durationMs === 'number'
+          ? response.durationMs
+          : Math.max(0, event.observedAt - lastEventTime);
 
       chain.push({
         step: chain.length + 1,
@@ -971,9 +987,12 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
         status_code: response ? response.status : null,
         status_text: response ? response.statusText : null,
         method: response ? response.method : null,
-        duration_ms: response ? response.durationMs : null
+        duration_ms: durationMs,
+        elapsed_ms: event.elapsedMs !== undefined ? event.elapsedMs : Math.max(0, event.observedAt - traceStartedAt),
+        timestamp: new Date(event.observedAt || Date.now()).toISOString()
       });
 
+      lastEventTime = event.observedAt || lastEventTime;
       previousUrl = event.url;
     }
 
@@ -987,7 +1006,9 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
         status_code: null,
         status_text: null,
         method: null,
-        duration_ms: null
+        duration_ms: Math.max(0, Date.now() - lastEventTime),
+        elapsed_ms: Math.max(0, Date.now() - traceStartedAt),
+        timestamp: new Date().toISOString()
       });
     }
 
@@ -996,7 +1017,10 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
       .evaluate(() => (document.body && document.body.innerText ? document.body.innerText.trim() : ''))
       .then((text) => text.replace(/\s+/g, ' ').slice(0, 240))
       .catch(() => '');
+    const markdownContent = await extractPageMarkdown(page).catch(() => '');
+    const markdownUrl = finalUrl ? `https://2md.aiurl.tw/${finalUrl}` : null;
     const previewPath = await capturePreview(page, options.previewDir, inputUrl, finalUrl).catch(() => null);
+    const totalDurationMs = Math.max(0, Date.now() - traceStartedAt);
 
     return interpretTraceResult({
       final_url: finalUrl,
@@ -1004,11 +1028,14 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
       trace_context: traceContext,
       redirect_count: Math.max(0, chain.length - 1),
       chain,
+      total_duration_ms: totalDurationMs,
       terminated_reason: stopReason || 'completed',
       terminated_message: stopMessage,
       loop_detected: stopReason === 'redirect_loop' || stopReason === 'max_redirect_steps',
       page_title: pageTitle || null,
       page_excerpt: pageExcerpt || null,
+      markdown_content: markdownContent || null,
+      markdown_url: markdownUrl,
       preview_path: previewPath,
       preview_url: options.toPublicPreviewUrl ? options.toPublicPreviewUrl(previewPath) : null
     });
@@ -1040,6 +1067,8 @@ async function buildTracePayload(request, targetUrl, traceContext) {
     page_title: traceResult.page_title,
     page_excerpt: traceResult.page_excerpt,
     preview_path: traceResult.preview_path,
+    total_duration_ms: traceResult.total_duration_ms,
+    markdown_content: traceResult.markdown_content,
     security_status: securityCheck.status,
     security_source: securityCheck.source,
     security_message: securityCheck.message,

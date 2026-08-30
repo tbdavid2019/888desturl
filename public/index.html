@@ -207,7 +207,7 @@
                     </button>
                   </div>
                 </div>
-                <div class="mt-5 grid gap-3 sm:grid-cols-3">
+                <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <div class="rounded-2xl bg-white/10 px-4 py-3">
                     <p
                       data-i18n="inputStat"
@@ -234,6 +234,15 @@
                       Steps
                     </p>
                     <p id="step-count" class="mt-2 text-2xl font-black"></p>
+                  </div>
+                  <div class="rounded-2xl bg-white/10 px-4 py-3">
+                    <p
+                      data-i18n="totalTimeStat"
+                      class="text-xs uppercase tracking-[0.2em] text-emerald-100"
+                    >
+                      Total Time
+                    </p>
+                    <p id="total-duration" class="mt-2 text-2xl font-black font-mono"></p>
                   </div>
                 </div>
               </div>
@@ -294,6 +303,49 @@
                 </div>
               </article>
             </div>
+
+            <!-- HTML to Markdown (2md 雙路線支援) Section -->
+            <article id="markdown-section" class="hidden overflow-hidden rounded-[1.75rem] border border-slate-200/70 bg-white/90 shadow-lg shadow-slate-200/60">
+              <div class="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <h3 data-i18n="markdownTitle" class="text-xl font-bold tracking-tight text-slate-900">
+                      頁面內容 Markdown
+                    </h3>
+                    <span class="inline-flex items-center gap-1 rounded-full bg-cyan-50 px-2.5 py-0.5 text-xs font-bold text-cyan-700 border border-cyan-200">
+                      <span class="h-1.5 w-1.5 rounded-full bg-cyan-500"></span>
+                      2md 雙路線
+                    </span>
+                  </div>
+                  <p data-i18n="markdownDescription" class="mt-1 text-sm text-slate-500">
+                    使用 2md.aiurl.tw 雙路線解析，直接提取最終頁面的純淨 Markdown 內文。
+                  </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <button
+                    id="copy-markdown-button"
+                    type="button"
+                    data-i18n="copyMarkdown"
+                    class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400"
+                  >
+                    複製 Markdown
+                  </button>
+                  <a
+                    id="open-2md-link"
+                    href="#"
+                    target="_blank"
+                    rel="noreferrer"
+                    data-i18n="openIn2md"
+                    class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300"
+                  >
+                    在 2md 開啟 ↗
+                  </a>
+                </div>
+              </div>
+              <div class="p-5">
+                <pre id="markdown-viewer" class="max-h-80 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-slate-900 p-4 font-mono text-xs leading-relaxed text-slate-100"></pre>
+              </div>
+            </article>
 
             <article class="rounded-[1.75rem] border border-slate-200/70 bg-white/90 p-5 shadow-lg shadow-slate-200/60">
               <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
@@ -442,6 +494,12 @@
           inputStat: 'Input',
           redirectStat: 'Redirects',
           stepsStat: 'Steps',
+          totalTimeStat: '總耗時',
+          markdownTitle: '頁面內容 Markdown',
+          markdownDescription: '使用 2md.aiurl.tw 雙路線解析，直接提取最終頁面的純淨 Markdown 內文。',
+          copyMarkdown: '複製 Markdown',
+          markdownCopied: '已複製 Markdown',
+          openIn2md: '在 2md 開啟 ↗',
           previewTitle: 'Final 頁面預覽',
           previewDescription: '使用最終頁面的即時截圖做預覽。',
           previewUnavailable: '目前沒有可用的頁面預覽。',
@@ -522,6 +580,12 @@
           inputStat: 'Input',
           redirectStat: 'Redirects',
           stepsStat: 'Steps',
+          totalTimeStat: 'Total Time',
+          markdownTitle: 'Page Content Markdown',
+          markdownDescription: 'Extracted using 2md.aiurl.tw dual-route to provide clean Markdown for LLMs.',
+          copyMarkdown: 'Copy Markdown',
+          markdownCopied: 'Markdown Copied',
+          openIn2md: 'Open in 2md ↗',
           previewTitle: 'Final Preview',
           previewDescription: 'A screenshot taken from the final destination page.',
           previewUnavailable: 'No preview image is available for this result.',
@@ -591,6 +655,7 @@
       const inputUrl = document.getElementById('input-url');
       const redirectCount = document.getElementById('redirect-count');
       const stepCount = document.getElementById('step-count');
+      const totalDuration = document.getElementById('total-duration');
       const chainList = document.getElementById('chain-list');
       const copyButton = document.getElementById('copy-button');
       const cleanUrlSection = document.getElementById('clean-url-section');
@@ -598,6 +663,10 @@
       const removedTrackingParameters = document.getElementById('removed-tracking-parameters');
       const copyCleanButton = document.getElementById('copy-clean-button');
       const resultLinkButton = document.getElementById('result-link-button');
+      const markdownSection = document.getElementById('markdown-section');
+      const markdownViewer = document.getElementById('markdown-viewer');
+      const copyMarkdownButton = document.getElementById('copy-markdown-button');
+      const open2mdLink = document.getElementById('open-2md-link');
       const langButtons = document.querySelectorAll('[data-lang]');
       const skillLink = document.getElementById('skill-link');
       const installButton = document.getElementById('install-button');
@@ -618,6 +687,7 @@
       let latestFinalUrl = '';
       let latestCleanUrl = '';
       let latestResultUrl = '';
+      let latestMarkdownContent = '';
       let currentLanguage = 'zh-TW';
       let isLoading = false;
       let lastFeedbackType = null;
@@ -745,6 +815,10 @@
             const fromUrl = item.from_url
               ? `<p class="mt-2 break-all text-xs text-slate-500">${escapeHtml(t('fromLabel'))}: ${escapeHtml(item.from_url)}</p>`
               : '';
+            const elapsedText =
+              typeof item.elapsed_ms === 'number'
+                ? `<p class="mt-1 text-[11px] font-mono text-slate-400">⏱ +${item.duration_ms !== null ? item.duration_ms : 0} ms (${item.elapsed_ms} ms)</p>`
+                : '';
 
             return `
               <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
@@ -765,6 +839,7 @@
                     <div class="rounded-xl bg-white px-3 py-2">
                       <p class="text-xs uppercase tracking-wide text-slate-400">${escapeHtml(t('timeLabel'))}</p>
                       <p class="mt-1 font-semibold text-slate-800">${escapeHtml(duration)}</p>
+                      ${elapsedText}
                     </div>
                   </div>
                 </div>
@@ -772,6 +847,21 @@
             `;
           })
           .join('');
+      }
+
+      function renderMarkdown(payload) {
+        const md = payload.markdown_content || '';
+        latestMarkdownContent = md;
+        if (!md) {
+          markdownSection.classList.add('hidden');
+          markdownViewer.textContent = '';
+          return;
+        }
+
+        markdownViewer.textContent = md;
+        const openUrl = payload.markdown_url || (payload.final_url ? `https://2md.aiurl.tw/${payload.final_url}` : '#');
+        open2mdLink.href = openUrl;
+        markdownSection.classList.remove('hidden');
       }
 
       function renderPreview(previewUrl) {
@@ -1023,12 +1113,27 @@
         }
       });
 
+      copyMarkdownButton.addEventListener('click', async () => {
+        if (!latestMarkdownContent) return;
+
+        try {
+          await navigator.clipboard.writeText(latestMarkdownContent);
+          copyMarkdownButton.textContent = t('markdownCopied');
+          setTimeout(() => {
+            copyMarkdownButton.textContent = t('copyMarkdown');
+          }, 1600);
+        } catch {
+          showFeedback(t('copyFailed'), 'error', 'copyFailed');
+        }
+      });
+
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
         hideFeedback();
         results.classList.add('hidden');
         latestResultUrl = '';
         latestCleanUrl = '';
+        latestMarkdownContent = '';
         copyButton.classList.remove('hidden');
         resultLinkButton.classList.add('hidden');
         resultLinkButton.removeAttribute('href');
@@ -1100,8 +1205,14 @@
           inputUrl.textContent = payload.input_url;
           redirectCount.textContent = String(payload.redirect_count);
           stepCount.textContent = String(payload.chain.length);
+          if (typeof payload.total_duration_ms === 'number') {
+            totalDuration.textContent = `${payload.total_duration_ms.toLocaleString()} ms`;
+          } else {
+            totalDuration.textContent = t('notAvailable');
+          }
           renderPreview(payload.preview_url);
           renderSecurity(payload.security);
+          renderMarkdown(payload);
           renderChain(payload.chain);
           saveHistoryEntry(payload);
           results.classList.remove('hidden');

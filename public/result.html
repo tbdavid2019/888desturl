@@ -106,6 +106,10 @@ __OG_IMAGE_META__
             </div>
             <div class="mt-5 space-y-4 text-sm text-slate-600">
               <div class="rounded-2xl bg-slate-50 px-4 py-3">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Total Duration</p>
+                <p id="total-duration" class="mt-2 font-semibold font-mono text-slate-800"></p>
+              </div>
+              <div class="rounded-2xl bg-slate-50 px-4 py-3">
                 <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Result ID</p>
                 <p id="result-id" class="mt-2 break-all font-semibold text-slate-800"></p>
               </div>
@@ -123,6 +127,43 @@ __OG_IMAGE_META__
               </div>
             </div>
           </article>
+        </section>
+
+        <!-- HTML to Markdown (2md 雙路線支援) Section -->
+        <section id="markdown-section" class="mt-8 hidden overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+          <div class="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <h2 class="text-xl font-bold tracking-tight text-slate-900">頁面內容 Markdown</h2>
+                <span class="inline-flex items-center gap-1 rounded-full bg-cyan-50 px-2.5 py-0.5 text-xs font-bold text-cyan-700 border border-cyan-200">
+                  <span class="h-1.5 w-1.5 rounded-full bg-cyan-500"></span>
+                  2md 雙路線
+                </span>
+              </div>
+              <p class="mt-1 text-sm text-slate-500">使用 2md.aiurl.tw 雙路線解析，直接提取最終頁面的純淨 Markdown 內文。</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button
+                id="copy-markdown-button"
+                type="button"
+                class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400"
+              >
+                複製 Markdown
+              </button>
+              <a
+                id="open-2md-link"
+                href="#"
+                target="_blank"
+                rel="noreferrer"
+                class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300"
+              >
+                在 2md 開啟 ↗
+              </a>
+            </div>
+          </div>
+          <div class="p-5">
+            <pre id="markdown-viewer" class="max-h-80 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-slate-900 p-4 font-mono text-xs leading-relaxed text-slate-100"></pre>
+          </div>
         </section>
 
         <section class="mt-8 rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/60">
@@ -190,9 +231,15 @@ __OG_IMAGE_META__
       const traceContext = document.getElementById('trace-context');
       const terminatedReason = document.getElementById('terminated-reason');
       const pageTitle = document.getElementById('page-title');
+      const totalDuration = document.getElementById('total-duration');
+      const markdownSection = document.getElementById('markdown-section');
+      const markdownViewer = document.getElementById('markdown-viewer');
+      const copyMarkdownButton = document.getElementById('copy-markdown-button');
+      const open2mdLink = document.getElementById('open-2md-link');
       const chainList = document.getElementById('chain-list');
       let activeResultUrl = '';
       let activeCleanUrl = '';
+      let activeMarkdownContent = '';
 
       function escapeHtml(value) {
         return String(value)
@@ -250,6 +297,10 @@ __OG_IMAGE_META__
                 ? 'N/A'
                 : `${item.status_code} ${item.status_text || ''}`.trim();
             const duration = item.duration_ms === null ? 'N/A' : `${item.duration_ms} ms`;
+            const elapsedText =
+              typeof item.elapsed_ms === 'number'
+                ? `<p class="mt-1 text-[11px] font-mono text-slate-400">⏱ +${item.duration_ms !== null ? item.duration_ms : 0} ms (${item.elapsed_ms} ms)</p>`
+                : '';
 
             return `
               <article class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
@@ -270,6 +321,7 @@ __OG_IMAGE_META__
                     <div class="rounded-xl bg-white px-3 py-2">
                       <p class="text-xs uppercase tracking-wide text-slate-400">Time</p>
                       <p class="mt-1 font-semibold text-slate-800">${escapeHtml(duration)}</p>
+                      ${elapsedText}
                     </div>
                   </div>
                 </div>
@@ -277,6 +329,21 @@ __OG_IMAGE_META__
             `;
           })
           .join('');
+      }
+
+      function renderMarkdown(payload) {
+        const md = payload.markdown_content || '';
+        activeMarkdownContent = md;
+        if (!md) {
+          markdownSection.classList.add('hidden');
+          markdownViewer.textContent = '';
+          return;
+        }
+
+        markdownViewer.textContent = md;
+        const openUrl = payload.markdown_url || (payload.final_url ? `https://2md.aiurl.tw/${payload.final_url}` : '#');
+        open2mdLink.href = openUrl;
+        markdownSection.classList.remove('hidden');
       }
 
       async function fetchResultById(resultId) {
@@ -313,6 +380,11 @@ __OG_IMAGE_META__
         traceContext.textContent = payload.trace_context || 'default';
         terminatedReason.textContent = payload.terminated_reason || 'completed';
         pageTitle.textContent = payload.page_title || 'N/A';
+        if (typeof payload.total_duration_ms === 'number') {
+          totalDuration.textContent = `${payload.total_duration_ms.toLocaleString()} ms`;
+        } else {
+          totalDuration.textContent = 'N/A';
+        }
         finalUrl.textContent = payload.final_url || 'N/A';
         finalUrl.href = payload.final_url || '#';
         renderCleanUrl(payload);
@@ -320,6 +392,7 @@ __OG_IMAGE_META__
         redirectBadge.textContent = `Redirects ${payload.redirect_count || 0} | Steps ${payload.step_count || 0}`;
         renderPreview(payload.preview_url);
         renderSecurity(payload);
+        renderMarkdown(payload);
         renderChain(payload.chain);
       }
 
@@ -352,7 +425,7 @@ __OG_IMAGE_META__
 
         try {
           await navigator.clipboard.writeText(activeResultUrl);
-          copyResultLinkButton.textContent = '已複製結果頁連結';
+          copyResultLinkButton.textContent = '已複製連結';
           setTimeout(() => {
             copyResultLinkButton.textContent = '複製結果頁連結';
           }, 1600);
@@ -383,14 +456,26 @@ __OG_IMAGE_META__
         }
       });
 
+      copyMarkdownButton.addEventListener('click', async () => {
+        if (!activeMarkdownContent) {
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(activeMarkdownContent);
+          copyMarkdownButton.textContent = '已複製 Markdown';
+          setTimeout(() => {
+            copyMarkdownButton.textContent = '複製 Markdown';
+          }, 1600);
+        } catch {
+          copyMarkdownButton.textContent = '複製失敗';
+          setTimeout(() => {
+            copyMarkdownButton.textContent = '複製 Markdown';
+          }, 1600);
+        }
+      });
+
       loadResult().catch((error) => {
-        document.title = '888desturl Result';
-        resultMeta.textContent = error.message;
-        finalUrl.textContent = '找不到這筆結果';
-        finalUrl.removeAttribute('href');
-        inputUrl.textContent = '';
-        redirectBadge.textContent = 'Result unavailable';
-        securityBadge.className = 'inline-flex items-center rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-800';
         securityBadge.textContent = '？ 無法載入';
         securityMessage.textContent = error.message;
         checkedUrl.textContent = '';

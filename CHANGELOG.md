@@ -2,8 +2,16 @@
 
 ## 2026-08-30
 
-### Added
-
+- Added Docker Quickstart guide in `README.md` for developers to install and run `tbdavid2019/888desturl:latest` directly via single-line `docker run` and `docker compose`.
+- Added HTML to Markdown dual-route detection (雙路線偵測):
+  - Built-in lightweight HTML to Markdown parser and active DOM extractor in `lib/html-to-md.js`.
+  - Automatically extracts page text into clean Markdown (`markdown_content`) and provides companion URL `markdown_url` (`https://2md.aiurl.tw/<final_url>`).
+  - Added dedicated "頁面內容 Markdown" (HTML to MD) preview panel in `public/index.html` and `public/result.html` with one-click "複製 Markdown" (Copy Markdown) and "在 2md 開啟 ↗" (Open in 2md) actions.
+- Added millisecond (ms) timing logs and duration tracking:
+  - Recorded overall trace duration `total_duration_ms` and displayed in the main stats grid on homepage and result page.
+  - Recorded per-hop timing `duration_ms` and cumulative elapsed time `elapsed_ms` in the Redirect Chain timeline logs.
+  - Added `total_duration_ms` and `markdown_content` to SQLite storage schema and trace persistence.
+- Added unit tests in `test/html-to-md.test.js` and `test/timing-and-markdown.test.js`.
 - Added automatic URL scheme normalization across the entire repository: bare domain inputs (e.g. `david888.com`, `aiurl.tw/104`), protocol-relative URLs (`//example.com`), and `localhost` are automatically normalized by prepending `https://` (or `http://` for localhost) in both the frontend and backend API endpoints (`/api/trace`, `/api/final`, `/api/f`), MCP handlers (`trace_url`, `clean_url`), and WebMCP client tools.
 - Added Chrome WebMCP (Web Model Context Protocol) support on the homepage:
   - Declarative API: annotated `<form toolname="trace_url" tooldescription="...">` and `<input toolparamdescription="...">` for browser AI agents to discover and interact with form fields natively.

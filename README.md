@@ -9,6 +9,10 @@
 - 每次 trace 的獨立結果頁
 - 可分享的結果頁 metadata 與結果頁連結複製
 - 追蹤參數分析與可分享的乾淨網址（保留原始最終網址）
+- **雙路線偵測 (Dual-Route Detection)**：
+  - **路線 A**：Redirect Chain 追蹤、去追蹤參數（Clean URL）、安全檢查與即時截圖預覽。
+  - **路線 B**：HTML to Markdown 頁面內容解析，直接提取最終頁面的純淨 Markdown 內文，支援一鍵複製與 [`2md.aiurl.tw`](https://2md.aiurl.tw) 深度閱讀。
+- **毫秒（ms）時間記錄**：全鏈路記錄 `total_duration_ms` 總耗時，並在 Redirect Chain 的每一步標註單步耗時 `duration_ms` 與累計時間 `elapsed_ms`。
 - 7 天預覽圖保留與自動清理
 - browser localStorage 最近查詢紀錄
 - SQLite server history / usage stats
@@ -29,73 +33,71 @@ Live sites:
 - `https://url.create360.ai` (office.fanpokka.ai)
 
 
-## Stack
+## 🚀 Docker 快速安裝與使用 (Docker Quickstart)
 
-- Backend: Node.js, Fastify, Playwright
-- Storage: SQLite
-- Frontend: HTML, Vanilla JavaScript, Tailwind CSS via CDN
-- Deployment: Docker, Docker Compose
+開發者可直接從 Docker Hub 拉取官方 Multi-Arch 映像檔（原生支援 `linux/amd64` 與 `linux/arm64`）：
 
-## First-Time Setup
-
-### 1. Prepare env
-
-複製 `.env.example` 成 `.env`，再填入你的設定值：
+### 1. 單行 Docker 指令啟動 (One-liner Run)
 
 ```bash
-cp .env.example .env
+docker run -d \
+  --name redirect-tracer \
+  -p 3000:3000 \
+  --shm-size=1gb \
+  --restart unless-stopped \
+  -v $(pwd)/data:/app/data \
+  -e PORT=3000 \
+  -e GOOGLE_WEB_RISK_API_KEY="" \
+  -e ADMIN_USERNAME="admin" \
+  -e ADMIN_PASSWORD="your-strong-password" \
+  tbdavid2019/888desturl:latest
 ```
 
-必要欄位：
+啟動後即可在瀏覽器開啟 `http://localhost:3000`。
 
-- `GOOGLE_WEB_RISK_API_KEY`
-- `ADMIN_USERNAME`
-- `ADMIN_PASSWORD`
+### 2. 使用 Docker Compose 啟動
 
-建議欄位：
+建立 `docker-compose.yml`：
 
-- `DATA_DIR=./data`
-- `PREVIEW_RETENTION_DAYS=7`
-- `HISTORY_RETENTION_DAYS=90`
+```yaml
+services:
+  redirect-tracer:
+    image: tbdavid2019/888desturl:latest
+    container_name: redirect-tracer
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    shm_size: 1gb
+    environment:
+      - PORT=3000
+      - HOST=0.0.0.0
+      - DATA_DIR=/app/data
+      - PREVIEW_RETENTION_DAYS=7
+      - HISTORY_RETENTION_DAYS=90
+      - GOOGLE_WEB_RISK_API_KEY=${GOOGLE_WEB_RISK_API_KEY:-}
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin_password}
+    volumes:
+      - ./data:/app/data
 
-### 2. Install dependencies
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=60
+      - WATCHTOWER_CLEANUP=true
+```
+
+執行啟動：
 
 ```bash
-npm install
+docker compose up -d
 ```
 
-這一步會安裝 `playwright` 與 `sqlite3`。
-
-### 3. Install Playwright Chromium locally if needed
-
-```bash
-npx playwright install chromium
-```
-
-### 4. Start the app
-
-```bash
-npm start
-```
-
-Open `http://localhost:3000`.
-
-## PWA
-
-在支援 PWA 的瀏覽器中開啟 HTTPS 正式站後，可透過首頁的「安裝 App」按鈕或瀏覽器選單安裝。`localhost` 開發環境也可測試安裝流程。
-
-離線行為：
-
-- 首頁、manifest、App 圖示與離線提示頁會預先快取
-- 曾載入的靜態資源可由 runtime cache 提供
-- `/api/*`、`/admin`、`/previews/*` 與健康檢查不會寫入 PWA cache
-- 網址追蹤本身仍需連線；離線時會顯示專用提示頁
-
-修改 `public/service-worker.js` 的 App Shell 後，請同步調整 `CACHE_VERSION`，讓既有安裝更新快取。
-
-## Docker
-
-Build and run:
+### 3. 本地原始碼建置 (Build from Source)
 
 ```bash
 docker compose up -d --build
