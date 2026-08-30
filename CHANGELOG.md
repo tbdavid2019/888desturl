@@ -8,6 +8,8 @@
 - Added Chrome WebMCP (Web Model Context Protocol) support on the homepage:
   - Declarative API: annotated `<form toolname="trace_url" tooldescription="...">` and `<input toolparamdescription="...">` for browser AI agents to discover and interact with form fields natively.
   - Imperative API: registered `trace_url` and `clean_url` tools via `document.modelContext` / `navigator.modelContext` allowing in-browser AI assistants (such as Chrome Model Context Tool Inspector) to invoke tracing directly within the tab.
+- Added GitHub Actions workflow (`.github/workflows/docker-publish.yml`) to automatically build and push multi-architecture Docker images (`linux/amd64` and `linux/arm64`) to Docker Hub (`tbdavid2019/888desturl`).
+- Added dual-server Watchtower integration across both production nodes (`url.david888.com` on `git.glsoft.ai` [x86_64] and `url.create360.ai` on `office.fanpokka.ai` [aarch64/ARM64]) for automated zero-touch rolling updates.
 - Added automated WebMCP contract tests in `test/webmcp.test.js` and URL normalization unit tests in `test/url-normalize.test.js`.
 
 ### Fixed

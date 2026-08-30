@@ -18,13 +18,15 @@
 - 支援 Chrome WebMCP（Declarative HTML 表單標註與 `document.modelContext` / `navigator.modelContext` 命令式 API）
 - 支援 Model Context Protocol (MCP) 與 Cloudflare WebMCP 整合（提供 `/mcp` 端點）
 - 瀏覽器 AI Agent 直接調用（`trace_url`、`clean_url` 工具）
+- GitHub Actions CI/CD 自動構建 Multi-Arch 映像檔（`linux/amd64`, `linux/arm64`）並推送至 Docker Hub (`tbdavid2019/888desturl`)，由 Watchtower 自動熱更新。
 
 ![alt text](image-1.png)
 ![alt text](image-2.png)
 ![alt text](image-3.png)
-Live site:
+Live sites:
 
-- `https://url.david888.com`
+- `https://url.david888.com` (git.glsoft.ai)
+- `https://url.create360.ai` (office.fanpokka.ai)
 
 
 ## Stack

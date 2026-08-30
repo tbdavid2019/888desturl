@@ -1,6 +1,7 @@
 services:
   redirect-tracer:
     container_name: redirect-tracer
+    image: tbdavid2019/888desturl:latest
     build:
       context: .
       dockerfile: Dockerfile
