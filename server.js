@@ -7,9 +7,8 @@ const { chromium } = require('playwright');
 const { loadEnvFile } = require('./lib/env');
 const { createHistoryStore } = require('./lib/storage');
 const { createAdminAuth } = require('./lib/admin-auth');
-const { analyzeUrl } = require('./lib/url-cleaner');
+const { analyzeUrl, normalizeUrl } = require('./lib/url-cleaner');
 const { createMcpHandler } = require('./lib/mcp');
-
 loadEnvFile(path.join(__dirname, '.env'));
 
 const PORT = Number(process.env.PORT || 3000);
@@ -57,19 +56,6 @@ app.register(fastifyStatic, {
   prefix: '/previews/',
   decorateReply: false
 });
-
-function normalizeUrl(input) {
-  try {
-    const candidate = new URL(input);
-    if (!['http:', 'https:'].includes(candidate.protocol)) {
-      return null;
-    }
-
-    return candidate.toString();
-  } catch {
-    return null;
-  }
-}
 
 function unwrapRedirectUrl(urlStr) {
   try {

@@ -101,9 +101,13 @@
               <input
                 id="url-input"
                 name="url"
-                type="url"
+                type="text"
+                inputmode="url"
+                autocorrect="off"
+                autocapitalize="none"
+                spellcheck="false"
                 required
-                placeholder="https://example.com"
+                placeholder="https://example.com 或 example.com"
                 class="min-h-14 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-base outline-none transition focus:border-accent focus:ring-4 focus:ring-accent/10"
               />
               <button
@@ -408,7 +412,7 @@
           urlLabel: '目標網址',
           submitIdle: '開始追蹤',
           submitLoading: '追蹤中...',
-          formHint: '輸入完整的 `http://` 或 `https://` 網址。',
+          formHint: '支援輸入 `http://`、`https://` 或直接輸入網址（如 `david888.com`）。',
           finalUrlEyebrow: 'Final URL',
           finalUrlTitle: '最終目的地網址',
           copyButton: '複製網址',
@@ -487,7 +491,7 @@
           urlLabel: 'Target URL',
           submitIdle: 'Start Trace',
           submitLoading: 'Tracing...',
-          formHint: 'Enter a full `http://` or `https://` URL.',
+          formHint: 'Enter a full URL or domain (e.g. `david888.com`, `https://...`).',
           finalUrlEyebrow: 'Final URL',
           finalUrlTitle: 'Final Destination URL',
           copyButton: 'Copy URL',
@@ -935,7 +939,10 @@
           element.innerHTML = t(element.dataset.i18nHtml);
         });
 
-        urlInput.placeholder = 'https://example.com';
+        urlInput.placeholder =
+          currentLanguage === 'zh-TW'
+            ? 'https://example.com 或 example.com'
+            : 'https://example.com or example.com';
         skillLink.href = '/ai-agent-skill';
         setLoading(isLoading);
         copyButton.textContent = t('copyButton');
@@ -1007,11 +1014,39 @@
         resultLinkButton.classList.add('hidden');
         resultLinkButton.removeAttribute('href');
 
-        const value = urlInput.value.trim();
-        if (!value) {
+        const rawValue = urlInput.value.trim();
+        if (!rawValue) {
           showFeedback(t('invalidUrl'), 'error', 'invalidUrl');
           return;
         }
+
+        let normalizedValue = rawValue;
+        if (!/^https?:\/\//i.test(normalizedValue)) {
+          if (normalizedValue.startsWith('//')) {
+            normalizedValue = 'https:' + normalizedValue;
+          } else if (/^localhost(:\d+)?(\/.*)?$/i.test(normalizedValue)) {
+            normalizedValue = 'http://' + normalizedValue;
+          } else {
+            normalizedValue = 'https://' + normalizedValue;
+          }
+        }
+
+        try {
+          const parsed = new URL(normalizedValue);
+          if (
+            !['http:', 'https:'].includes(parsed.protocol) ||
+            !parsed.hostname ||
+            (!parsed.hostname.includes('.') && parsed.hostname !== 'localhost')
+          ) {
+            showFeedback(t('invalidUrlReason'), 'error', 'invalidUrlReason');
+            return;
+          }
+        } catch {
+          showFeedback(t('invalidUrlReason'), 'error', 'invalidUrlReason');
+          return;
+        }
+
+        const value = normalizedValue;
 
         setLoading(true);
         try {

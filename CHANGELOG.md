@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-08-30
+
+### Added
+
+- Added automatic URL scheme normalization: bare domain inputs (e.g. `david888.com`), protocol-relative URLs (`//example.com`), and `localhost` are automatically normalized by prepending `https://` (or `http://` for localhost).
+- Added comprehensive unit tests for `normalizeUrl` in `test/url-normalize.test.js`.
+
+### Fixed
+
+- Fixed `Failed to fetch` caused by expired Let's Encrypt certificate on `url.david888.com` by renewing the certificate on `git.glsoft.ai` and updating the cron renewal script (`renewSSL_bitnami.sh`) to automatically renew `url.david888.com` alongside other domains.
+- Fixed UI validation error `網址格式無效` when users enter domain names directly without `https://`.
+
+### Changed
+
+- Updated frontend input helper hint and placeholder to indicate that full `https://` or bare domain (e.g. `david888.com`) can be inputted directly.
+
 ## 2026-08-19
 
 ### Added
