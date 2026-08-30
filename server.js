@@ -330,16 +330,26 @@ async function waitForPageToSettle(page, getLastNavigationAt, deadline, shouldSt
     }
 
     const idleFor = Date.now() - getLastNavigationAt();
+
     const networkIdleReached = await page
-      .waitForLoadState('networkidle', { timeout: 500 })
+      .waitForLoadState('networkidle', { timeout: 300 })
       .then(() => true)
       .catch(() => false);
 
-    if (idleFor >= SETTLE_WINDOW_MS && networkIdleReached) {
+    const loadReached = await page
+      .waitForLoadState('load', { timeout: 300 })
+      .then(() => true)
+      .catch(() => false);
+
+    if (
+      (networkIdleReached && idleFor >= SETTLE_WINDOW_MS) ||
+      (loadReached && idleFor >= SETTLE_WINDOW_MS) ||
+      idleFor >= Math.max(SETTLE_WINDOW_MS * 2, 2500)
+    ) {
       return true;
     }
 
-    await wait(250);
+    await wait(200);
   }
 
   return false;

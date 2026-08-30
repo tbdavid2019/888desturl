@@ -14,6 +14,7 @@
 
 - Fixed `Failed to fetch` caused by expired Let's Encrypt certificate on `url.david888.com` by renewing the certificate on `git.glsoft.ai` and updating the cron renewal script (`renewSSL_bitnami.sh`) to automatically renew `url.david888.com` alongside other domains.
 - Fixed UI and API validation errors (`網址格式無效`) when users enter domain names directly without manually typing `http://` or `https://`.
+- Fixed false `timeout` warnings on websites with ongoing background network requests/analytics (such as `david888.com`) by enhancing `waitForPageToSettle` to recognize `load` state combined with navigation idle window.
 
 ### Changed
 
