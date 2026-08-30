@@ -2,6 +2,10 @@
 
 ## 2026-08-30
 
+- Redesigned homepage UX & layout:
+  - Replaced the oversized hero header with a compact, modern brand navbar (`888 URL` badge + title + language & PWA install actions), drastically reducing vertical space consumption.
+  - Eliminated unnecessary vertical scrolling: input form and results are now immediately visible above the fold on desktop and mobile.
+  - Added smooth auto-scroll into view when trace results load.
 - Added automatic intermediate shortlink and countdown redirect bypass (`maybeContinueShortlinkIntermediate`):
   - Automatically identifies countdown intermediate landing pages (such as 888短網址系統, Sink, and interstitial redirectors).
   - Detects and triggers explicit fast-forward actions (`#btn-redirect-now`, `#target-link`, `Redirect Now`, `立即前往`, `點擊跳轉`) to bypass countdown wait times without stopping on intermediate transitional screens.

@@ -30,25 +30,45 @@
     </script>
   </head>
   <body class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(20,184,166,0.18),_transparent_30%),linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] text-ink">
-    <main class="mx-auto flex min-h-screen w-full max-w-6xl items-center px-4 py-10 sm:px-6 lg:px-8">
+    <main class="mx-auto min-h-screen w-full max-w-5xl px-3 py-4 sm:px-6 sm:py-8">
       <div class="w-full">
-        <section class="mx-auto max-w-5xl rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-panel backdrop-blur md:p-10">
-          <div class="relative mb-10">
-            <div class="mb-5 flex justify-center sm:mb-0 sm:absolute sm:right-0 sm:top-0">
-              <div class="flex shrink-0 gap-2 rounded-2xl border border-slate-200 bg-white/90 p-1 shadow-sm">
-                <button
-                  id="install-button"
-                  type="button"
-                  data-i18n="installApp"
-                  class="hidden rounded-xl bg-accent px-3 py-2 text-sm font-semibold text-white transition hover:bg-teal-800"
-                >
-                  安裝 App
-                </button>
+        <section class="mx-auto w-full rounded-[2rem] border border-white/70 bg-white/85 p-5 shadow-panel backdrop-blur md:p-8">
+          <!-- Compact Modern Navbar / Brand Header -->
+          <header class="relative mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100/80 pb-5">
+            <div class="flex items-center gap-3.5">
+              <div class="flex items-center gap-1.5 rounded-2xl bg-gradient-to-br from-slate-900 via-teal-950 to-emerald-950 px-3.5 py-2 text-white shadow-md shadow-teal-950/20 shrink-0" aria-label="888 URL">
+                <span class="text-xl font-black tracking-tight leading-none">888</span>
+                <span class="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[11px] font-black tracking-widest text-emerald-300 uppercase leading-none">URL</span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h1 data-i18n="heroTitle" class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900">
+                    追蹤網址真正的最終目的地
+                  </h1>
+                  <span data-i18n="eyebrow" class="hidden md:inline-flex rounded-full bg-accentSoft px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
+                    Redirect Trace
+                  </span>
+                </div>
+                <p data-i18n="heroDescription" class="text-xs text-slate-500 hidden sm:block mt-0.5 truncate max-w-xl">
+                  使用 Headless Chromium 模擬真實瀏覽器，抓出 HTTP 轉址、meta refresh 與 JavaScript 導向。
+                </p>
+              </div>
+            </div>
+            <div class="flex shrink-0 items-center gap-2 self-end sm:self-auto">
+              <button
+                id="install-button"
+                type="button"
+                data-i18n="installApp"
+                class="hidden rounded-xl bg-accent px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-teal-800 shadow-sm"
+              >
+                安裝 App
+              </button>
+              <div class="flex gap-1 rounded-xl border border-slate-200 bg-white/90 p-1 shadow-sm text-xs">
                 <button
                   id="lang-zh"
                   type="button"
                   data-lang="zh-TW"
-                  class="rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 transition"
+                  class="rounded-lg px-2.5 py-1 font-semibold text-slate-600 transition"
                 >
                   繁中
                 </button>
@@ -56,38 +76,13 @@
                   id="lang-en"
                   type="button"
                   data-lang="en"
-                  class="rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 transition"
+                  class="rounded-lg px-2.5 py-1 font-semibold text-slate-600 transition"
                 >
                   EN
                 </button>
               </div>
             </div>
-            <div class="text-center sm:px-16">
-              <p
-                data-i18n="eyebrow"
-                class="mb-3 inline-flex rounded-full bg-accentSoft px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-accent"
-              >
-                Redirect Trace
-              </p>
-              <h1
-                aria-label="888 URL"
-                data-i18n-html="heroTitle"
-                class="mx-auto max-w-3xl text-4xl font-black leading-[0.98] tracking-[-0.04em] text-slate-950 sm:text-5xl md:text-6xl"
-              >
-                <span class="block text-[1.18em] leading-[0.8] tracking-[-0.04em]">888</span>
-                <span class="mt-3 block text-[0.34em] font-black tracking-[0.35em] text-accent">URL</span>
-                <span class="mt-5 block text-[0.54em] font-extrabold tracking-[-0.03em] sm:text-[0.5em]">
-                  追蹤網址真正的最終目的地
-                </span>
-              </h1>
-              <p
-                data-i18n="heroDescription"
-                class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-lg"
-              >
-                使用 Headless Chromium 模擬真實瀏覽器，抓出 HTTP 轉址、meta refresh 與 JavaScript 導向。
-              </p>
-            </div>
-          </div>
+          </header>
 
           <form
             id="trace-form"
@@ -474,8 +469,7 @@
         'zh-TW': {
           pageTitle: '888desturl - 追蹤網址真正的最終目的地',
           eyebrow: 'Redirect Trace',
-          heroTitle:
-            '<span class="block text-[1.18em] leading-[0.8] tracking-[-0.04em]">888</span><span class="mt-3 block text-[0.34em] font-black tracking-[0.35em] text-accent">URL</span><span class="mt-5 block text-[0.54em] font-extrabold tracking-[-0.03em] sm:text-[0.5em]">追蹤網址真正的最終目的地</span>',
+          heroTitle: '追蹤網址真正的最終目的地',
           heroDescription:
             '使用 Headless Chromium 模擬真實瀏覽器，抓出 HTTP 轉址、meta refresh 與 JavaScript 導向。',
           urlLabel: '目標網址',
@@ -560,8 +554,7 @@
         en: {
           pageTitle: '888desturl - Trace the Real Final Destination of Any URL',
           eyebrow: 'Redirect Trace',
-          heroTitle:
-            '<span class="block text-[1.18em] leading-[0.8] tracking-[-0.04em]">888</span><span class="mt-3 block text-[0.34em] font-black tracking-[0.35em] text-accent">URL</span><span class="mt-5 block text-[0.5em] font-extrabold tracking-[-0.03em] sm:text-[0.46em]">Trace the Real Final Destination of Any URL</span>',
+          heroTitle: 'Trace the Real Final Destination of Any URL',
           heroDescription:
             'Use Headless Chromium to simulate a real browser and capture HTTP redirects, meta refresh, and JavaScript navigation.',
           urlLabel: 'Target URL',
@@ -1216,6 +1209,7 @@
           renderChain(payload.chain);
           saveHistoryEntry(payload);
           results.classList.remove('hidden');
+          results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
           if (payload.terminated_reason && payload.terminated_reason !== 'completed') {
             const reason = reasonMessageFromCode(
