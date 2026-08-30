@@ -20,6 +20,7 @@ const MAX_REDIRECT_STEPS = 20;
 const MAX_REPEAT_URL_VISITS = 3;
 const MAX_REPEAT_TRANSITIONS = 2;
 const MAX_LINE_INTERMEDIATE_CLICKS = 2;
+const MAX_SHORTLINK_INTERMEDIATE_CLICKS = 3;
 const CLEANUP_INTERVAL_MS = 12 * 60 * 60 * 1000;
 const PREVIEW_RETENTION_DAYS = Number(process.env.PREVIEW_RETENTION_DAYS || 7);
 const HISTORY_RETENTION_DAYS = Number(process.env.HISTORY_RETENTION_DAYS || 90);
@@ -458,6 +459,151 @@ async function maybeContinueYoutubeIntermediate(page) {
   return false;
 }
 
+async function maybeContinueShortlinkIntermediate(page) {
+  const currentUrl = page.url();
+
+  // 1. Direct explicit button/element matches (e.g. #btn-redirect-now, #target-link)
+  const explicitSelectors = [
+    '#btn-redirect-now',
+    '#target-link',
+    'a.redirect-now',
+    'button.redirect-now',
+    '#btn-proceed',
+    '#btn-continue',
+    '#btn-go',
+    '#redirect-btn',
+    'a[id*="redirect"]',
+    'button[id*="redirect"]',
+    'a.btn-redirect',
+    'button.btn-redirect'
+  ];
+
+  for (const selector of explicitSelectors) {
+    try {
+      const element = await page.locator(selector).first();
+      const count = await element.count().catch(() => 0);
+      if (count > 0) {
+        const href = await element.getAttribute('href').catch(() => null);
+        if (href && /^https?:\/\//i.test(href) && href !== currentUrl && href !== `${currentUrl}#`) {
+          await element.click({ timeout: 2000 }).catch(() => {});
+          return true;
+        }
+        const visible = await element.isVisible().catch(() => false);
+        if (visible) {
+          await element.click({ timeout: 2000 }).catch(() => {});
+          return true;
+        }
+      }
+    } catch {
+      // Continue to next selector
+    }
+  }
+
+  // 2. Check if page has countdown or intermediate redirect keywords in title / body
+  const title = await page.title().catch(() => '');
+  const bodyText = await page
+    .evaluate(() => (document.body && document.body.innerText ? document.body.innerText.trim() : ''))
+    .catch(() => '');
+  const snapshot = `${title}\n${bodyText}`.replace(/\s+/g, ' ');
+
+  const isLikelyIntermediate =
+    /redirecting in/i.test(snapshot) ||
+    /redirect now/i.test(snapshot) ||
+    /即將在/i.test(snapshot) ||
+    /秒後跳轉/i.test(snapshot) ||
+    /幫您跳轉/i.test(snapshot) ||
+    /正在為您跳轉/i.test(snapshot) ||
+    /短網址系統/i.test(snapshot) ||
+    /Destination URL/i.test(snapshot) ||
+    /目標網址/i.test(snapshot) ||
+    /目的地網址/i.test(snapshot) ||
+    /跳轉中/i.test(snapshot) ||
+    /正在跳轉/i.test(snapshot) ||
+    /即將離開/i.test(snapshot) ||
+    /外部連結/i.test(snapshot) ||
+    /External link/i.test(snapshot) ||
+    /Safe redirect/i.test(snapshot) ||
+    /Security check/i.test(snapshot) ||
+    /Please wait/i.test(snapshot);
+
+  if (isLikelyIntermediate) {
+    // 2.1 Check for CTA buttons/links matching standard redirect text
+    const ctaPatterns = [
+      /redirect now/i,
+      /立即跳轉/i,
+      /立即前往/i,
+      /現在跳轉/i,
+      /前往網站/i,
+      /前往目的地/i,
+      /繼續前往/i,
+      /點此前往/i,
+      /點擊前往/i,
+      /直接前往/i,
+      /go to (site|destination|link)/i,
+      /get link/i,
+      /skip/i,
+      /skip ad/i,
+      /跳過/i,
+      /proceed/i,
+      /continue/i
+    ];
+
+    const generalSelectors = ['a', 'button', 'input[type="button"]', 'input[type="submit"]'];
+    for (const selector of generalSelectors) {
+      const elements = await page.locator(selector).elementHandles();
+      for (const element of elements) {
+        const text = (
+          (await element.textContent().catch(() => '')) ||
+          (await element.getAttribute('value').catch(() => '')) ||
+          ''
+        ).trim();
+
+        if (!text || !ctaPatterns.some((pattern) => pattern.test(text))) {
+          continue;
+        }
+
+        const href = await element.getAttribute('href').catch(() => null);
+        if (href && /^https?:\/\//i.test(href) && href !== currentUrl && href !== `${currentUrl}#`) {
+          await element.click({ timeout: 2000 }).catch(() => {});
+          return true;
+        }
+
+        const visible = await element.isVisible().catch(() => false);
+        if (visible) {
+          await element.click({ timeout: 2000 }).catch(() => {});
+          return true;
+        }
+      }
+    }
+
+    // 2.2 Check if there is an in-page script variable or destination link in DOM
+    const extractedDestination = await page.evaluate(() => {
+      if (window.trackingConfig && typeof window.trackingConfig.target === 'string' && /^https?:\/\//i.test(window.trackingConfig.target)) {
+        return window.trackingConfig.target;
+      }
+      if (typeof window.target === 'string' && /^https?:\/\//i.test(window.target)) {
+        return window.target;
+      }
+      const metaRefresh = document.querySelector('meta[http-equiv="refresh" i]');
+      if (metaRefresh) {
+        const content = metaRefresh.getAttribute('content') || '';
+        const match = content.match(/url=([^;]+)/i);
+        if (match && match[1]) {
+          return match[1].trim();
+        }
+      }
+      return null;
+    }).catch(() => null);
+
+    if (extractedDestination && /^https?:\/\//i.test(extractedDestination) && extractedDestination !== currentUrl) {
+      await page.goto(extractedDestination, { timeout: 10000, waitUntil: 'domcontentloaded' }).catch(() => {});
+      return true;
+    }
+  }
+
+  return false;
+}
+
 async function capturePreview(page, previewDir, inputUrl, finalUrl) {
   if (!previewDir || !finalUrl || !/^https?:/i.test(finalUrl)) {
     return null;
@@ -793,6 +939,7 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
   let stopReason = null;
   let stopMessage = null;
   let lineIntermediateClicks = 0;
+  let shortlinkIntermediateClicks = 0;
 
   function markTermination(reason, message) {
     if (!stopReason) {
@@ -935,6 +1082,19 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
       const clickedYoutube = await maybeContinueYoutubeIntermediate(page);
       if (clickedYoutube) {
         lastNavigationAt = Date.now();
+        continue;
+      }
+
+      const clickedShortlink = await maybeContinueShortlinkIntermediate(page);
+      if (clickedShortlink) {
+        shortlinkIntermediateClicks += 1;
+        lastNavigationAt = Date.now();
+        if (shortlinkIntermediateClicks > MAX_SHORTLINK_INTERMEDIATE_CLICKS) {
+          markTermination(
+            'shortlink_intermediate_limit',
+            `Stopped after ${MAX_SHORTLINK_INTERMEDIATE_CLICKS} intermediate shortlink continuation clicks.`
+          );
+        }
         continue;
       }
 

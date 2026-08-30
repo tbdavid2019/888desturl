@@ -2,6 +2,11 @@
 
 ## 2026-08-30
 
+- Added automatic intermediate shortlink and countdown redirect bypass (`maybeContinueShortlinkIntermediate`):
+  - Automatically identifies countdown intermediate landing pages (such as 888短網址系統, Sink, and interstitial redirectors).
+  - Detects and triggers explicit fast-forward actions (`#btn-redirect-now`, `#target-link`, `Redirect Now`, `立即前往`, `點擊跳轉`) to bypass countdown wait times without stopping on intermediate transitional screens.
+  - Automatically extracts JavaScript redirect target variables (`trackingConfig.target`, `target`, and `<meta http-equiv="refresh">`) to ensure tracing reaches the true final destination.
+- Added unit test in `test/shortlink-intermediate.test.js`.
 - Added Docker Quickstart guide in `README.md` for developers to install and run `tbdavid2019/888desturl:latest` directly via single-line `docker run` and `docker compose`.
 - Added HTML to Markdown dual-route detection (雙路線偵測):
   - Built-in lightweight HTML to Markdown parser and active DOM extractor in `lib/html-to-md.js`.

@@ -4,6 +4,7 @@
 
 - 靜態轉址網址自動解包 (YouTube, Facebook, Google, Slack) 以加速追蹤並避免機器人阻擋
 - YouTube 中介警告頁面（"Are you sure you want to leave YouTube?"）自動點擊繞過機制
+- 短網址倒數中介頁面（如 888短網址系統、Sink、"Redirecting in X seconds..."、"Redirect Now"、"立即前往"）自動偵測與點擊穿透機制
 - final-only Google Web Risk 檢查
 - final 頁面截圖預覽
 - 每次 trace 的獨立結果頁
