@@ -1377,11 +1377,15 @@ const mcpHandler = createMcpHandler({
   },
   onClean: async (args) => {
     if (!args || typeof args.url !== 'string' || !args.url.trim()) {
-      throw new Error('Invalid or missing url argument.');
+      throw new Error('Invalid or missing url argument. Please provide a valid URL or domain (e.g. david888.com or https://example.com).');
     }
-    const cleaned = analyzeUrl(args.url.trim());
+    const targetUrl = normalizeUrl(args.url.trim());
+    if (!targetUrl) {
+      throw new Error('Invalid or missing url argument. Please provide a valid URL or domain (e.g. david888.com or https://example.com).');
+    }
+    const cleaned = analyzeUrl(targetUrl);
     return {
-      input_url: args.url.trim(),
+      input_url: targetUrl,
       clean_url: cleaned.clean_url,
       has_tracking: (cleaned.removed_tracking_parameters || []).length > 0,
       removed_tracking_parameters: cleaned.removed_tracking_parameters || []
