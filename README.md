@@ -14,7 +14,8 @@
 - SQLite server history / usage stats
 - admin login 與 admin dashboard
 - 可安裝的 PWA（Web App Manifest、桌面／行動裝置圖示、Service Worker）
-- 首頁 App Shell 離線快取與離線提示頁
+- 支援純網域名稱自動補全（不需手動輸入 `http://` 或 `https://`，如 `david888.com`）
+- 支援 Chrome WebMCP（Declarative HTML 表單標註與 `document.modelContext` / `navigator.modelContext` 命令式 API）
 - 支援 Model Context Protocol (MCP) 與 Cloudflare WebMCP 整合（提供 `/mcp` 端點）
 - 瀏覽器 AI Agent 直接調用（`trace_url`、`clean_url` 工具）
 

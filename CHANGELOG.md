@@ -4,17 +4,21 @@
 
 ### Added
 
-- Added automatic URL scheme normalization: bare domain inputs (e.g. `david888.com`), protocol-relative URLs (`//example.com`), and `localhost` are automatically normalized by prepending `https://` (or `http://` for localhost).
-- Added comprehensive unit tests for `normalizeUrl` in `test/url-normalize.test.js`.
+- Added automatic URL scheme normalization across the entire repository: bare domain inputs (e.g. `david888.com`, `aiurl.tw/104`), protocol-relative URLs (`//example.com`), and `localhost` are automatically normalized by prepending `https://` (or `http://` for localhost) in both the frontend and backend API endpoints (`/api/trace`, `/api/final`, `/api/f`), MCP handlers (`trace_url`, `clean_url`), and WebMCP client tools.
+- Added Chrome WebMCP (Web Model Context Protocol) support on the homepage:
+  - Declarative API: annotated `<form toolname="trace_url" tooldescription="...">` and `<input toolparamdescription="...">` for browser AI agents to discover and interact with form fields natively.
+  - Imperative API: registered `trace_url` and `clean_url` tools via `document.modelContext` / `navigator.modelContext` allowing in-browser AI assistants (such as Chrome Model Context Tool Inspector) to invoke tracing directly within the tab.
+- Added automated WebMCP contract tests in `test/webmcp.test.js` and URL normalization unit tests in `test/url-normalize.test.js`.
 
 ### Fixed
 
 - Fixed `Failed to fetch` caused by expired Let's Encrypt certificate on `url.david888.com` by renewing the certificate on `git.glsoft.ai` and updating the cron renewal script (`renewSSL_bitnami.sh`) to automatically renew `url.david888.com` alongside other domains.
-- Fixed UI validation error `網址格式無效` when users enter domain names directly without `https://`.
+- Fixed UI and API validation errors (`網址格式無效`) when users enter domain names directly without manually typing `http://` or `https://`.
 
 ### Changed
 
-- Updated frontend input helper hint and placeholder to indicate that full `https://` or bare domain (e.g. `david888.com`) can be inputted directly.
+- Updated frontend input helper hint, placeholder, and error messages to indicate that full `https://` or bare domain (e.g. `david888.com`) can be inputted directly.
+- Updated MCP tool descriptions in `lib/mcp.js` to explicitly state bare domain support.
 
 ## 2026-08-19
 

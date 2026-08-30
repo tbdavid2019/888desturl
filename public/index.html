@@ -89,7 +89,13 @@
             </div>
           </div>
 
-          <form id="trace-form" class="space-y-4" novalidate>
+          <form
+            id="trace-form"
+            class="space-y-4"
+            novalidate
+            toolname="trace_url"
+            tooldescription="Trace the real final destination of any redirecting URL or bare domain through HTTP redirects, HTML meta refresh, and JavaScript navigation. Automatically strips marketing tracking parameters and checks safety."
+          >
             <label
               for="url-input"
               data-i18n="urlLabel"
@@ -107,6 +113,7 @@
                 autocapitalize="none"
                 spellcheck="false"
                 required
+                toolparamdescription="Target URL or bare domain to trace (e.g. david888.com or https://example.com)"
                 placeholder="https://example.com 或 example.com"
                 class="min-h-14 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-base outline-none transition focus:border-accent focus:ring-4 focus:ring-accent/10"
               />
@@ -460,7 +467,7 @@
           typeInitial: '起始',
           typeHttpRedirect: 'HTTP 轉址',
           typeClientRedirect: '前端轉址',
-          invalidUrlReason: '網址格式無效，請輸入完整的 http:// 或 https:// 網址。',
+          invalidUrlReason: '網址格式無效，請輸入有效的網址或網域名稱（例如 david888.com 或 https://example.com）。',
           dnsErrorReason: '網域名稱無法解析，請確認網址是否正確。',
           connectionRefusedReason: '目標伺服器拒絕連線。',
           sslErrorReason: '目標網站的 SSL/TLS 驗證失敗。',
@@ -539,7 +546,7 @@
           typeInitial: 'Initial',
           typeHttpRedirect: 'HTTP Redirect',
           typeClientRedirect: 'Client Redirect',
-          invalidUrlReason: 'The URL is invalid. Please enter a full http:// or https:// URL.',
+          invalidUrlReason: 'The URL is invalid. Please enter a valid URL or domain (e.g. david888.com or https://example.com).',
           dnsErrorReason: 'The domain name could not be resolved.',
           connectionRefusedReason: 'The target server refused the connection.',
           sslErrorReason: 'The target site failed SSL/TLS validation.',
@@ -1183,6 +1190,135 @@
         installButton.classList.add('hidden');
         hideInstallDialog();
       });
+
+      // Chrome WebMCP (Web Model Context Protocol) Registration
+      async function registerWebMcpTools() {
+        const modelContext =
+          (typeof document !== 'undefined' && document.modelContext) ||
+          (typeof navigator !== 'undefined' && navigator.modelContext) ||
+          (typeof window !== 'undefined' && window.modelContext);
+
+        if (!modelContext || typeof modelContext.registerTool !== 'function') {
+          return;
+        }
+
+        try {
+          await modelContext.registerTool({
+            name: 'trace_url',
+            description:
+              'Trace the real final destination of a redirecting URL or bare domain (such as david888.com or https://...) through HTTP redirects, HTML meta refresh, and JavaScript navigation. Strips marketing tracking parameters and returns security status.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                url: {
+                  type: 'string',
+                  description: 'The URL or bare domain to trace (e.g. david888.com, https://example.com, or bit.ly/3XYZ).'
+                },
+                context: {
+                  type: 'string',
+                  enum: ['default', 'line'],
+                  description: "Optional tracing context. Set to 'line' when tracing URLs meant for the LINE in-app browser."
+                }
+              },
+              required: ['url']
+            },
+            execute: async ({ url, context }) => {
+              if (urlInput) {
+                urlInput.value = url || '';
+              }
+              let target = (url || '').trim();
+              if (!/^https?:\/\//i.test(target)) {
+                if (target.startsWith('//')) {
+                  target = 'https:' + target;
+                } else if (/^localhost(:\d+)?(\/.*)?$/i.test(target)) {
+                  target = 'http://' + target;
+                } else {
+                  target = 'https://' + target;
+                }
+              }
+
+              const { response, payload } = await traceRequest(target, context || '');
+              if (!response.ok) {
+                throw new Error(payload.error_message || payload.error || 'Trace failed');
+              }
+
+              latestFinalUrl = payload.final_url;
+              latestResultUrl = payload.result_url || '';
+              lastChain = payload.chain;
+              finalUrlLink.textContent = payload.final_url;
+              finalUrlLink.href = payload.final_url;
+              renderCleanUrl(payload);
+              inputUrl.textContent = payload.input_url;
+              redirectCount.textContent = String(payload.redirect_count);
+              stepCount.textContent = String(payload.chain.length);
+              renderPreview(payload.preview_url);
+              renderSecurity(payload.security);
+              renderChain(payload.chain);
+              saveHistoryEntry(payload);
+              results.classList.remove('hidden');
+
+              return JSON.stringify({
+                input_url: payload.input_url,
+                final_url: payload.final_url,
+                clean_url: payload.clean_url,
+                removed_tracking_parameters: payload.removed_tracking_parameters,
+                redirect_count: payload.redirect_count,
+                security_status: payload.security && payload.security.status,
+                result_url: payload.result_url
+              }, null, 2);
+            }
+          });
+
+          await modelContext.registerTool({
+            name: 'clean_url',
+            description:
+              'Strip marketing tracking parameters (utm_*, fbclid, gclid, etc.) from a URL or bare domain without making network requests.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                url: {
+                  type: 'string',
+                  description: 'The URL or bare domain to clean (e.g. https://example.com?utm_source=1 or example.com?fbclid=2).'
+                }
+              },
+              required: ['url']
+            },
+            execute: async ({ url }) => {
+              let target = (url || '').trim();
+              if (!/^https?:\/\//i.test(target)) {
+                if (target.startsWith('//')) {
+                  target = 'https:' + target;
+                } else {
+                  target = 'https://' + target;
+                }
+              }
+              const response = await fetch('/mcp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: Date.now(),
+                  method: 'tools/call',
+                  params: {
+                    name: 'clean_url',
+                    arguments: { url: target }
+                  }
+                })
+              });
+              const json = await response.json();
+              return json.result && json.result.content && json.result.content[0] ? json.result.content[0].text : JSON.stringify(json);
+            }
+          });
+        } catch (e) {
+          console.warn('WebMCP tool registration notice:', e);
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', registerWebMcpTools);
+      } else {
+        registerWebMcpTools();
+      }
 
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

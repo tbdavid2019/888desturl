@@ -244,7 +244,7 @@ function classifyTraceError(error) {
   }
 
   if (lower.includes('invalid url')) {
-    return new TraceError('invalid_url', 'The URL is invalid. Use a full http(s) URL.', 400);
+    return new TraceError('invalid_url', 'The URL is invalid. Please enter a valid URL or domain (e.g. david888.com or https://example.com).', 400);
   }
 
   return new TraceError('trace_failed', message, 500);
@@ -1080,9 +1080,9 @@ app.get('/api/trace', async (request, reply) => {
   if (!targetUrl) {
     reply.code(400);
     return {
-      error: 'Invalid or missing url query parameter. Use a full http(s) URL.',
+      error: 'Invalid or missing url query parameter. Please provide a valid URL or domain (e.g. david888.com or https://example.com).',
       error_code: 'invalid_url',
-      error_message: 'Invalid or missing url query parameter. Use a full http(s) URL.',
+      error_message: 'Invalid or missing url query parameter. Please provide a valid URL or domain (e.g. david888.com or https://example.com).',
       trace_context: traceContext
     };
   }
@@ -1126,15 +1126,15 @@ async function handleFinalLookup(request, reply) {
     reply.code(400);
     if (format === 'json') {
       return {
-        error: 'Invalid or missing url query parameter. Use a full http(s) URL.',
+        error: 'Invalid or missing url query parameter. Please provide a valid URL or domain (e.g. david888.com or https://example.com).',
         error_code: 'invalid_url',
-        error_message: 'Invalid or missing url query parameter. Use a full http(s) URL.',
+        error_message: 'Invalid or missing url query parameter. Please provide a valid URL or domain (e.g. david888.com or https://example.com).',
         trace_context: traceContext
       };
     }
 
     reply.type('text/plain; charset=utf-8');
-    return 'Invalid or missing url query parameter. Use a full http(s) URL.\n';
+    return 'Invalid or missing url query parameter. Please provide a valid URL or domain (e.g. david888.com or https://example.com).\n';
   }
 
   try {
@@ -1344,7 +1344,7 @@ const mcpHandler = createMcpHandler({
     const targetUrl = normalizeUrl(args && args.url);
     const traceContext = normalizeTraceContext(args && args.context);
     if (!targetUrl) {
-      throw new Error('Invalid or missing url argument. Use a full http(s) URL.');
+      throw new Error('Invalid or missing url argument. Please provide a valid URL or domain (e.g. david888.com or https://example.com).');
     }
     try {
       return await buildTracePayload(req, targetUrl, traceContext);
