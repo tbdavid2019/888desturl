@@ -29,3 +29,13 @@ test('homepage implements Chrome WebMCP Imperative API tool registration', () =>
   assert.match(indexHtml, /name:\s*'trace_url'/);
   assert.match(indexHtml, /name:\s*'clean_url'/);
 });
+
+test('homepage and result page display Chrome WebMCP support badge in footer', () => {
+  const indexHtml = readPublicFile('index.html');
+  const resultHtml = readPublicFile('result.html');
+
+  assert.match(indexHtml, /支援 Chrome WebMCP/);
+  assert.match(indexHtml, /https:\/\/developer\.chrome\.com\/docs\/ai\/webmcp/);
+  assert.match(resultHtml, /支援 Chrome WebMCP/);
+  assert.match(resultHtml, /https:\/\/developer\.chrome\.com\/docs\/ai\/webmcp/);
+});

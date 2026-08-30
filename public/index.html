@@ -347,8 +347,8 @@
 
           <footer class="mt-10 border-t border-slate-200 pt-6 text-center text-sm text-slate-500">
             <p>© 2026 888desturl. All rights reserved.</p>
-            <p class="mt-2">
-              Created by
+            <p class="mt-2 flex flex-wrap items-center justify-center gap-2">
+              <span>Created by</span>
               <a
                 href="https://david888.com"
                 target="_blank"
@@ -366,6 +366,16 @@
                 class="font-semibold text-accent underline decoration-accent/40 underline-offset-4"
               >
                 AI Agent Skills
+              </a>
+              <span>|</span>
+              <a
+                href="https://developer.chrome.com/docs/ai/webmcp"
+                target="_blank"
+                rel="noreferrer"
+                class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200 transition hover:bg-emerald-100"
+              >
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                <span data-i18n="webmcpSupported">支援 Chrome WebMCP</span>
               </a>
             </p>
           </footer>
@@ -420,6 +430,7 @@
           submitIdle: '開始追蹤',
           submitLoading: '追蹤中...',
           formHint: '支援輸入 `http://`、`https://` 或直接輸入網址（如 `david888.com`）。',
+          webmcpSupported: '支援 Chrome WebMCP',
           finalUrlEyebrow: 'Final URL',
           finalUrlTitle: '最終目的地網址',
           copyButton: '複製網址',
@@ -499,6 +510,7 @@
           submitIdle: 'Start Trace',
           submitLoading: 'Tracing...',
           formHint: 'Enter a full URL or domain (e.g. `david888.com`, `https://...`).',
+          webmcpSupported: 'Chrome WebMCP Supported',
           finalUrlEyebrow: 'Final URL',
           finalUrlTitle: 'Final Destination URL',
           copyButton: 'Copy URL',
