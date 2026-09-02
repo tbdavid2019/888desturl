@@ -701,12 +701,23 @@
       }
 
       function escapeHtml(value) {
-        return String(value)
+        return String(value ?? '')
           .replaceAll('&', '&amp;')
           .replaceAll('<', '&lt;')
           .replaceAll('>', '&gt;')
           .replaceAll('"', '&quot;')
           .replaceAll("'", '&#39;');
+      }
+
+      function sanitizeHref(url) {
+        if (typeof url !== 'string' || !url) {
+          return '#';
+        }
+        const trimmed = url.trim();
+        if (/^https?:\/\//i.test(trimmed) || trimmed.startsWith('/') || trimmed === '#') {
+          return trimmed;
+        }
+        return '#';
       }
 
       function badgeClass(type) {
@@ -852,7 +863,7 @@
         }
 
         markdownViewer.textContent = md;
-        const openUrl = payload.markdown_url || (payload.final_url ? `https://2md.aiurl.tw/${payload.final_url}` : '#');
+        const openUrl = sanitizeHref(payload.markdown_url || (payload.final_url ? `https://2md.aiurl.tw/${payload.final_url}` : '#'));
         open2mdLink.href = openUrl;
         markdownSection.classList.remove('hidden');
       }
@@ -866,8 +877,9 @@
           return;
         }
 
-        previewImage.src = previewUrl;
-        previewLink.href = previewUrl;
+        const safeUrl = sanitizeHref(previewUrl);
+        previewImage.src = safeUrl;
+        previewLink.href = safeUrl;
         previewEmpty.classList.add('hidden');
         previewLink.classList.remove('hidden');
       }
@@ -890,7 +902,7 @@
 
         latestCleanUrl = cleanUrl;
         copyButton.classList.add('hidden');
-        cleanUrlLink.href = cleanUrl;
+        cleanUrlLink.href = sanitizeHref(cleanUrl);
         cleanUrlLink.textContent = cleanUrl;
         removedTrackingParameters.textContent = `${t('removedTrackingParameters')} ${removedParameters.join(', ')}`;
         cleanUrlSection.classList.remove('hidden');
@@ -961,7 +973,7 @@
         historyList.innerHTML = items
           .map((item) => {
             const preview = item.preview_url
-              ? `<img src="${escapeHtml(item.preview_url)}" alt="" class="h-24 w-32 rounded-xl object-cover" />`
+              ? `<img src="${escapeHtml(sanitizeHref(item.preview_url))}" alt="" class="h-24 w-32 rounded-xl object-cover" />`
               : `<div class="flex h-24 w-32 items-center justify-center rounded-xl bg-slate-100 text-xs text-slate-400">${escapeHtml(t('previewUnavailable'))}</div>`;
 
             const securityClass =
@@ -990,8 +1002,8 @@
                     <p class="mt-2 break-all text-xs text-slate-500">${escapeHtml(item.input_url)}</p>
                     <p class="mt-3 text-xs text-slate-500">${escapeHtml(t('historyQueriedAt'))}: ${escapeHtml(new Date(item.queried_at).toLocaleString())}</p>
                     <div class="mt-3 flex flex-wrap gap-3">
-                      <a href="${escapeHtml(item.final_url)}" target="_blank" rel="noreferrer" class="inline-flex text-sm font-semibold text-accent underline decoration-accent/30 underline-offset-4">${escapeHtml(t('historyOpen'))}</a>
-                      ${item.result_url ? `<a href="${escapeHtml(item.result_url)}" target="_blank" rel="noreferrer" class="inline-flex text-sm font-semibold text-slate-700 underline decoration-slate-300 underline-offset-4">${escapeHtml(t('historyResult'))}</a>` : ''}
+                      <a href="${escapeHtml(sanitizeHref(item.final_url))}" target="_blank" rel="noreferrer" class="inline-flex text-sm font-semibold text-accent underline decoration-accent/30 underline-offset-4">${escapeHtml(t('historyOpen'))}</a>
+                      ${item.result_url ? `<a href="${escapeHtml(sanitizeHref(item.result_url))}" target="_blank" rel="noreferrer" class="inline-flex text-sm font-semibold text-slate-700 underline decoration-slate-300 underline-offset-4">${escapeHtml(t('historyResult'))}</a>` : ''}
                     </div>
                   </div>
                 </div>
@@ -1185,7 +1197,7 @@
           latestResultUrl = payload.result_url || '';
           lastChain = payload.chain;
           finalUrlLink.textContent = payload.final_url;
-          finalUrlLink.href = payload.final_url;
+          finalUrlLink.href = sanitizeHref(payload.final_url);
           renderCleanUrl(payload);
           if (latestResultUrl) {
             resultLinkButton.href = latestResultUrl;
@@ -1363,7 +1375,7 @@
               latestResultUrl = payload.result_url || '';
               lastChain = payload.chain;
               finalUrlLink.textContent = payload.final_url;
-              finalUrlLink.href = payload.final_url;
+              finalUrlLink.href = sanitizeHref(payload.final_url);
               renderCleanUrl(payload);
               inputUrl.textContent = payload.input_url;
               redirectCount.textContent = String(payload.redirect_count);

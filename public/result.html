@@ -242,12 +242,23 @@ __OG_IMAGE_META__
       let activeMarkdownContent = '';
 
       function escapeHtml(value) {
-        return String(value)
+        return String(value ?? '')
           .replaceAll('&', '&amp;')
           .replaceAll('<', '&lt;')
           .replaceAll('>', '&gt;')
           .replaceAll('"', '&quot;')
           .replaceAll("'", '&#39;');
+      }
+
+      function sanitizeHref(url) {
+        if (typeof url !== 'string' || !url) {
+          return '#';
+        }
+        const trimmed = url.trim();
+        if (/^https?:\/\//i.test(trimmed) || trimmed.startsWith('/') || trimmed === '#') {
+          return trimmed;
+        }
+        return '#';
       }
 
       function renderPreview(previewUrl) {
@@ -259,8 +270,9 @@ __OG_IMAGE_META__
           return;
         }
 
-        previewImage.src = previewUrl;
-        previewLink.href = previewUrl;
+        const safeUrl = sanitizeHref(previewUrl);
+        previewImage.src = safeUrl;
+        previewLink.href = safeUrl;
         previewLink.classList.remove('hidden');
         previewEmpty.classList.add('hidden');
       }
@@ -341,7 +353,7 @@ __OG_IMAGE_META__
         }
 
         markdownViewer.textContent = md;
-        const openUrl = payload.markdown_url || (payload.final_url ? `https://2md.aiurl.tw/${payload.final_url}` : '#');
+        const openUrl = sanitizeHref(payload.markdown_url || (payload.final_url ? `https://2md.aiurl.tw/${payload.final_url}` : '#'));
         open2mdLink.href = openUrl;
         markdownSection.classList.remove('hidden');
       }
@@ -386,7 +398,7 @@ __OG_IMAGE_META__
           totalDuration.textContent = 'N/A';
         }
         finalUrl.textContent = payload.final_url || 'N/A';
-        finalUrl.href = payload.final_url || '#';
+        finalUrl.href = sanitizeHref(payload.final_url);
         renderCleanUrl(payload);
         inputUrl.textContent = payload.input_url || '';
         redirectBadge.textContent = `Redirects ${payload.redirect_count || 0} | Steps ${payload.step_count || 0}`;
@@ -412,7 +424,7 @@ __OG_IMAGE_META__
         }
 
         activeCleanUrl = nextCleanUrl;
-        cleanUrl.href = nextCleanUrl;
+        cleanUrl.href = sanitizeHref(nextCleanUrl);
         cleanUrl.textContent = nextCleanUrl;
         removedTrackingParameters.textContent = `已移除追蹤參數：${removedParameters.join(', ')}`;
         cleanUrlSection.classList.remove('hidden');

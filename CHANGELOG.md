@@ -1,5 +1,30 @@
 # Changelog
 
+## 2026-09-02
+
+### Security & Hardening (7-Layer Security Audit)
+
+- **DOM XSS Remediation in Admin & Public Pages (Layer 4)**:
+  - Fixed DOM XSS vulnerability in `public/admin.html` by adding strict `escapeHtml()` and `sanitizeHref()` helpers across `renderBreakdown`, `renderTrend`, and `renderHistory`.
+  - Added `sanitizeHref()` link and image source sanitization across `public/index.html` and `public/result.html` to block `javascript:` and dangerous URI schemes.
+- **Supply Chain Vulnerability Patching (Layer 5)**:
+  - Remediated high-severity vulnerability in `fast-uri` (`GHSA-7p8r-x3mc-p8w7`) achieving 0 vulnerabilities across all dependencies.
+  - Updated `Dockerfile` to copy `package*.json` and run `npm ci --omit=dev` for deterministic, secure container builds.
+- **SSRF & Cloud Metadata Protection (Layer 2)**:
+  - Blocked access to cloud metadata IP/hosts (`169.254.169.254`, `169.254.170.2`, `metadata.google.internal`, `100.100.100.200`, `fd00:ec2::254`) in both the trace entrypoint and Playwright route interception.
+  - Added strict alphanumeric validation for `resultId` route parameters (`/^[a-zA-Z0-9_-]{1,64}$/`).
+- **HTTP Security Headers Injection (Layer 6)**:
+  - Added global Fastify response hook setting `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN` (`DENY` for `/admin`), `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`, and `Cross-Origin-Opener-Policy`.
+- **Timing Attack Hardening (Layer 7)**:
+  - Hardened `secureEquals` in `lib/admin-auth.js` by comparing SHA-256 pre-hashed buffers before `crypto.timingSafeEqual`, eliminating length-leakage timing vulnerabilities.
+- **ReDoS Protection in HTML-to-MD (Layer 7)**:
+  - Replaced nested regex quantifiers with linear non-greedy patterns in `lib/html-to-md.js` and added scheme filtering on markdown links.
+- **Secrets & Git Protection (Layer 1)**:
+  - Expanded `.gitignore` to comprehensively exclude all `.env.*`, `*.pem`, `*.key`, `*.pfx`, `*.crt`, `*.cert`.
+- **Audit Skill & Automated Tests**:
+  - Added `.agents/skills/security-audit/SKILL.md` defining the 7-Layer security audit standard.
+  - Added automated security unit test suite in `test/security.test.js`.
+
 ## 2026-08-30
 
 - Redesigned homepage UX & layout:

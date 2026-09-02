@@ -48,6 +48,19 @@ const adminAuth = createAdminAuth({
   sessionTtlMs: Number(process.env.ADMIN_SESSION_TTL_HOURS || 24) * 60 * 60 * 1000
 });
 
+app.addHook('onSend', async (request, reply) => {
+  reply.header('X-Content-Type-Options', 'nosniff');
+  reply.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+  reply.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  reply.header('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+
+  if (request.raw.url && request.raw.url.startsWith('/admin')) {
+    reply.header('X-Frame-Options', 'DENY');
+  } else {
+    reply.header('X-Frame-Options', 'SAMEORIGIN');
+  }
+});
+
 app.register(fastifyStatic, {
   root: PUBLIC_DIR,
   prefix: '/'
@@ -58,6 +71,36 @@ app.register(fastifyStatic, {
   prefix: '/previews/',
   decorateReply: false
 });
+
+function isBlockedTarget(urlStr) {
+  if (!urlStr || typeof urlStr !== 'string') {
+    return false;
+  }
+  try {
+    const parsed = new URL(urlStr);
+    const host = parsed.hostname.toLowerCase();
+
+    if (
+      host === '169.254.169.254' ||
+      host === '169.254.170.2' ||
+      host === '100.100.100.200' ||
+      host === 'metadata.google.internal' ||
+      host === 'metadata.internal' ||
+      host === '[fd00:ec2::254]' ||
+      host === 'fd00:ec2::254'
+    ) {
+      return true;
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+function isValidResultId(resultId) {
+  return typeof resultId === 'string' && /^[a-zA-Z0-9_-]{1,64}$/.test(resultId);
+}
 
 function unwrapRedirectUrl(urlStr) {
   try {
@@ -869,6 +912,14 @@ function buildResultWebRiskPayload(result) {
 }
 
 async function getStoredResultOrReply(request, reply) {
+  const { resultId } = request.params;
+  if (!isValidResultId(resultId)) {
+    reply.code(400);
+    return {
+      error: 'Invalid result ID format.'
+    };
+  }
+
   if (!historyStore || !historyStore.enabled) {
     reply.code(503);
     return {
@@ -876,7 +927,7 @@ async function getStoredResultOrReply(request, reply) {
     };
   }
 
-  const result = await historyStore.getResultById(request.params.resultId);
+  const result = await historyStore.getResultById(resultId);
   if (!result) {
     reply.code(404);
     return {
@@ -903,6 +954,11 @@ async function persistTraceRecord(record) {
 async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
   const traceStartedAt = Date.now();
   const unwrappedUrl = unwrapRedirectUrlRecursively(inputUrl);
+
+  if (isBlockedTarget(unwrappedUrl) || isBlockedTarget(inputUrl)) {
+    throw new TraceError('ssrf_blocked', 'Access to internal cloud metadata addresses is forbidden.', 403);
+  }
+
   const browser = await chromium.launch({
     headless: true,
     args: [
@@ -952,6 +1008,12 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
   }
 
   await page.route('**/*', async (route) => {
+    const reqUrl = route.request().url();
+    if (isBlockedTarget(reqUrl)) {
+      await route.abort();
+      return;
+    }
+
     const resourceType = route.request().resourceType();
 
     if (['image', 'media', 'font'].includes(resourceType)) {
@@ -1513,12 +1575,18 @@ app.get('/admin', async (request, reply) => {
 });
 
 app.get('/result/:resultId', async (request, reply) => {
+  const { resultId } = request.params;
+  if (!isValidResultId(resultId)) {
+    reply.code(400).type('text/html; charset=utf-8');
+    return renderResultPageHtml(null, getBaseUrl(request));
+  }
+
   if (!historyStore || !historyStore.enabled) {
     reply.code(503).type('text/html; charset=utf-8');
     return renderResultPageHtml(null, getBaseUrl(request));
   }
 
-  const result = await historyStore.getResultById(request.params.resultId);
+  const result = await historyStore.getResultById(resultId);
   if (!result) {
     reply.code(404).type('text/html; charset=utf-8');
     return renderResultPageHtml(null, getBaseUrl(request));
@@ -1529,7 +1597,12 @@ app.get('/result/:resultId', async (request, reply) => {
 });
 
 app.get('/r/:resultId', async (request, reply) => {
-  return reply.redirect(`/result/${encodeURIComponent(request.params.resultId)}`);
+  const { resultId } = request.params;
+  if (!isValidResultId(resultId)) {
+    reply.code(400);
+    return { error: 'Invalid result ID format.' };
+  }
+  return reply.redirect(`/result/${encodeURIComponent(resultId)}`);
 });
 
 app.get('/health', async () => ({
