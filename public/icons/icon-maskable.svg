@@ -1,6 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="888 URL">
-  <rect width="512" height="512" fill="#101828"/>
-  <text x="256" y="242" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="238" font-weight="900" letter-spacing="-22" text-anchor="middle">888</text>
-  <path d="M122 291h268" stroke="#14b8a6" stroke-linecap="round" stroke-width="14"/>
-  <text x="267" y="388" fill="#ccfbf1" font-family="Arial, Helvetica, sans-serif" font-size="102" font-weight="800" letter-spacing="22" text-anchor="middle">URL</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF7A1A" />
+      <stop offset="60%" stop-color="#FF5A00" />
+      <stop offset="100%" stop-color="#E54400" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#orangeGrad)" />
+  <g fill="#FFFFFF" text-anchor="middle">
+    <text x="256" y="254" font-size="172" font-weight="900" letter-spacing="-4" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', Inter, 'Segoe UI', Roboto, sans-serif">888</text>
+    <text x="256" y="382" font-size="116" font-weight="900" letter-spacing="3" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', Inter, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif" >URL</text>
+  </g>
 </svg>
