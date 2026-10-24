@@ -2,7 +2,28 @@
 
 ## 2026-10-24
 
-### Critical Fix: Restored Trace Functionality, Unified Noto Sans TC Typography & WCAG Standards
+### Major UI/UX Overhaul: CJK Legibility Scale, Mobile-First RWD & Zero-Clipping Tech Inspector
+
+- **Complete Elimination of Sub-12px Typography (`public/index.html`, `public/result.html`)**:
+  - Eliminated all 70+ occurrences of `text-[9px]`, `text-[10px]`, and `text-[11px]` across the entire frontend.
+  - Traditional Chinese glyphs have dense stroke complexity; Western microcopy standards (< 12px) caused severe eye strain ("眼睛要脫窗了").
+  - Raised all micro-tags, badges, and metadata to at least 12px (`text-xs`), and elevated all reading paragraphs, descriptions, drawer copy, and inspector texts to 14px-16px (`text-sm sm:text-base`) with relaxed line heights.
+- **Mobile-First Responsive Redesign (RWD) (`public/index.html`, `public/result.html`)**:
+  - **Header Structure**: Restructured into a clean top bar on mobile: 888 URL logo on the left, language toggle (`繁中 | EN`) and Install App button on the right. Main title (`text-xl sm:text-3xl font-black`) and capability chips wrap naturally across full width with no horizontal squeezing or clipped tags.
+  - **Search Bar & iOS Auto-Zoom Prevention**: Replaced cramped inline search with `flex-col sm:flex-row`. Configured `#url-input` to `h-12 text-base` (16px, preventing iOS Safari auto-zoom on focus) and `#submit-button` to `h-12 w-full sm:w-auto px-6 text-base font-bold` (thumb-friendly 48px touch target).
+  - **Destination Overview Bar**: Displays final destination in prominent 16px-20px monospace text with responsive full-width copy action buttons for effortless mobile tapping.
+- **Resolved Popover Clipping Bug ("被切掉了") via Live Tech Inspector Bar**:
+  - Identified root cause of popover clipping: absolute tooltips inside `#tech-list` were clipped by the scroll container's `overflow-y: auto` boundary, and failed on mobile touchscreens.
+  - Introduced a persistent **Live Tech Inspector Bar** (`#tech-inspector-card`) inside `#tech-section`:
+    - Zero container clipping: safely placed above the scrollable tech stack container.
+    - Seamless interaction: updates instantly on desktop mouse hover OR mobile touch click.
+    - Comprehensive metadata: displays technology title, version badge, primary category, comfortable 14px-16px description, official external documentation link, and 1-click copy action.
+    - Native HTML `title` kept on chips as a secondary browser tooltip fallback.
+- **Details Drawer Typography & Spacing Fix**:
+  - Upgraded page preview placeholders, Google Web Risk safety check status messages, checked URLs, and 2md markdown content to clear 14px-16px text sizes.
+- **Bumped Service Worker Cache to `v6` (`public/service-worker.js`)**:
+  - Evicts stale cached shell assets and forces client browsers to immediately load the new mobile-first, high-legibility UI layout.
+
 
 - **Bumpped Service Worker Cache to `v5` (`public/service-worker.js`)**:
   - Evicts stale cached app shell (`v4`) ensuring client browsers immediately download fresh HTML with Noto Sans TC fonts and syntax fixes.
