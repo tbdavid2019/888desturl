@@ -6,6 +6,7 @@ const APP_SHELL = [
   '/',
   '/offline.html',
   '/manifest.webmanifest',
+  '/vendor/lucide.min.js',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/icon-maskable-512.png'

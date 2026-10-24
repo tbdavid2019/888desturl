@@ -12,6 +12,13 @@
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <title>888desturl - 追蹤網址真正的最終目的地</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/vendor/lucide.min.js"></script>
+    <style>
+      .lucide {
+        display: inline-block;
+        vertical-align: middle;
+      }
+    </style>
     <script>
       tailwind.config = {
         theme: {
@@ -72,19 +79,19 @@
                 </p>
                 <div class="mt-2 flex flex-wrap items-center gap-1.5 text-[11px]">
                   <span class="inline-flex items-center gap-1 rounded-md bg-[#fff9e8] px-2 py-0.5 font-semibold text-[#2b251a] border border-[#d6bc7c]/60">
-                    <span aria-hidden="true">🔍</span> 網址跳轉追蹤
+                    <i data-lucide="git-fork" class="w-3.5 h-3.5 text-[#17324d]"></i> <span>網址跳轉追蹤</span>
                   </span>
                   <span class="inline-flex items-center gap-1 rounded-md bg-[#fff9e8] px-2 py-0.5 font-semibold text-[#2b251a] border border-[#d6bc7c]/60">
-                    <span aria-hidden="true">🛠️</span> 7,600+ Web 技術棧指紋
+                    <i data-lucide="cpu" class="w-3.5 h-3.5 text-[#17324d]"></i> <span>7,600+ Web 技術棧指紋</span>
                   </span>
                   <span class="inline-flex items-center gap-1 rounded-md bg-[#fff9e8] px-2 py-0.5 font-semibold text-[#2b251a] border border-[#d6bc7c]/60">
-                    <span aria-hidden="true">🛡️</span> Google Web Risk
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-[#17324d]"></i> <span>Google Web Risk</span>
                   </span>
                   <span class="inline-flex items-center gap-1 rounded-md bg-[#fff9e8] px-2 py-0.5 font-semibold text-[#2b251a] border border-[#d6bc7c]/60">
-                    <span aria-hidden="true">📝</span> 2md 全文 Markdown
+                    <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#17324d]"></i> <span>2md 全文 Markdown</span>
                   </span>
                   <span class="inline-flex items-center gap-1 rounded-md bg-[#fff9e8] px-2 py-0.5 font-semibold text-[#2b251a] border border-[#d6bc7c]/60">
-                    <span aria-hidden="true">🧹</span> 去除行銷參數
+                    <i data-lucide="broom" class="w-3.5 h-3.5 text-[#17324d]"></i> <span>去除行銷參數</span>
                   </span>
                 </div>
               </div>
@@ -137,7 +144,7 @@
             </label>
             <div class="flex items-center gap-2">
               <div class="relative flex-1">
-                <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm text-[#594e36]/70" aria-hidden="true">🔍</span>
+                <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[#594e36]/70" aria-hidden="true"><i data-lucide="search" class="w-4 h-4"></i></span>
                 <input
                   id="url-input"
                   name="url"
@@ -182,7 +189,10 @@
                 <div class="min-w-0 flex-1">
                   <div class="flex flex-wrap items-center gap-2 mb-1.5">
                     <span data-i18n="finalUrlEyebrow" class="rounded bg-[#ffb010] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#17324d]">Final URL</span>
-                    <span id="security-status-badge" class="inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">✓ 安全</span>
+                    <span id="security-status-badge" class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">
+                      <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                      <span>安全</span>
+                    </span>
                     <span class="inline-flex items-center gap-1 rounded bg-white/10 px-2 py-0.5 text-[11px] font-medium text-white/90">
                       <span data-i18n="redirectStat">Redirects</span>:
                       <strong id="redirect-count" class="font-mono font-bold text-white">0</strong>
@@ -191,7 +201,7 @@
                       <strong id="step-count" class="font-mono font-bold text-white">1</strong>
                     </span>
                     <span class="inline-flex items-center gap-1 rounded bg-white/10 px-2 py-0.5 text-[11px] font-medium text-white/90 font-mono">
-                      <span>⏱</span>
+                      <i data-lucide="clock" class="w-3 h-3"></i>
                       <span data-i18n="totalTimeStat" class="hidden">總耗時</span>
                       <strong id="total-duration" class="text-white">0 ms</strong>
                     </span>
@@ -210,7 +220,7 @@
                     <div class="flex flex-wrap items-center gap-2">
                       <span data-i18n="cleanUrlEyebrow" class="text-[10px] font-bold uppercase tracking-wider text-[#fde68a]">乾淨網址:</span>
                       <a id="clean-url" href="#" target="_blank" rel="noreferrer" class="break-all text-xs font-semibold text-[#fde68a] hover:underline"></a>
-                      <button id="copy-clean-button" type="button" data-i18n="copyCleanButton" class="rounded bg-[#fde68a] px-2 py-0.5 text-[10px] font-bold text-[#17324d] hover:bg-white cursor-pointer">複製乾淨網址</button>
+                      <button id="copy-clean-button" type="button" class="inline-flex items-center gap-1 rounded bg-[#fde68a] px-2 py-0.5 text-[10px] font-bold text-[#17324d] hover:bg-white cursor-pointer"><i data-lucide="copy" class="w-3 h-3"></i><span id="copy-clean-text" data-i18n="copyCleanButton">複製乾淨網址</span></button>
                     </div>
                     <p id="removed-tracking-parameters" class="mt-1 break-all text-[11px] text-white/70"></p>
                   </div>
@@ -220,21 +230,20 @@
                   <button
                     id="copy-button"
                     type="button"
-                    data-i18n="copyButton"
-                    class="inline-flex items-center gap-1 rounded-xl bg-[#ffb010] px-3.5 py-2 text-xs font-bold text-[#17324d] transition hover:bg-[#f2a600] shadow-sm cursor-pointer"
+                    class="inline-flex items-center gap-1.5 rounded-xl bg-[#ffb010] px-3.5 py-2 text-xs font-bold text-[#17324d] transition hover:bg-[#f2a600] shadow-sm cursor-pointer"
                   >
-                    <span>📋</span>
-                    <span>複製網址</span>
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    <span id="copy-button-text" data-i18n="copyButton">複製網址</span>
                   </button>
                   <a
                     id="result-link-button"
                     href="#"
                     target="_blank"
                     rel="noreferrer"
-                    data-i18n="resultPageButton"
-                    class="hidden inline-flex items-center rounded-xl bg-white/15 px-3 py-2 text-xs font-semibold text-white backdrop-blur transition hover:bg-white/25"
+                    class="hidden inline-flex items-center gap-1 rounded-xl bg-white/15 px-3 py-2 text-xs font-semibold text-white backdrop-blur transition hover:bg-white/25"
                   >
-                    查看結果頁 ↗
+                    <span id="result-link-text" data-i18n="resultPageButton">查看結果頁</span>
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                   </a>
                 </div>
               </div>
@@ -242,32 +251,31 @@
 
             <!-- 2. The Two Core Pillars Side-by-Side (Split View: Redirect Chain & Web Technologies) -->
             <div class="grid grid-cols-1 gap-3.5 lg:grid-cols-12 items-start">
-              <!-- Left Pillar: 🔀 跳轉鏈路 (Redirect Chain) (5 cols on lg) -->
+              <!-- Left Pillar: 跳轉鏈路 (Redirect Chain) (5 cols on lg) -->
               <article class="lg:col-span-5 rounded-2xl border border-[#d6bc7c]/60 bg-white p-3.5 sm:p-4 shadow-sm">
                 <div class="flex items-center justify-between border-b border-[#d6bc7c]/30 pb-2.5">
                   <div class="flex items-center gap-2">
-                    <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#17324d] text-xs text-white" aria-hidden="true">🔀</span>
+                    <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#17324d] text-xs text-white" aria-hidden="true"><i data-lucide="git-fork" class="w-3.5 h-3.5"></i></span>
                     <h3 data-i18n="chainTitle" class="text-sm sm:text-base font-bold text-[#17324d]">Redirect Chain</h3>
                   </div>
                   <button
                     id="copy-chain-button"
                     type="button"
-                    data-i18n="copyChainButton"
-                    class="inline-flex items-center gap-1 rounded-lg bg-[#17324d] px-2.5 py-1 text-[11px] font-bold text-white transition hover:bg-[#1f4265] shadow-xs cursor-pointer"
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-[#17324d] px-2.5 py-1 text-[11px] font-bold text-white transition hover:bg-[#1f4265] shadow-xs cursor-pointer"
                   >
-                    <span>📋</span>
-                    <span id="copy-chain-text">複製跳轉鏈路</span>
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    <span id="copy-chain-text" data-i18n="copyChainButton">複製跳轉鏈路</span>
                   </button>
                 </div>
                 <p data-i18n="chainDescription" class="sr-only">完整跳轉過程與每個節點的細節。</p>
                 <div id="chain-list" class="mt-3 space-y-2 max-h-[580px] overflow-y-auto pr-1"></div>
               </article>
 
-              <!-- Right Pillar: 🛠️ 網站技術棧 (Web Technologies) (7 cols on lg) -->
+              <!-- Right Pillar: 網站技術棧 (Web Technologies) (7 cols on lg) -->
               <article id="tech-section" class="lg:col-span-7 rounded-2xl border border-[#d6bc7c]/60 bg-white p-3.5 sm:p-4 shadow-sm">
                 <div class="flex flex-col gap-2 border-b border-[#d6bc7c]/30 pb-2.5 sm:flex-row sm:items-center sm:justify-between">
                   <div class="flex items-center gap-2">
-                    <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#17324d] text-xs text-white" aria-hidden="true">🛠️</span>
+                    <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#17324d] text-xs text-white" aria-hidden="true"><i data-lucide="cpu" class="w-3.5 h-3.5"></i></span>
                     <h3 data-i18n="techTitle" class="text-sm sm:text-base font-bold text-[#17324d]">網站技術棧</h3>
                     <span id="tech-count-badge" class="inline-flex items-center rounded-full bg-[#fff0cc] px-2 py-0.2 text-[11px] font-bold text-[#17324d] border border-[#d6bc7c]/70">
                       <span id="tech-count-text">0 detected</span>
@@ -276,11 +284,10 @@
                   <button
                     id="copy-tech-button"
                     type="button"
-                    data-i18n="copyTechButton"
-                    class="inline-flex items-center gap-1 rounded-lg bg-[#17324d] px-2.5 py-1 text-[11px] font-bold text-white transition hover:bg-[#1f4265] shadow-xs cursor-pointer self-start sm:self-auto"
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-[#17324d] px-2.5 py-1 text-[11px] font-bold text-white transition hover:bg-[#1f4265] shadow-xs cursor-pointer self-start sm:self-auto"
                   >
-                    <span>📋</span>
-                    <span id="copy-tech-text">複製技術清單</span>
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    <span id="copy-tech-text" data-i18n="copyTechButton">複製技術清單</span>
                   </button>
                 </div>
                 <p data-i18n="techDescription" class="sr-only">分析最終目標網頁所使用的伺服器、CMS、框架、函式庫與分析工具等技術指紋。</p>
@@ -302,10 +309,10 @@
               <details class="group rounded-2xl border border-[#d6bc7c]/50 bg-white shadow-xs">
                 <summary class="flex cursor-pointer items-center justify-between px-4 py-2.5 text-xs font-bold text-[#17324d] hover:bg-[#fff9e8]/50 transition rounded-2xl">
                   <span class="flex items-center gap-2">
-                    <span>🖼️</span>
+                    <i data-lucide="image" class="w-3.5 h-3.5 text-[#17324d]"></i>
                     <span>頁面預覽截圖 & Google Web Risk 安全檢查細節</span>
                   </span>
-                  <span class="text-[#594e36] text-[10px] group-open:rotate-180 transition-transform">▼</span>
+                  <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#594e36] group-open:rotate-180 transition-transform"></i>
                 </summary>
                 <div class="grid gap-4 border-t border-[#d6bc7c]/30 p-4 lg:grid-cols-2">
                   <article>
@@ -332,14 +339,20 @@
               <article id="markdown-section" class="hidden overflow-hidden rounded-2xl border border-[#d6bc7c]/50 bg-white shadow-xs">
                 <div class="flex flex-col gap-2 border-b border-[#d6bc7c]/30 px-4 py-2.5 sm:flex-row sm:items-center sm:justify-between">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs">📝</span>
+                    <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#17324d]"></i>
                     <h3 data-i18n="markdownTitle" class="text-xs sm:text-sm font-bold text-[#17324d]">頁面內容 Markdown</h3>
                     <span class="rounded bg-[#fff0cc] px-2 py-0.2 text-[10px] font-bold text-[#a9471d] border border-[#d6bc7c]/70">2md 雙路線</span>
                   </div>
                   <p data-i18n="markdownDescription" class="sr-only">使用 2md.aiurl.tw 雙路線解析，直接提取最終頁面的純淨 Markdown 內文。</p>
                   <div class="flex items-center gap-2">
-                    <button id="copy-markdown-button" type="button" data-i18n="copyMarkdown" class="rounded-lg bg-[#17324d] px-2.5 py-1 text-[11px] font-bold text-white hover:bg-[#1f4265]">複製 Markdown</button>
-                    <a id="open-2md-link" href="#" target="_blank" rel="noreferrer" data-i18n="openIn2md" class="rounded-lg border border-[#d6bc7c] px-2.5 py-1 text-[11px] font-bold text-[#17324d] hover:bg-[#fff9e8]">在 2md 開啟 ↗</a>
+                    <button id="copy-markdown-button" type="button" class="inline-flex items-center gap-1 rounded-lg bg-[#17324d] px-2.5 py-1 text-[11px] font-bold text-white hover:bg-[#1f4265]">
+                      <i data-lucide="copy" class="w-3 h-3"></i>
+                      <span id="copy-markdown-text" data-i18n="copyMarkdown">複製 Markdown</span>
+                    </button>
+                    <a id="open-2md-link" href="#" target="_blank" rel="noreferrer" class="inline-flex items-center gap-1 rounded-lg border border-[#d6bc7c] px-2.5 py-1 text-[11px] font-bold text-[#17324d] hover:bg-[#fff9e8]">
+                      <span data-i18n="openIn2md">在 2md 開啟</span>
+                      <i data-lucide="external-link" class="w-3 h-3"></i>
+                    </a>
                   </div>
                 </div>
                 <div class="p-3">
@@ -393,7 +406,7 @@
                 <!-- Feature 1: Web Technologies -->
                 <div class="rounded-xl border border-[#d6bc7c]/60 bg-[#fff9e8]/50 p-3 transition hover:bg-[#fff9e8]">
                   <div class="flex items-center gap-2">
-                    <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#17324d] text-white text-xs shadow-xs" aria-hidden="true">🛠️</span>
+                    <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#17324d] text-white shadow-xs" aria-hidden="true"><i data-lucide="cpu" class="w-4 h-4"></i></span>
                     <div>
                       <h3 data-i18n="featureTechTitle" class="text-xs font-bold text-[#17324d]">7,600+ Web 技術棧指紋</h3>
                       <span class="text-[9px] font-semibold text-[#a9471d]">enthec/webappanalyzer</span>
@@ -407,7 +420,7 @@
                 <!-- Feature 2: Deep Redirect Trace -->
                 <div class="rounded-xl border border-[#d6bc7c]/60 bg-[#fff9e8]/50 p-3 transition hover:bg-[#fff9e8]">
                   <div class="flex items-center gap-2">
-                    <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#17324d] text-white text-xs shadow-xs" aria-hidden="true">🔍</span>
+                    <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#17324d] text-white shadow-xs" aria-hidden="true"><i data-lucide="git-fork" class="w-4 h-4"></i></span>
                     <div>
                       <h3 data-i18n="featureTraceTitle" class="text-xs font-bold text-[#17324d]">深度跳轉鏈路還原</h3>
                       <span class="text-[9px] font-semibold text-[#a9471d]">Headless Chromium</span>
@@ -421,7 +434,7 @@
                 <!-- Feature 3: Google Web Risk -->
                 <div class="rounded-xl border border-[#d6bc7c]/60 bg-[#fff9e8]/50 p-3 transition hover:bg-[#fff9e8]">
                   <div class="flex items-center gap-2">
-                    <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#17324d] text-white text-xs shadow-xs" aria-hidden="true">🛡️</span>
+                    <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#17324d] text-white shadow-xs" aria-hidden="true"><i data-lucide="shield-check" class="w-4 h-4"></i></span>
                     <div>
                       <h3 data-i18n="featureSecurityTitle" class="text-xs font-bold text-[#17324d]">Google Web Risk 審核</h3>
                       <span class="text-[9px] font-semibold text-[#a9471d]">Real-time Threat Check</span>
@@ -435,7 +448,7 @@
                 <!-- Feature 4: 2md Full Markdown -->
                 <div class="rounded-xl border border-[#d6bc7c]/60 bg-[#fff9e8]/50 p-3 transition hover:bg-[#fff9e8]">
                   <div class="flex items-center gap-2">
-                    <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#17324d] text-white text-xs shadow-xs" aria-hidden="true">📝</span>
+                    <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#17324d] text-white shadow-xs" aria-hidden="true"><i data-lucide="file-text" class="w-4 h-4"></i></span>
                     <div>
                       <h3 data-i18n="featureMarkdownTitle" class="text-xs font-bold text-[#17324d]">2md 全文 Markdown</h3>
                       <span class="text-[9px] font-semibold text-[#a9471d]">LLM-ready Content</span>
@@ -565,16 +578,16 @@
           markdownDescription: '使用 2md.aiurl.tw 雙路線解析，直接提取最終頁面的純淨 Markdown 內文。',
           copyMarkdown: '複製 Markdown',
           markdownCopied: '已複製 Markdown',
-          openIn2md: '在 2md 開啟 ↗',
+          openIn2md: '在 2md 開啟',
           previewTitle: 'Final 頁面預覽',
           previewDescription: '使用最終頁面的即時截圖做預覽。',
           previewUnavailable: '目前沒有可用的頁面預覽。',
           securityTitle: '安全檢查',
           securityDescription: '依 final URL 執行 Google Web Risk final-only 檢查。',
           securityStatusLabel: 'Security',
-          securitySafe: '✓ 安全',
-          securityFlagged: '⚠ 已知風險',
-          securityUnknown: '？ 無法判斷',
+          securitySafe: '安全',
+          securityFlagged: '已知風險',
+          securityUnknown: '未知狀態',
           securitySafeMessage: '這個最終網址目前未被列入 Google Web Risk 已知風險名單。',
           securityFlaggedMessage: '這個最終網址已被列入 Google Web Risk 已知風險名單，請不要輕易開啟或輸入個資。',
           securityUnknownMessage: '這次暫時無法完成風險判斷，請稍後再試。',
@@ -667,16 +680,16 @@
           markdownDescription: 'Extracted using 2md.aiurl.tw dual-route to provide clean Markdown for LLMs.',
           copyMarkdown: 'Copy Markdown',
           markdownCopied: 'Markdown Copied',
-          openIn2md: 'Open in 2md ↗',
+          openIn2md: 'Open in 2md',
           previewTitle: 'Final Preview',
           previewDescription: 'A screenshot taken from the final destination page.',
           previewUnavailable: 'No preview image is available for this result.',
           securityTitle: 'Safety Check',
           securityDescription: 'Google Web Risk is checked against the final URL only.',
           securityStatusLabel: 'Security',
-          securitySafe: '✓ Safe',
-          securityFlagged: '⚠ Known Risk',
-          securityUnknown: '? Unknown',
+          securitySafe: 'Safe',
+          securityFlagged: 'Known Risk',
+          securityUnknown: 'Unknown',
           securitySafeMessage: 'This final URL is not currently listed in Google Web Risk known-risk lists.',
           securityFlaggedMessage: 'This final URL is listed in Google Web Risk known-risk lists. Do not open it casually or enter personal data.',
           securityUnknownMessage: 'The risk check could not be completed this time. Please try again later.',
@@ -925,25 +938,25 @@
       }
 
       const CATEGORY_META = {
-        CMS: { icon: '📦', zh: '內容管理系統 (CMS)' },
-        'Web servers': { icon: '🖥️', zh: '網頁伺服器' },
-        'Web frameworks': { icon: '🛠️', zh: '網站框架' },
-        'JavaScript frameworks': { icon: '⚛️', zh: 'JavaScript 框架' },
-        'JavaScript libraries': { icon: '📚', zh: 'JavaScript 函式庫' },
-        'UI frameworks': { icon: '🎨', zh: 'UI 介面框架' },
-        Analytics: { icon: '📊', zh: '網站流量分析' },
-        'Tag managers': { icon: '🏷️', zh: '標籤管理' },
-        'Font scripts': { icon: '🔤', zh: '字體服務' },
-        'Reverse proxies': { icon: '🔀', zh: '反向代理' },
-        Security: { icon: '🛡️', zh: '資安防護' },
-        CDN: { icon: '🌐', zh: '內容傳遞網路 (CDN)' },
-        Hosting: { icon: '☁️', zh: '雲端主機' },
-        PaaS: { icon: '☁️', zh: '雲端平台 (PaaS)' },
-        Databases: { icon: '🗄️', zh: '資料庫' },
-        Caching: { icon: '⚡', zh: '快取架構' },
-        Ecommerce: { icon: '🛒', zh: '電子商務' },
-        SEO: { icon: '🔍', zh: 'SEO 搜尋引擎優化' },
-        'Programming languages': { icon: '💻', zh: '程式語言' }
+        CMS: { icon: 'package', zh: '內容管理系統 (CMS)' },
+        'Web servers': { icon: 'server', zh: '網頁伺服器' },
+        'Web frameworks': { icon: 'code', zh: '網站框架' },
+        'JavaScript frameworks': { icon: 'cpu', zh: 'JavaScript 框架' },
+        'JavaScript libraries': { icon: 'layers', zh: 'JavaScript 函式庫' },
+        'UI frameworks': { icon: 'palette', zh: 'UI 介面框架' },
+        Analytics: { icon: 'bar-chart-2', zh: '網站流量分析' },
+        'Tag managers': { icon: 'tag', zh: '標籤管理' },
+        'Font scripts': { icon: 'type', zh: '字體服務' },
+        'Reverse proxies': { icon: 'shuffle', zh: '反向代理' },
+        Security: { icon: 'shield-check', zh: '資安防護' },
+        CDN: { icon: 'globe', zh: '內容傳遞網路 (CDN)' },
+        Hosting: { icon: 'cloud', zh: '雲端主機' },
+        PaaS: { icon: 'cloud-lightning', zh: '雲端平台 (PaaS)' },
+        Databases: { icon: 'database', zh: '資料庫' },
+        Caching: { icon: 'zap', zh: '快取架構' },
+        Ecommerce: { icon: 'shopping-cart', zh: '電子商務' },
+        SEO: { icon: 'search', zh: 'SEO 搜尋引擎優化' },
+        'Programming languages': { icon: 'terminal', zh: '程式語言' }
       };
 
       function getCategoryDisplay(catName) {
@@ -954,7 +967,21 @@
             label: currentLanguage === 'zh-TW' ? meta.zh : catName
           };
         }
-        return { icon: '🔧', label: catName || 'Other' };
+        return { icon: 'wrench', label: catName || 'Other' };
+      }
+
+      function refreshIcons(container) {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+          try {
+            if (container) {
+              window.lucide.createIcons({ root: container });
+            } else {
+              window.lucide.createIcons();
+            }
+          } catch (e) {
+            console.warn('Lucide icon render error:', e);
+          }
+        }
       }
 
       function showCopyToast(msg) {
@@ -962,10 +989,11 @@
         if (!toast) {
           toast = document.createElement('div');
           toast.id = 'copy-toast';
-          toast.className = 'fixed bottom-5 right-5 z-50 transform rounded-xl bg-[#0f2337] px-4 py-2 text-xs font-bold text-white shadow-xl transition-all duration-300 border border-[#17324d] opacity-0 pointer-events-none';
+          toast.className = 'fixed bottom-5 right-5 z-50 transform rounded-xl bg-[#0f2337] px-4 py-2 text-xs font-bold text-white shadow-xl transition-all duration-300 border border-[#17324d] opacity-0 pointer-events-none inline-flex items-center gap-1.5';
           document.body.appendChild(toast);
         }
-        toast.textContent = msg;
+        toast.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i><span>${escapeHtml(msg)}</span>`;
+        refreshIcons(toast);
         toast.classList.remove('opacity-0', 'pointer-events-none');
         toast.classList.add('opacity-100');
         clearTimeout(toast._timeout);
@@ -1002,7 +1030,7 @@
                       <span class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#17324d] px-1 text-[11px] font-bold text-white">${item.step}</span>
                       <span class="inline-flex rounded-md px-1.5 py-0.2 text-[10px] font-bold ${badgeClass(item.type)}">${escapeHtml(localizedType(item.type))}</span>
                       <span class="font-mono text-[11px] font-bold ${item.status_code >= 400 ? 'text-red-700' : 'text-[#17324d]'}">${escapeHtml(status)}</span>
-                      <span class="text-[10px] font-mono text-[#594e36]">⏱ ${escapeHtml(duration)}</span>
+                      <span class="text-[10px] font-mono text-[#594e36] inline-flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i><span>${escapeHtml(duration)}</span></span>
                     </div>
                     <p class="mt-1.5 break-all text-xs font-semibold text-[#17324d]">${escapeHtml(item.url)}</p>
                     ${fromUrl}
@@ -1012,6 +1040,7 @@
             `;
           })
           .join('');
+        refreshIcons(chainList);
       }
 
       function renderMarkdown(payload) {
@@ -1079,11 +1108,7 @@
             const count = groups[catName].length;
             const isActive = selectedCategory === catName;
             filterPills.push(
-              `<button type="button" data-cat="${escapeHtml(catName)}" class="tech-filter-btn inline-flex items-center gap-1 rounded-lg px-2.5 py-0.5 text-xs font-bold transition-all cursor-pointer ${
-                isActive
-                  ? 'bg-[#17324d] text-white shadow-xs'
-                  : 'bg-[#fff9e8] text-[#594e36] border border-[#d6bc7c]/70 hover:bg-[#fff0cc]'
-              }"><span>${icon}</span><span>${escapeHtml(label)}</span><span class="rounded-full ${isActive ? 'bg-white/20' : 'bg-[#17324d]/10'} px-1.5 py-0.2 text-[10px]">${count}</span></button>`
+              `<button type="button" data-cat="${escapeHtml(catName)}" class="tech-filter-btn inline-flex items-center gap-1.5 rounded-lg px-2.5 py-0.5 text-xs font-bold transition-all cursor-pointer ${isActive ? "bg-[#17324d] text-white shadow-xs" : "bg-[#fff9e8] text-[#594e36] border border-[#d6bc7c]/70 hover:bg-[#fff0cc]"}"><i data-lucide="${icon}" class="w-3.5 h-3.5"></i><span>${escapeHtml(label)}</span><span class="rounded-full ${isActive ? "bg-white/20" : "bg-[#17324d]/10"} px-1.5 py-0.2 text-[10px]">${count}</span></button>`
             );
           }
           techCategoryFilter.innerHTML = filterPills.join('');
@@ -1112,7 +1137,7 @@
                   : '';
 
                 const websiteLink = tech.website
-                  ? `<a href="${sanitizeHref(tech.website)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-[#17324d] hover:text-[#a9471d] font-bold text-xs" title="前往官方網站" onclick="event.stopPropagation()">↗</a>`
+                  ? `<a href="${sanitizeHref(tech.website)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-[#17324d] hover:text-[#a9471d] font-bold text-xs" title="前往官方網站" onclick="event.stopPropagation()"><i data-lucide="external-link" class="w-3 h-3"></i></a>`
                   : '';
 
                 const confidence =
@@ -1151,7 +1176,7 @@
               <div class="rounded-xl border border-[#d6bc7c]/40 bg-[#fff9e8]/30 p-2.5 sm:p-3">
                 <div class="mb-2 flex items-center justify-between">
                   <h4 class="flex items-center gap-1.5 text-xs font-bold text-[#17324d]">
-                    <span>${icon}</span>
+                    <i data-lucide="${icon}" class="w-3.5 h-3.5"></i>
                     <span>${escapeHtml(label)}</span>
                     <span class="rounded-full bg-[#17324d]/10 px-1.5 py-0.2 text-[10px] font-bold text-[#17324d]">${items.length}</span>
                   </h4>
@@ -1173,6 +1198,7 @@
             }
           });
         });
+        refreshIcons(techSection);
       }
 
       async function copyTechStack() {
@@ -1199,7 +1225,7 @@
           const itemList = items
             .map((t) => `${t.name}${t.version ? ' v' + t.version : ''}${t.website ? ' (' + t.website + ')' : ''}`)
             .join(', ');
-          lines.push(`- **${icon} ${label}**: ${itemList}`);
+          lines.push(`- **[${label}]**: ${itemList}`);
         }
 
         const markdownText = lines.filter(Boolean).join('
@@ -1209,7 +1235,7 @@
 
         if (copyTechText) {
           const originalText = copyTechText.textContent;
-          copyTechText.textContent = `✓ ${t('techCopied') || '已複製'}`;
+          copyTechText.textContent = t('techCopied') || '已複製';
           setTimeout(() => {
             copyTechText.textContent = originalText;
           }, 2000);
@@ -1239,7 +1265,7 @@
 
         if (copyChainText) {
           const originalText = copyChainText.textContent;
-          copyChainText.textContent = `✓ ${t('chainCopied') || '已複製'}`;
+          copyChainText.textContent = t('chainCopied') || '已複製';
           setTimeout(() => {
             copyChainText.textContent = originalText;
           }, 2000);
@@ -1307,9 +1333,11 @@
               ? 'mt-5 rounded-2xl border border-red-300 bg-red-50/70 px-4 py-4'
               : 'mt-5 rounded-2xl border border-amber-300 bg-amber-50/70 px-4 py-4';
 
+        const iconName = status === 'safe' ? 'shield-check' : status === 'flagged' ? 'alert-triangle' : 'help-circle';
         securityCard.className = cardClassName;
-        securityStatusBadge.className = `inline-flex rounded-full px-3 py-1 text-xs font-bold ${badgeClassName}`;
-        securityStatusBadge.textContent = t(labelKey);
+        securityStatusBadge.className = `inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${badgeClassName}`;
+        securityStatusBadge.innerHTML = `<i data-lucide="${iconName}" class="w-3.5 h-3.5"></i><span>${escapeHtml(t(labelKey))}</span>`;
+        refreshIcons(securityStatusBadge);
         securityMessage.textContent =
           status === 'safe'
             ? t('securitySafeMessage')
@@ -1389,6 +1417,7 @@
             `;
           })
           .join('');
+        refreshIcons(chainList);
       }
 
       function saveHistoryEntry(payload) {
@@ -1437,11 +1466,6 @@
             : 'https://example.com or example.com';
         skillLink.href = '/ai-agent-skill';
         setLoading(isLoading);
-        copyButton.textContent = t('copyButton');
-        copyCleanButton.textContent = t('copyCleanButton');
-        if (!resultLinkButton.classList.contains('hidden')) {
-          resultLinkButton.textContent = t('resultPageButton');
-        }
         updateLanguageButtons();
         renderHistory();
 
@@ -1450,15 +1474,13 @@
           showFeedback(nextMessage, lastFeedbackType, lastFeedbackMessageKey);
         }
 
-        if (copyMarkdownButton) copyMarkdownButton.textContent = t('copyMarkdown');
-        if (copyTechText) copyTechText.textContent = t('copyTechButton');
-        if (copyChainText) copyChainText.textContent = t('copyChainButton');
         if (lastChain.length > 0) {
           renderChain(lastChain);
         }
         if (latestTechnologies.length > 0) {
           renderTechnologies(latestTechnologies);
         }
+        refreshIcons();
       }
 
       langButtons.forEach((button) => {
@@ -1479,9 +1501,11 @@
         try {
           await navigator.clipboard.writeText(latestFinalUrl);
           const copiedText = t('copied');
-          copyButton.textContent = copiedText;
+          const copyBtnText = document.getElementById('copy-button-text');
+          if (copyBtnText) copyBtnText.textContent = copiedText;
+          showCopyToast(copiedText);
           setTimeout(() => {
-            copyButton.textContent = t('copyButton');
+            if (copyBtnText) copyBtnText.textContent = t('copyButton');
           }, 1600);
         } catch {
           showFeedback(t('copyFailed'), 'error', 'copyFailed');
@@ -1493,9 +1517,11 @@
 
         try {
           await navigator.clipboard.writeText(latestCleanUrl);
-          copyCleanButton.textContent = t('cleanUrlCopied');
+          const copyCleanText = document.getElementById('copy-clean-text');
+          if (copyCleanText) copyCleanText.textContent = t('cleanUrlCopied');
+          showCopyToast(t('cleanUrlCopied'));
           setTimeout(() => {
-            copyCleanButton.textContent = t('copyCleanButton');
+            if (copyCleanText) copyCleanText.textContent = t('copyCleanButton');
           }, 1600);
         } catch {
           showFeedback(t('copyFailed'), 'error', 'copyFailed');
@@ -1837,6 +1863,7 @@
         }
       }
 
+      refreshIcons();
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', registerWebMcpTools);
       } else {
