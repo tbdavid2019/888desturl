@@ -2,6 +2,22 @@
 
 ## 2026-10-24
 
+### AI Discovery, WebMCP & Frontend Showcase Polish
+
+- **Standard `llms.txt` & `llms-full.txt` Endpoints (`server.js`)**:
+  - Implemented `/llms.txt` and `/llms-full.txt` following the llmstxt.org specification to provide LLMs and AI Agents with clean, structured machine-readable technical docs, core endpoints, and technology fingerprinting specs.
+- **AI Agent Skill Enhancement (`server.js`)**:
+  - Enriched `/ai-agent-skill` Markdown with complete `technologies` response schema (name, version, categories, confidence, icon, website, description) and instructions for autonomous tech stack reconnaissance.
+- **Chrome WebMCP Tool Expansion (`public/index.html` & `lib/mcp.js`)**:
+  - Updated declarative form annotations and imperative `navigator.modelContext.registerTool('trace_url')` to return detected `technologies` in the structured JSON tool result.
+  - Expanded tool descriptions across MCP and WebMCP to explicitly mention 7,600+ technology and framework detection.
+- **Frontend UI & Feature Highlights (`public/index.html` & `public/result.html`)**:
+  - Added 5-in-1 capability badges directly under the homepage hero title for instant feature visibility.
+  - Added "Core Capabilities & Intelligence" (核心功能與分析維度) 4-card showcase grid introducing Web Technologies, Deep Redirect Tracing, Google Web Risk, and 2md Markdown.
+  - Added `llms.txt` and `API (/trace)` links to both homepage and result page footers.
+  - Added bilingual i18n translations for all new feature titles and descriptions.
+  - Bumped Service Worker cache version to `v3` in `public/service-worker.js` to ensure immediate client cache refresh.
+
 ### Automated CI/CD & Watchtower Deployment
 
 - **GitHub Actions Dual-Registry Publishing (`.github/workflows/docker-publish.yml`)**:

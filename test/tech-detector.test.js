@@ -273,3 +273,14 @@ test('server.js defines /trace and /api/final-url endpoints and integrates tech-
   assert.ok(serverJs.includes("app.get('/api/final-url'"), 'server.js must define /api/final-url route');
   assert.ok(serverJs.includes('technologies:'), 'server.js storage integration must reference technologies');
 });
+
+test('server.js defines /llms.txt, /llms-full.txt, and updates /ai-agent-skill with technologies', () => {
+  const serverPath = path.join(__dirname, '..', 'server.js');
+  const serverJs = fs.readFileSync(serverPath, 'utf8');
+
+  assert.ok(serverJs.includes("app.get('/llms.txt'"), 'server.js must define /llms.txt route');
+  assert.ok(serverJs.includes("app.get('/llms-full.txt'"), 'server.js must define /llms-full.txt route');
+  assert.ok(serverJs.includes('buildLlmsTxt'), 'server.js must define buildLlmsTxt');
+  assert.ok(serverJs.includes('buildLlmsFullTxt'), 'server.js must define buildLlmsFullTxt');
+  assert.ok(serverJs.includes('Web Technology'), 'skill/llms must describe Web Technology');
+});

@@ -214,25 +214,27 @@ function normalizeTraceContext(input) {
 
 function buildSkillMarkdown(baseUrl) {
   const apiUrl = `${baseUrl}/api/trace`;
-  const finalUrlApi = `${baseUrl}/api/final`;
+  const finalUrlApi = `${baseUrl}/api/final-url`;
   const shortFinalApi = `${baseUrl}/api/f`;
   const mcpUrl = `${baseUrl}/mcp`;
   const resultPageUrl = `${baseUrl}/result/<result_id>`;
+  const llmsTxtUrl = `${baseUrl}/llms.txt`;
 
   return `---
 name: 888desturl-url-trace
-description: Use when you need to trace a URL through HTTP redirects, meta refresh, or JavaScript navigation by calling the live 888desturl API or MCP server for the current deployment. Supports final destination discovery, LIFF URL inspection, redirect-chain debugging, and Cloudflare WebMCP integration.
+description: Use when you need to trace a URL through HTTP redirects, meta refresh, or JavaScript navigation, detect web technologies and server frameworks (7,600+ fingerprints via enthec/webappanalyzer), inspect LIFF URLs, check Google Web Risk security, extract 2md Markdown, or call the live 888desturl API or MCP/WebMCP endpoints.
 ---
 
-# 888desturl URL Trace
+# 888desturl URL Trace & Web Technology Intelligence
 
 ## Environment Setup
 
 - **Base URL**: \`${baseUrl}\`
 - **MCP Endpoint**: \`${mcpUrl}\` (JSON-RPC 2.0 / WebMCP compatible)
 - **Trace Endpoint**: \`${apiUrl}?url=<encoded_target_url>\`
-- **Final-Only Endpoint**: \`${finalUrlApi}?url=<encoded_target_url>\`
+- **Final-Only Endpoint**: \`${finalUrlApi}?url=<encoded_target_url>&format=json\`
 - **Short CLI Endpoint**: \`${shortFinalApi}?url=<encoded_target_url>\`
+- **LLMs Guide**: \`${llmsTxtUrl}\`
 - **Result Page Pattern**: \`${resultPageUrl}\`
 - **Optional Context**: add \`&context=line\` for LINE-like mobile tracing when a link only works inside the LINE in-app browser
 - **Method**: \`GET\` (REST) / \`POST\` (MCP)
@@ -243,25 +245,160 @@ description: Use when you need to trace a URL through HTTP redirects, meta refre
 1. Validate that the input is a full \`http://\` or \`https://\` URL.
 2. URL-encode the target URL.
 3. If the URL appears to depend on the LINE app or LIFF, add \`context=line\`.
-4. Call \`${shortFinalApi}?url=<encoded_target_url>\` for a short CLI response.
-5. Call \`${finalUrlApi}?url=<encoded_target_url>&format=json\` when you need the final URL plus metadata.
-6. Call \`${apiUrl}?url=<encoded_target_url>\` when you need the full chain.
+4. Call \`${shortFinalApi}?url=<encoded_target_url>\` for a quick text response of the final URL.
+5. Call \`${finalUrlApi}?url=<encoded_target_url>&format=json\` when you need the final URL, security status, clean URL, and detected web technologies.
+6. Call \`${apiUrl}?url=<encoded_target_url>\` when you need the full redirect chain, timing stats, and 2md markdown content.
 7. Read \`final_url\` first and present it as the traced destination.
-8. If \`removed_tracking_parameters\` is non-empty, also present \`clean_url\` as the copy-friendly URL and state which tracking parameters were removed.
-9. Summarize \`redirect_count\`.
-10. If present, surface \`security.status\`, \`preview_url\`, \`final_image_url\`, and \`result_url\`.
+8. If \`removed_tracking_parameters\` is non-empty, present \`clean_url\` as the copy-friendly URL without marketing tags.
+9. Summarize \`redirect_count\` and chain transitions.
+10. If present, surface \`security.status\` (safe, flagged, or unknown) and any threat types.
+11. Inspect \`technologies\` to discover the destination site's tech stack (CMS, Web servers, JavaScript frameworks, CDN, analytics, and software versions).
+12. If \`markdown_content\` or \`markdown_url\` is present, use it for document extraction and reading.
 
 ## Response Shape
 
-- \`final_url\`
-- \`clean_url\`
-- \`removed_tracking_parameters\`
-- \`redirect_count\`
-- \`chain\`
-- \`preview_url\`
-- \`final_image_url\`
-- \`security\`
-- \`result_url\`
+- \`final_url\`: string (The destination URL)
+- \`clean_url\`: string (Destination URL stripped of marketing parameters)
+- \`removed_tracking_parameters\`: Array<string>
+- \`redirect_count\`: number
+- \`chain\`: Array of redirect hop objects (step, url, type, status_code, duration_ms)
+- \`technologies\`: Array of detected technology objects:
+  - \`name\`: string (e.g. "WordPress", "Nginx", "React")
+  - \`version\`: string | null (e.g. "6.5.2", "1.24.0")
+  - \`categories\`: Array<{ id: number, name: string }> (e.g. [{"id": 1, "name": "CMS"}])
+  - \`confidence\`: number (0-100)
+  - \`icon\`: string | null
+  - \`website\`: string | null
+  - \`description\`: string | null
+- \`security\`: object
+  - \`status\`: "safe" | "flagged" | "unknown"
+  - \`source\`: "google_webrisk"
+  - \`checked_url\`: string
+  - \`message\`: string
+  - \`threat_types\`: Array<string>
+- \`preview_url\`: string | null (Public preview screenshot URL)
+- \`final_image_url\`: string | null
+- \`markdown_content\`: string | null (Extracted article/page Markdown)
+- \`markdown_url\`: string | null (2md reader URL)
+- \`result_url\`: string | null (Permanent shareable web result URL)
+- \`total_duration_ms\`: number
+`;
+}
+
+function buildLlmsTxt(baseUrl) {
+  return `# 888desturl - URL Redirect Tracer & Web Technology Intelligence
+
+> High-speed URL redirect tracer, Google Web Risk safety inspector, 7,600+ Web Technology & CMS fingerprint detector, and 2md HTML-to-Markdown extractor. Built with Node.js, Fastify, and Playwright.
+
+## Core Services & Endpoints
+
+- [Web Interface](${baseUrl}/): Interactive tracer with visual preview, redirect chain logs, web technologies badges, and 2md markdown reader.
+- [Trace API](${baseUrl}/trace?url=https://example.com): Full JSON trace including redirects, status codes, timing, Google Web Risk, web technologies, and markdown.
+- [Final URL Lookup](${baseUrl}/api/final-url?url=https://example.com&format=json): Lightweight endpoint returning final destination, clean URL, security status, and technologies.
+- [Model Context Protocol (MCP)](${baseUrl}/mcp): Standard JSON-RPC 2.0 MCP endpoint supporting \`trace_url\` and \`clean_url\`. Compatible with Cursor, Claude Desktop, and Cloudflare WebMCP.
+- [AI Agent Skill](${baseUrl}/ai-agent-skill): Machine-readable skill specification for autonomous coding agents and LLMs.
+- [Detailed LLMs Documentation](${baseUrl}/llms-full.txt): Complete technical reference, API schemas, and sample outputs.
+- [2md HTML-to-Markdown Reader](https://2md.aiurl.tw): Direct web reader transforming destination HTML into clean LLM-ready markdown.
+
+## Key Capabilities
+
+1. **Deep Redirect Tracing**: Follows HTTP 3xx, meta refresh, JavaScript location changes, wrapped links (YouTube, Facebook, Google, Line), and intermediate shortlink countdowns.
+2. **Web Technology Fingerprinting**: Powered by the \`enthec/webappanalyzer\` database with 7,600+ technologies across 109 categories (CMS, Web servers, JavaScript frameworks, CDN, Analytics). Extracts versions and confidence scores.
+3. **Google Web Risk Security Audit**: Real-time evaluation against malware, social engineering/phishing, and unwanted software threats.
+4. **Marketing Tracker Scrubbing**: Automatically removes \`utm_*\`, \`fbclid\`, \`gclid\`, and tracking parameters to produce clean shareable URLs.
+5. **Chrome WebMCP Integration**: Supports client-side browser agent invocation via declarative annotations and \`navigator.modelContext\` imperative API.
+
+## Project & Maintainer Information
+
+- GitHub Repository: https://github.com/tbdavid2019/888desturl
+- Author & Maintainer: DAVID888 / GLSOFT (https://github.com/tbdavid2019)
+- License: MIT
+`;
+}
+
+function buildLlmsFullTxt(baseUrl) {
+  return `# 888desturl - Full Technical Reference & API Manual
+
+> Complete documentation for 888desturl: URL Redirect Tracer, Google Web Risk Inspector, 7,600+ Web Technology Detector, and 2md Markdown Extractor.
+
+## 1. Overview
+888desturl is an enterprise-grade redirect tracer and web intelligence service. When an agent or user submits a URL or bare domain, 888desturl spins up an isolated Headless Chromium browser context via Playwright, executes the full navigation lifecycle (including HTTP 3xx, HTML meta refresh, JavaScript redirection, and shortlink countdown bypasses), captures a screenshot, runs Google Web Risk validation, fingerprints the destination site's technologies against 7,600+ rules from enthec/webappanalyzer, and converts the destination page HTML to clean Markdown.
+
+## 2. API Endpoints
+
+### 2.1 GET /trace or /api/trace
+Query parameters:
+- \`url\` (required): Target URL or domain to trace (e.g. \`david888.com\` or \`https://bit.ly/xyz\`).
+- \`context\` (optional): Set to \`line\` to emulate the LINE mobile in-app browser user agent.
+
+Response Schema (JSON):
+\`\`\`json
+{
+  "input_url": "https://bit.ly/example",
+  "final_url": "https://example.com/dest",
+  "clean_url": "https://example.com/dest",
+  "removed_tracking_parameters": ["utm_source", "fbclid"],
+  "redirect_count": 2,
+  "terminated_reason": "completed",
+  "total_duration_ms": 1280,
+  "security": {
+    "status": "safe",
+    "source": "google_webrisk",
+    "checked_url": "https://example.com/dest",
+    "threat_types": []
+  },
+  "technologies": [
+    {
+      "name": "WordPress",
+      "version": "6.5.2",
+      "confidence": 100,
+      "categories": [{ "id": 1, "name": "CMS" }, { "id": 11, "name": "Blogs" }],
+      "icon": "WordPress.svg",
+      "website": "https://wordpress.org",
+      "description": "WordPress is a free and open-source content management system."
+    },
+    {
+      "name": "Nginx",
+      "version": "1.24.0",
+      "confidence": 100,
+      "categories": [{ "id": 22, "name": "Web servers" }],
+      "website": "https://nginx.org"
+    }
+  ],
+  "chain": [
+    { "step": 1, "url": "https://bit.ly/example", "type": "initial", "status_code": 301, "duration_ms": 120 },
+    { "step": 2, "url": "https://example.com/dest", "type": "http_redirect", "status_code": 200, "duration_ms": 350 }
+  ],
+  "markdown_content": "# Example Destination\\n\\nWelcome to the destination page...",
+  "markdown_url": "https://2md.aiurl.tw/https://example.com/dest",
+  "preview_url": "/previews/2026/10/24/example.jpg",
+  "result_url": "${baseUrl}/result/xyz123"
+}
+\`\`\`
+
+### 2.2 GET /api/final-url or /api/final
+Query parameters:
+- \`url\` (required): Target URL.
+- \`format\` (optional): Set to \`json\` for structured metadata including \`technologies\`, or omit for plain text \`final_url\`.
+
+### 2.3 POST /mcp (Model Context Protocol)
+Standard JSON-RPC 2.0 protocol endpoint. Tools provided:
+1. \`trace_url\`: Parameters \`{ url: string, context?: "default" | "line" }\`. Returns full redirect chain, Google Web Risk audit, and web technologies.
+2. \`clean_url\`: Parameters \`{ url: string }\`. Pure URL string sanitizer removing tracking parameters without network calls.
+
+### 2.4 GET /ai-agent-skill
+Returns agent skill markdown for LLMs and autonomous coders.
+
+## 3. Web Technology Detection Engine
+The detection engine is built into \`lib/tech-detector.js\` and compiled against \`enthec/webappanalyzer\`:
+- Over 7,647 technology signatures across 109 categories.
+- Extracts signals from HTTP Response Headers, Cookies, Meta tags, Script sources, HTML snippets, DOM selectors, and JS global objects.
+- Supports version extraction and recursive implied technologies (e.g. WordPress implies PHP and MySQL).
+
+## 4. Client-side Chrome WebMCP
+The web frontend (\`public/index.html\`) implements:
+- Declarative WebMCP annotations on the form.
+- Imperative registration: \`navigator.modelContext.registerTool('trace_url')\` providing instant in-browser agent tool calling with \`technologies\`.
 `;
 }
 
@@ -1587,6 +1724,18 @@ app.get('/ai-agent-skill', async (request, reply) => {
     .header('content-disposition', 'inline; filename="888desturl-url-trace.SKILL.md"');
 
   return markdown;
+});
+
+app.get('/llms.txt', async (request, reply) => {
+  const baseUrl = getBaseUrl(request);
+  reply.type('text/plain; charset=utf-8');
+  return buildLlmsTxt(baseUrl);
+});
+
+app.get('/llms-full.txt', async (request, reply) => {
+  const baseUrl = getBaseUrl(request);
+  reply.type('text/plain; charset=utf-8');
+  return buildLlmsFullTxt(baseUrl);
 });
 
 app.get('/admin', async (request, reply) => {

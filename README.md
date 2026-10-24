@@ -223,11 +223,17 @@ Aliases for `/api/final`.
 
 ### `GET /trace`
 
-Alias for `/api/trace`.
+Alias for `/api/trace`. Returns full redirect chain, timing log, Google Web Risk audit, Web technology fingerprints, and 2md extracted Markdown.
+
+### `GET /llms.txt` and `GET /llms-full.txt`
+
+Machine-readable documentation following the [llmstxt.org](https://llmstxt.org) standard:
+- `/llms.txt`: Concise index of core endpoints, Web technology detection specs, and capabilities for LLMs.
+- `/llms-full.txt`: Full technical API manual, request/response JSON schemas, and multi-language client examples.
 
 ### `GET /ai-agent-skill`
 
-Returns a Markdown skill document for the current deployment host. It documents the trace endpoints and instructs agents to present `clean_url` as the copy-friendly URL whenever `removed_tracking_parameters` is non-empty.
+Returns a Markdown skill document for the current deployment host. It documents the trace endpoints, Web technology detection features (7,600+ fingerprints), and instructs agents to present `clean_url` as the copy-friendly URL whenever `removed_tracking_parameters` is non-empty.
 
 ### `GET /api/results/:resultId`
 

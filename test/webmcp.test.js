@@ -17,10 +17,11 @@ test('homepage implements Chrome WebMCP Declarative API annotations on form and 
 
   assert.match(indexHtml, /toolname="trace_url"/);
   assert.match(indexHtml, /tooldescription="Trace the real final destination/);
+  assert.match(indexHtml, /web technologies/i);
   assert.match(indexHtml, /toolparamdescription="Target URL or bare domain to trace/);
 });
 
-test('homepage implements Chrome WebMCP Imperative API tool registration', () => {
+test('homepage implements Chrome WebMCP Imperative API tool registration with technologies', () => {
   const indexHtml = readPublicFile('index.html');
 
   assert.match(indexHtml, /document\.modelContext/);
@@ -28,14 +29,21 @@ test('homepage implements Chrome WebMCP Imperative API tool registration', () =>
   assert.match(indexHtml, /registerWebMcpTools/);
   assert.match(indexHtml, /name:\s*'trace_url'/);
   assert.match(indexHtml, /name:\s*'clean_url'/);
+  assert.match(indexHtml, /technologies:\s*payload\.technologies/);
 });
 
-test('homepage and result page display Chrome WebMCP support badge in footer', () => {
+test('homepage and result page display Chrome WebMCP support badge, llms.txt, and REST API in footer', () => {
   const indexHtml = readPublicFile('index.html');
   const resultHtml = readPublicFile('result.html');
 
   assert.match(indexHtml, /支援 Chrome WebMCP/);
+  assert.match(indexHtml, /href="\/llms\.txt"/);
+  assert.match(indexHtml, /href="\/trace\?url=/);
+  assert.match(indexHtml, /id="features-overview"/);
   assert.match(indexHtml, /https:\/\/developer\.chrome\.com\/docs\/ai\/webmcp/);
+
   assert.match(resultHtml, /支援 Chrome WebMCP/);
+  assert.match(resultHtml, /href="\/llms\.txt"/);
+  assert.match(resultHtml, /href="\/trace\?url=/);
   assert.match(resultHtml, /https:\/\/developer\.chrome\.com\/docs\/ai\/webmcp/);
 });

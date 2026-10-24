@@ -50,8 +50,25 @@
                   </span>
                 </div>
                 <p data-i18n="heroDescription" class="text-xs text-slate-500 hidden sm:block mt-0.5 truncate max-w-xl">
-                  使用 Headless Chromium 模擬真實瀏覽器，抓出 HTTP 轉址、meta refresh 與 JavaScript 導向。
+                  使用 Headless Chromium 模擬真實瀏覽器，抓出 HTTP 轉址、meta refresh、JavaScript 導向與 7,600+ Web 技術棧指紋。
                 </p>
+                <div class="mt-2 flex flex-wrap items-center gap-1.5 text-[11px]">
+                  <span class="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-800 border border-emerald-200/70">
+                    <span>🔍</span> 網址跳轉追蹤
+                  </span>
+                  <span class="inline-flex items-center gap-1 rounded-md bg-indigo-50 px-2 py-0.5 font-semibold text-indigo-800 border border-indigo-200/70">
+                    <span>🛠️</span> 7,600+ Web 技術棧指紋
+                  </span>
+                  <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 font-semibold text-blue-800 border border-blue-200/70">
+                    <span>🛡️</span> Google Web Risk
+                  </span>
+                  <span class="inline-flex items-center gap-1 rounded-md bg-purple-50 px-2 py-0.5 font-semibold text-purple-800 border border-purple-200/70">
+                    <span>📝</span> 2md 全文 Markdown
+                  </span>
+                  <span class="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 font-semibold text-amber-800 border border-amber-200/70">
+                    <span>🧹</span> 去除行銷參數
+                  </span>
+                </div>
               </div>
             </div>
             <div class="flex shrink-0 items-center gap-2 self-end sm:self-auto">
@@ -89,7 +106,7 @@
             class="space-y-4"
             novalidate
             toolname="trace_url"
-            tooldescription="Trace the real final destination of any redirecting URL or bare domain through HTTP redirects, HTML meta refresh, and JavaScript navigation. Automatically strips marketing tracking parameters and checks safety."
+            tooldescription="Trace the real final destination of any redirecting URL or bare domain through HTTP redirects, HTML meta refresh, and JavaScript navigation. Automatically detects 7,600+ web technologies & server frameworks, strips marketing tracking parameters, and checks Google Web Risk safety."
           >
             <label
               for="url-input"
@@ -128,6 +145,75 @@
               輸入完整的 `http://` 或 `https://` 網址。
             </p>
           </form>
+
+          <!-- Core Capabilities Highlights (核心功能特色) -->
+          <section id="features-overview" class="mt-8 border-t border-slate-100 pt-6">
+            <div class="mb-4 flex items-center justify-between">
+              <h2 data-i18n="featuresTitle" class="text-sm font-bold uppercase tracking-wider text-slate-500">
+                核心功能與分析維度
+              </h2>
+              <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">
+                5-in-1 URL Intelligence
+              </span>
+            </div>
+            <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+              <!-- Feature 1: Web Technologies -->
+              <div class="rounded-2xl border border-indigo-100 bg-indigo-50/40 p-4 transition hover:bg-indigo-50/70 hover:border-indigo-200">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600 text-white text-sm shadow-sm">🛠️</span>
+                  <div>
+                    <h3 data-i18n="featureTechTitle" class="text-sm font-bold text-slate-900">7,600+ Web 技術棧指紋</h3>
+                    <span class="text-[10px] font-semibold text-indigo-700">enthec/webappanalyzer</span>
+                  </div>
+                </div>
+                <p data-i18n="featureTechDesc" class="mt-2 text-xs leading-relaxed text-slate-600">
+                  即時探測 CMS (WordPress, Shopify)、伺服器 (Nginx, Cloudflare)、前端框架 (React, Vue) 與套件版本。
+                </p>
+              </div>
+
+              <!-- Feature 2: Deep Redirect Trace -->
+              <div class="rounded-2xl border border-emerald-100 bg-emerald-50/40 p-4 transition hover:bg-emerald-50/70 hover:border-emerald-200">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-600 text-white text-sm shadow-sm">🔍</span>
+                  <div>
+                    <h3 data-i18n="featureTraceTitle" class="text-sm font-bold text-slate-900">深度跳轉鏈路還原</h3>
+                    <span class="text-[10px] font-semibold text-emerald-700">Headless Chromium</span>
+                  </div>
+                </div>
+                <p data-i18n="featureTraceDesc" class="mt-2 text-xs leading-relaxed text-slate-600">
+                  精確追蹤 HTTP 3xx、Meta Refresh、JS 導向與倒數時短網址，還原完整真實鏈路。
+                </p>
+              </div>
+
+              <!-- Feature 3: Google Web Risk -->
+              <div class="rounded-2xl border border-blue-100 bg-blue-50/40 p-4 transition hover:bg-blue-50/70 hover:border-blue-200">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-white text-sm shadow-sm">🛡️</span>
+                  <div>
+                    <h3 data-i18n="featureSecurityTitle" class="text-sm font-bold text-slate-900">Google Web Risk 審核</h3>
+                    <span class="text-[10px] font-semibold text-blue-700">Real-time Threat Check</span>
+                  </div>
+                </div>
+                <p data-i18n="featureSecurityDesc" class="mt-2 text-xs leading-relaxed text-slate-600">
+                  即時比對安全威脅資料庫，檢驗目標網址是否涉及網路釣魚、惡意軟體或已知資安風險。
+                </p>
+              </div>
+
+              <!-- Feature 4: 2md Full Markdown -->
+              <div class="rounded-2xl border border-purple-100 bg-purple-50/40 p-4 transition hover:bg-purple-50/70 hover:border-purple-200">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-600 text-white text-sm shadow-sm">📝</span>
+                  <div>
+                    <h3 data-i18n="featureMarkdownTitle" class="text-sm font-bold text-slate-900">2md 全文 Markdown</h3>
+                    <span class="text-[10px] font-semibold text-purple-700">LLM-ready Content</span>
+                  </div>
+                </div>
+                <p data-i18n="featureMarkdownDesc" class="mt-2 text-xs leading-relaxed text-slate-600">
+                  雙路線解析網頁內文，去除廣告雜訊，提取純淨 Markdown 內文供 AI Agent 閱讀。
+                </p>
+              </div>
+            </div>
+          </section>
 
           <section id="feedback" class="mt-6 hidden rounded-2xl border px-4 py-3 text-sm"></section>
 
@@ -347,13 +433,13 @@
               <div class="flex flex-col gap-2 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <div class="flex flex-wrap items-center gap-2">
-                    <h3 class="text-xl font-bold tracking-tight text-slate-900">網站技術棧</h3>
+                    <h3 data-i18n="techTitle" class="text-xl font-bold tracking-tight text-slate-900">網站技術棧</h3>
                     <span id="tech-count-badge" class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-bold text-indigo-700 border border-indigo-200">
                       <span class="h-1.5 w-1.5 rounded-full bg-indigo-500"></span>
                       <span id="tech-count-text">Web Technologies</span>
                     </span>
                   </div>
-                  <p class="mt-1 text-sm text-slate-500">分析最終目標網頁所使用的伺服器、CMS、框架、函式庫與分析工具等技術指紋。</p>
+                  <p data-i18n="techDescription" class="mt-1 text-sm text-slate-500">分析最終目標網頁所使用的伺服器、CMS、框架、函式庫與分析工具等技術指紋。</p>
                 </div>
               </div>
               <div class="p-5">
@@ -435,6 +521,24 @@
                 class="font-semibold text-accent underline decoration-accent/40 underline-offset-4"
               >
                 AI Agent Skills
+              </a>
+              <span>|</span>
+              <a
+                href="/llms.txt"
+                target="_blank"
+                rel="noreferrer"
+                class="font-semibold text-accent underline decoration-accent/40 underline-offset-4"
+              >
+                llms.txt
+              </a>
+              <span>|</span>
+              <a
+                href="/trace?url=https://wordpress.org"
+                target="_blank"
+                rel="noreferrer"
+                class="font-semibold text-accent underline decoration-accent/40 underline-offset-4"
+              >
+                API (/trace)
               </a>
               <span>|</span>
               <a
@@ -532,6 +636,17 @@
           resultPageButton: '查看結果頁',
           chainTitle: 'Redirect Chain',
           chainDescription: '完整跳轉過程與每個節點的細節。',
+          techTitle: '網站技術棧',
+          techDescription: '分析最終目標網頁所使用的伺服器、CMS、框架、函式庫與分析工具等技術指紋。',
+          featuresTitle: '核心功能與分析維度',
+          featureTechTitle: '7,600+ Web 技術棧指紋',
+          featureTechDesc: '即時探測 CMS (WordPress, Shopify)、伺服器 (Nginx, Cloudflare)、前端框架 (React, Vue) 與套件版本。',
+          featureTraceTitle: '深度跳轉鏈路還原',
+          featureTraceDesc: '精確追蹤 HTTP 3xx、Meta Refresh、JS 導向與倒數時短網址，還原完整真實鏈路。',
+          featureSecurityTitle: 'Google Web Risk 審核',
+          featureSecurityDesc: '即時比對安全威脅資料庫，檢驗目標網址是否涉及網路釣魚、惡意軟體或已知資安風險。',
+          featureMarkdownTitle: '2md 全文 Markdown',
+          featureMarkdownDesc: '雙路線解析網頁內文，去除廣告雜訊，提取純淨 Markdown 內文供 AI Agent 閱讀。',
           historyTitle: '最近查詢',
           historyDescription: '僅存在你的瀏覽器 localStorage 的最近查詢紀錄。',
           clearHistory: '清除紀錄',
@@ -617,6 +732,17 @@
           resultPageButton: 'Open Result Page',
           chainTitle: 'Redirect Chain',
           chainDescription: 'Review the full chain with status codes and timing details.',
+          techTitle: 'Web Technologies',
+          techDescription: 'Analyze web technologies, server frameworks, CMS, and libraries used by the final destination page.',
+          featuresTitle: 'Core Capabilities & Intelligence',
+          featureTechTitle: '7,600+ Web Tech Fingerprints',
+          featureTechDesc: 'Automatically detect CMS, web servers, frontend frameworks, analytics, and software versions.',
+          featureTraceTitle: 'Deep Redirect Tracing',
+          featureTraceDesc: 'Track HTTP 3xx, HTML meta refresh, and JavaScript navigation with Headless Chromium.',
+          featureSecurityTitle: 'Google Web Risk Safety Check',
+          featureSecurityDesc: 'Check whether the final URL is flagged for malware, phishing, or web risks.',
+          featureMarkdownTitle: '2md Full Markdown Extraction',
+          featureMarkdownDesc: 'Extract clean markdown content from the destination DOM for LLM reading.',
           historyTitle: 'Recent Searches',
           historyDescription: 'Stored only in your browser localStorage.',
           clearHistory: 'Clear History',
@@ -1430,7 +1556,7 @@
           await modelContext.registerTool({
             name: 'trace_url',
             description:
-              'Trace the real final destination of a redirecting URL or bare domain (such as david888.com or https://...) through HTTP redirects, HTML meta refresh, and JavaScript navigation. Strips marketing tracking parameters and returns security status.',
+              'Trace the real final destination of a redirecting URL or bare domain through HTTP redirects, HTML meta refresh, and JavaScript navigation. Automatically detects 7,600+ web technologies & server frameworks, strips marketing tracking parameters, and checks Google Web Risk safety.',
             inputSchema: {
               type: 'object',
               properties: {
@@ -1489,6 +1615,7 @@
                 removed_tracking_parameters: payload.removed_tracking_parameters,
                 redirect_count: payload.redirect_count,
                 security_status: payload.security && payload.security.status,
+                technologies: payload.technologies || [],
                 result_url: payload.result_url
               }, null, 2);
             }
