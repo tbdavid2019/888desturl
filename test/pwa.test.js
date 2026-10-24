@@ -107,3 +107,29 @@ test('homepage implements sticky floating trace form and conforms to WCAG access
   assert.match(resultHtml, /#17324d/i);
 });
 
+test('homepage and result page support direct routing parameters, share actions, and address bar synchronization', () => {
+  const indexHtml = readPublicFile('index.html');
+  const resultHtml = readPublicFile('result.html');
+
+  // Direct route URL parameter extraction on homepage
+  assert.match(indexHtml, /searchParams\.get\('url'\)/);
+  assert.match(indexHtml, /searchParams\.get\('target'\)/);
+  assert.match(indexHtml, /searchParams\.get\('q'\)/);
+  assert.match(indexHtml, /searchParams\.get\('link'\)/);
+  assert.match(indexHtml, /searchParams\.get\('u'\)/);
+
+  // Address bar pushState synchronization and popstate listener
+  assert.match(indexHtml, /window\.history\.pushState/);
+  assert.match(indexHtml, /window\.addEventListener\('popstate'/);
+
+  // Dedicated Share Result button & Web Share API support
+  assert.match(indexHtml, /id="share-result-button"/);
+  assert.match(indexHtml, /navigator\.share/);
+  assert.match(indexHtml, /data-lucide="share-2"/);
+
+  // Result page share button & quick trace input
+  assert.match(resultHtml, /id="copy-result-link-button"/);
+  assert.match(resultHtml, /navigator\.share/);
+  assert.match(resultHtml, /<form\s+action="\/"\s+method="GET"/);
+});
+

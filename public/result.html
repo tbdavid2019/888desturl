@@ -93,6 +93,29 @@ __OG_IMAGE_META__
           </a>
         </div>
 
+        <!-- Quick Trace Input for Direct Routing -->
+        <form action="/" method="GET" class="mt-4 flex flex-col sm:flex-row gap-2.5">
+          <div class="relative flex-1">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#594e36]">
+              <i data-lucide="search" class="w-4 h-4"></i>
+            </div>
+            <input
+              type="text"
+              name="url"
+              placeholder="輸入其他網址直接追蹤（如 david888.com 或 https://...）"
+              class="h-11 w-full rounded-xl border border-[#d6bc7c] bg-[#fffdf7] pl-10 pr-4 text-sm text-[#2b251a] placeholder:text-[#594e36]/60 focus:border-[#ffb010] focus:outline-none focus:ring-2 focus:ring-[#ffb010]/30"
+              aria-label="追蹤其他網址"
+            />
+          </div>
+          <button
+            type="submit"
+            class="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#17324d] px-5 text-sm font-bold text-white transition hover:bg-[#1f4265] shadow-xs cursor-pointer"
+          >
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            <span>追蹤新網址</span>
+          </button>
+        </form>
+
         <!-- 1. Destination Overview Bar (Compact, High-Density) -->
         <section id="status-card" class="mt-4 rounded-2xl border border-[#ffb010]/70 bg-[#17324d] p-4 sm:p-5 text-white shadow-md">
           <div class="flex flex-col gap-3.5 md:flex-row md:items-center md:justify-between">
@@ -121,8 +144,8 @@ __OG_IMAGE_META__
 
             <div class="flex shrink-0 items-center gap-2 mt-2 md:mt-0">
               <button id="copy-result-link-button" type="button" class="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#ffb010] px-4 text-sm sm:text-base font-bold text-[#17324d] transition hover:bg-[#f2a600] shadow-sm cursor-pointer">
-                <i data-lucide="copy" class="w-4 h-4"></i>
-                <span id="copy-result-link-text">複製結果頁連結</span>
+                <i data-lucide="share-2" class="w-4 h-4"></i>
+                <span id="copy-result-link-text">分享結果</span>
               </button>
             </div>
           </div>
@@ -891,20 +914,32 @@ __OG_IMAGE_META__
       }
 
       copyResultLinkButton.addEventListener('click', async () => {
-        if (!activeResultUrl) {
-          return;
+        const shareUrl = activeResultUrl || window.location.href;
+        const pageTitleText = (window.__RESULT_DATA__ && window.__RESULT_DATA__.final_url) || document.title;
+
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: '888 URL 追蹤結果 - ' + pageTitleText,
+              text: `查看網址跳轉與技術分析：${pageTitleText}`,
+              url: shareUrl
+            });
+            return;
+          } catch (err) {
+            if (err.name === 'AbortError') return;
+          }
         }
 
         try {
-          await navigator.clipboard.writeText(activeResultUrl);
-          const txt = document.getElementById('copy-result-link-text'); if (txt) txt.textContent = '已複製連結'; else copyResultLinkButton.textContent = '已複製連結';
+          await navigator.clipboard.writeText(shareUrl);
+          const txt = document.getElementById('copy-result-link-text'); if (txt) txt.textContent = '已複製分享連結'; else copyResultLinkButton.textContent = '已複製分享連結';
           setTimeout(() => {
-            const txt = document.getElementById('copy-result-link-text'); if (txt) txt.textContent = '複製結果頁連結'; else copyResultLinkButton.textContent = '複製結果頁連結';
+            const txt = document.getElementById('copy-result-link-text'); if (txt) txt.textContent = '分享結果'; else copyResultLinkButton.textContent = '分享結果';
           }, 1600);
         } catch {
           const txt = document.getElementById('copy-result-link-text'); if (txt) txt.textContent = '複製失敗'; else copyResultLinkButton.textContent = '複製失敗';
           setTimeout(() => {
-            const txt = document.getElementById('copy-result-link-text'); if (txt) txt.textContent = '複製結果頁連結'; else copyResultLinkButton.textContent = '複製結果頁連結';
+            const txt = document.getElementById('copy-result-link-text'); if (txt) txt.textContent = '分享結果'; else copyResultLinkButton.textContent = '分享結果';
           }, 1600);
         }
       });

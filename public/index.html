@@ -247,12 +247,20 @@
 
                 <div class="flex flex-col sm:flex-row shrink-0 items-stretch sm:items-center gap-2 mt-2 md:mt-0">
                   <button
-                    id="copy-button"
+                    id="share-result-button"
                     type="button"
                     class="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#ffb010] px-4 text-sm sm:text-base font-bold text-[#17324d] transition hover:bg-[#f2a600] shadow-sm cursor-pointer"
                   >
+                    <i data-lucide="share-2" class="w-4 h-4"></i>
+                    <span id="share-result-text" data-i18n="shareResultButton">分享結果</span>
+                  </button>
+                  <button
+                    id="copy-button"
+                    type="button"
+                    class="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-white/15 px-4 text-sm sm:text-base font-semibold text-white backdrop-blur transition hover:bg-white/25 cursor-pointer"
+                  >
                     <i data-lucide="copy" class="w-4 h-4"></i>
-                    <span id="copy-button-text" data-i18n="copyButton">複製網址</span>
+                    <span id="copy-button-text" data-i18n="copyButton">複製最終網址</span>
                   </button>
                   <a
                     id="result-link-button"
@@ -619,8 +627,10 @@
           webmcpSupported: '支援 Chrome WebMCP',
           finalUrlEyebrow: 'Final URL',
           finalUrlTitle: '最終目的地網址',
-          copyButton: '複製網址',
-          copied: '已複製',
+          shareResultButton: '分享結果',
+          shareLinkCopied: '已複製分享連結',
+          copyButton: '複製最終網址',
+          copied: '已複製最終網址',
           cleanUrlEyebrow: '建議分享網址',
           copyCleanButton: '複製乾淨網址',
           cleanUrlCopied: '已複製乾淨網址',
@@ -724,8 +734,10 @@
           webmcpSupported: 'Chrome WebMCP Supported',
           finalUrlEyebrow: 'Final URL',
           finalUrlTitle: 'Final Destination URL',
-          copyButton: 'Copy URL',
-          copied: 'Copied',
+          shareResultButton: 'Share Result',
+          shareLinkCopied: 'Share Link Copied',
+          copyButton: 'Copy Final URL',
+          copied: 'Final URL Copied',
           cleanUrlEyebrow: 'Recommended to Share',
           copyCleanButton: 'Copy clean URL',
           cleanUrlCopied: 'Clean URL copied',
@@ -831,6 +843,7 @@
       const totalDuration = document.getElementById('total-duration');
       const chainList = document.getElementById('chain-list');
       const copyButton = document.getElementById('copy-button');
+      const shareResultButton = document.getElementById('share-result-button');
       const cleanUrlSection = document.getElementById('clean-url-section');
       const cleanUrlLink = document.getElementById('clean-url');
       const removedTrackingParameters = document.getElementById('removed-tracking-parameters');
@@ -1602,6 +1615,40 @@
         renderHistory();
       });
 
+      if (shareResultButton) {
+        shareResultButton.addEventListener('click', async () => {
+          const shareUrl = latestResultUrl || `${window.location.origin}/?url=${encodeURIComponent(latestFinalUrl || urlInput.value.trim())}`;
+          const shareTitle = '888 URL 追蹤結果';
+          const shareText = `網址追蹤：${latestFinalUrl || urlInput.value.trim()}`;
+
+          if (navigator.share) {
+            try {
+              await navigator.share({
+                title: shareTitle,
+                text: shareText,
+                url: shareUrl
+              });
+              showCopyToast(t('shareLinkCopied'));
+              return;
+            } catch (err) {
+              if (err.name === 'AbortError') return;
+            }
+          }
+
+          try {
+            await navigator.clipboard.writeText(shareUrl);
+            const shareBtnText = document.getElementById('share-result-text');
+            if (shareBtnText) shareBtnText.textContent = t('shareLinkCopied');
+            showCopyToast(t('shareLinkCopied'));
+            setTimeout(() => {
+              if (shareBtnText) shareBtnText.textContent = t('shareResultButton');
+            }, 1600);
+          } catch {
+            showFeedback(t('copyFailed'), 'error', 'copyFailed');
+          }
+        });
+      }
+
       copyButton.addEventListener('click', async () => {
         if (!latestFinalUrl) return;
 
@@ -1748,6 +1795,11 @@
           results.classList.remove('hidden');
           results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
+          const directQuery = '?url=' + encodeURIComponent(value);
+          if (window.location.search !== directQuery) {
+            window.history.pushState({ url: value }, document.title, window.location.pathname + directQuery);
+          }
+
           if (payload.terminated_reason && payload.terminated_reason !== 'completed') {
             const reason = reasonMessageFromCode(
               payload.terminated_reason,
@@ -1766,24 +1818,63 @@
         }
       });
 
-      function sharedUrlFromCurrentLocation() {
-        const searchParams = new URL(window.location.href).searchParams;
-        const sharedCandidates = [
-          searchParams.get('shared_url'),
-          searchParams.get('shared_text')
-        ];
+      function normalizeCandidateUrl(raw) {
+        if (!raw || typeof raw !== 'string') return '';
+        const trimmed = raw.trim();
+        if (!trimmed) return '';
 
-        for (const candidate of sharedCandidates) {
-          const urlMatch = candidate && candidate.match(/https?:\/\/[^\s<>"']+/i);
-          if (!urlMatch) continue;
-
+        const urlMatch = trimmed.match(/https?:\/\/[^\s<>"']+/i);
+        if (urlMatch) {
           try {
             const sharedUrl = new URL(urlMatch[0]);
             if (sharedUrl.protocol === 'http:' || sharedUrl.protocol === 'https:') {
               return sharedUrl.href;
             }
           } catch {
-            // Try the next share field when this candidate is not a valid URL.
+            // Try next
+          }
+        }
+
+        if (!trimmed.includes(' ') && (trimmed.includes('.') || trimmed.startsWith('localhost'))) {
+          let withScheme = trimmed;
+          if (!/^https?:\/\//i.test(withScheme)) {
+            if (withScheme.startsWith('//')) {
+              withScheme = 'https:' + withScheme;
+            } else if (/^localhost(:\d+)?(\/.*)?$/i.test(withScheme)) {
+              withScheme = 'http://' + withScheme;
+            } else {
+              withScheme = 'https://' + withScheme;
+            }
+          }
+          try {
+            const parsed = new URL(withScheme);
+            if (['http:', 'https:'].includes(parsed.protocol) && parsed.hostname) {
+              return parsed.href;
+            }
+          } catch {
+            return '';
+          }
+        }
+
+        return '';
+      }
+
+      function sharedUrlFromCurrentLocation() {
+        const searchParams = new URL(window.location.href).searchParams;
+        const sharedCandidates = [
+          searchParams.get('url'),
+          searchParams.get('target'),
+          searchParams.get('link'),
+          searchParams.get('q'),
+          searchParams.get('u'),
+          searchParams.get('shared_url'),
+          searchParams.get('shared_text')
+        ];
+
+        for (const candidate of sharedCandidates) {
+          const candidateUrl = normalizeCandidateUrl(candidate);
+          if (candidateUrl) {
+            return candidateUrl;
           }
         }
 
@@ -1795,9 +1886,18 @@
         if (!sharedUrl) return;
 
         urlInput.value = sharedUrl;
-        window.history.replaceState({}, document.title, window.location.pathname);
+        const directQuery = '?url=' + encodeURIComponent(sharedUrl);
+        window.history.replaceState({ url: sharedUrl }, document.title, window.location.pathname + directQuery);
         form.requestSubmit();
       }
+
+      window.addEventListener('popstate', () => {
+        const sharedUrl = sharedUrlFromCurrentLocation();
+        if (sharedUrl && sharedUrl !== urlInput.value.trim()) {
+          urlInput.value = sharedUrl;
+          form.requestSubmit();
+        }
+      });
 
       currentLanguage = detectLanguage();
       applyTranslations();

@@ -2,6 +2,28 @@
 
 ## 2026-10-24
 
+### Direct Routing Deep Links, Real-Time Address Bar Sync & 1-Click Social Sharing
+
+- **Direct Route Deep Linking (`/?url=...`, `public/index.html`, `server.js`)**:
+  - Added full direct routing support for URL query parameters: `url`, `target`, `link`, `q`, `u`, `shared_url`, `shared_text`.
+  - Visiting any direct route (e.g. `https://url.david888.com/?url=https://www.watsons.com.tw/` or bare domains `?url=watsons.com.tw`) automatically populates the search bar and triggers the trace pipeline without manual user action.
+  - Browser GET navigation to `/trace?url=...` with HTML Accept headers automatically 302 redirects to `/?url=...` for visual rendering while preserving raw JSON responses for API/MCP callers.
+  - Added `popstate` event listeners so browser Back and Forward history buttons fluidly re-trace past URLs.
+- **Real-Time Address Bar Synchronization (`public/index.html`)**:
+  - Whenever a trace completes, the browser address bar dynamically updates to `/?url=${encodeURIComponent(url)}` via `window.history.pushState`.
+  - Users can now simply copy the URL straight from the browser address bar at any time to share the exact live trace with colleagues and friends.
+- **Dedicated 1-Click "分享結果" (Share Result) & Web Share API (`public/index.html`, `public/result.html`)**:
+  - Added a prominent primary **分享結果** (Share Result) action button (`#share-result-button`) in the hero destination card, styled in bold Saffron `#ffb010` with Lucide `share-2` icon.
+  - Integrates native OS Web Share API (`navigator.share`) on mobile devices (iOS Safari, Android Chrome) to open the native system share sheet (LINE, WhatsApp, Telegram, AirDrop, Messages) with page title, destination summary, and permalink.
+  - Automatically falls back to 1-click clipboard copying with visual toast notifications on desktop browsers.
+  - Differentiated copy buttons: **分享結果** (shares the 888desturl trace result/permalink), **複製最終網址** (copies the destination URL), and **複製乾淨網址** (copies parameter-scrubbed destination URL).
+- **Result Page Quick Trace Bar (`public/result.html`)**:
+  - Added an inline quick-trace search form directly below the header on `/result/:id`, allowing users who receive a shared link to immediately trace another URL via direct routing.
+  - Upgraded `#copy-result-link-button` to support `navigator.share` on mobile devices.
+- **Bumped Service Worker Cache to `v7` (`public/service-worker.js`)**:
+  - Evicts stale cached shell assets and forces immediate client browser reload with the new direct routing and share features.
+
+
 ### Full Feature Synchronization: AI Agent Skills, llms.txt & API (/trace)
 
 - **AI Agent Skill Specification Update (`/ai-agent-skill`, `.agents/skills/888desturl-url-trace/SKILL.md`)**:
