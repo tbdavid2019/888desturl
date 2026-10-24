@@ -2,6 +2,17 @@
 
 ## 2026-10-24
 
+### Footer UX Cleanup: Removed Redundant WebMCP Badge & Cleaned Footer Links
+
+- **Eliminated Redundant WebMCP External Badge (`public/index.html`, `public/result.html`)**:
+  - Removed the meaningless and distracting "支援 Chrome WebMCP" badge (`https://developer.chrome.com/docs/ai/webmcp`) from the footer.
+  - Kept the footer concise, balanced, and focused exclusively on essential developer & agent resources: `Created by DAVID888 | AI Agent Skills | llms.txt | API (/trace)`.
+- **Pure JSON Response Preservation for `/trace` (`server.js`)**:
+  - Removed HTML redirect interception on `/trace` so that clicking or requesting `API (/trace)` directly renders the authentic JSON API payload.
+- **Service Worker Cache Upgrade to `v8` (`public/service-worker.js`)**:
+  - Bumped shell cache version to immediately evict cached pages and deliver the clean footer layout across all browsers.
+
+
 ### Direct Routing Deep Links, Real-Time Address Bar Sync & 1-Click Social Sharing
 
 - **Direct Route Deep Linking (`/?url=...`, `public/index.html`, `server.js`)**:

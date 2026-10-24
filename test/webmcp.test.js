@@ -32,18 +32,16 @@ test('homepage implements Chrome WebMCP Imperative API tool registration with te
   assert.match(indexHtml, /technologies:\s*payload\.technologies/);
 });
 
-test('homepage and result page display Chrome WebMCP support badge, llms.txt, and REST API in footer', () => {
+test('homepage and result page display llms.txt, AI Agent Skills, and REST API in footer', () => {
   const indexHtml = readPublicFile('index.html');
   const resultHtml = readPublicFile('result.html');
 
-  assert.match(indexHtml, /支援 Chrome WebMCP/);
+  assert.match(indexHtml, /href="\/ai-agent-skill"/);
   assert.match(indexHtml, /href="\/llms\.txt"/);
   assert.match(indexHtml, /href="\/trace\?url=/);
   assert.match(indexHtml, /id="features-overview"/);
-  assert.match(indexHtml, /https:\/\/developer\.chrome\.com\/docs\/ai\/webmcp/);
 
-  assert.match(resultHtml, /支援 Chrome WebMCP/);
+  assert.match(resultHtml, /href="\/ai-agent-skill"/);
   assert.match(resultHtml, /href="\/llms\.txt"/);
   assert.match(resultHtml, /href="\/trace\?url=/);
-  assert.match(resultHtml, /https:\/\/developer\.chrome\.com\/docs\/ai\/webmcp/);
 });

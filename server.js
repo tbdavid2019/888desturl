@@ -1493,12 +1493,6 @@ async function persistFailure(request, targetUrl, traceContext, classified) {
 async function handleTraceRequest(request, reply) {
   const targetUrl = normalizeUrl(request.query.url);
   const traceContext = normalizeTraceContext(request.query.context);
-  const accept = String(request.headers.accept || '');
-  const wantsHtml = accept.includes('text/html') && !accept.includes('application/json') && !accept.startsWith('*/*');
-
-  if (wantsHtml && targetUrl) {
-    return reply.redirect(`/?url=${encodeURIComponent(targetUrl)}`);
-  }
 
   if (!targetUrl) {
     reply.code(400);
