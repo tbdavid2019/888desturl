@@ -7,6 +7,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="888desturl" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
@@ -14,6 +17,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="/vendor/lucide.min.js"></script>
     <style>
+      html, body {
+        font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+      }
+      .font-mono, pre, code {
+        font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+      }
       .lucide {
         display: inline-block;
         vertical-align: middle;
@@ -23,6 +35,10 @@
       tailwind.config = {
         theme: {
           extend: {
+            fontFamily: {
+              sans: ['"Noto Sans TC"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"PingFang TC"', '"Microsoft JhengHei"', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+            },
             colors: {
               saffron: {
                 DEFAULT: '#ffb010',
@@ -74,7 +90,7 @@
                     Redirect Trace
                   </span>
                 </div>
-                <p data-i18n="heroDescription" class="text-xs text-[#594e36] hidden sm:block mt-0.5 truncate max-w-xl">
+                <p data-i18n="heroDescription" class="mt-1 text-xs sm:text-sm leading-relaxed text-[#594e36] max-w-2xl">
                   使用 Headless Chromium 模擬真實瀏覽器，抓出 HTTP 轉址、meta refresh、JavaScript 導向與 7,600+ Web 技術棧指紋。
                 </p>
                 <div class="mt-2 flex flex-wrap items-center gap-1.5 text-[11px]">
@@ -409,7 +425,7 @@
                     <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#17324d] text-white shadow-xs" aria-hidden="true"><i data-lucide="cpu" class="w-4 h-4"></i></span>
                     <div>
                       <h3 data-i18n="featureTechTitle" class="text-xs font-bold text-[#17324d]">7,600+ Web 技術棧指紋</h3>
-                      <span class="text-[9px] font-semibold text-[#a9471d]">enthec/webappanalyzer</span>
+                      <span class="text-[11px] font-bold text-[#a9471d]">enthec/webappanalyzer</span>
                     </div>
                   </div>
                   <p data-i18n="featureTechDesc" class="mt-1.5 text-[11px] leading-relaxed text-[#594e36]">
@@ -423,7 +439,7 @@
                     <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#17324d] text-white shadow-xs" aria-hidden="true"><i data-lucide="git-fork" class="w-4 h-4"></i></span>
                     <div>
                       <h3 data-i18n="featureTraceTitle" class="text-xs font-bold text-[#17324d]">深度跳轉鏈路還原</h3>
-                      <span class="text-[9px] font-semibold text-[#a9471d]">Headless Chromium</span>
+                      <span class="text-[11px] font-bold text-[#a9471d]">Headless Chromium</span>
                     </div>
                   </div>
                   <p data-i18n="featureTraceDesc" class="mt-1.5 text-[11px] leading-relaxed text-[#594e36]">
@@ -437,7 +453,7 @@
                     <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#17324d] text-white shadow-xs" aria-hidden="true"><i data-lucide="shield-check" class="w-4 h-4"></i></span>
                     <div>
                       <h3 data-i18n="featureSecurityTitle" class="text-xs font-bold text-[#17324d]">Google Web Risk 審核</h3>
-                      <span class="text-[9px] font-semibold text-[#a9471d]">Real-time Threat Check</span>
+                      <span class="text-[11px] font-bold text-[#a9471d]">Real-time Threat Check</span>
                     </div>
                   </div>
                   <p data-i18n="featureSecurityDesc" class="mt-1.5 text-[11px] leading-relaxed text-[#594e36]">
@@ -451,7 +467,7 @@
                     <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#17324d] text-white shadow-xs" aria-hidden="true"><i data-lucide="file-text" class="w-4 h-4"></i></span>
                     <div>
                       <h3 data-i18n="featureMarkdownTitle" class="text-xs font-bold text-[#17324d]">2md 全文 Markdown</h3>
-                      <span class="text-[9px] font-semibold text-[#a9471d]">LLM-ready Content</span>
+                      <span class="text-[11px] font-bold text-[#a9471d]">LLM-ready Content</span>
                     </div>
                   </div>
                   <p data-i18n="featureMarkdownDesc" class="mt-1.5 text-[11px] leading-relaxed text-[#594e36]">
@@ -1216,8 +1232,7 @@
 
         const lines = [
           `### 網站技術棧 (共 ${latestTechnologies.length} 項)`,
-          latestFinalUrl ? `目標網址: ${latestFinalUrl}
-` : ''
+          latestFinalUrl ? ("目標網址: " + latestFinalUrl) : ""
         ];
 
         for (const [catName, items] of Object.entries(groups)) {
@@ -1228,8 +1243,7 @@
           lines.push(`- **[${label}]**: ${itemList}`);
         }
 
-        const markdownText = lines.filter(Boolean).join('
-');
+        const markdownText = lines.filter(Boolean).join(String.fromCharCode(10));
         await navigator.clipboard.writeText(markdownText);
         showCopyToast(t('techCopied') || '已複製技術清單');
 
@@ -1247,8 +1261,7 @@
 
         const lines = [
           `### 跳轉鏈路 (共 ${lastChain.length} 步)`,
-          latestFinalUrl ? `最終網址: ${latestFinalUrl}
-` : ''
+          latestFinalUrl ? ("最終網址: " + latestFinalUrl) : ""
         ];
 
         lastChain.forEach((item) => {
@@ -1258,8 +1271,7 @@
           lines.push(`${item.step}. [${status} ${type}] ${item.url} (${duration})`);
         });
 
-        const markdownText = lines.filter(Boolean).join('
-');
+        const markdownText = lines.filter(Boolean).join(String.fromCharCode(10));
         await navigator.clipboard.writeText(markdownText);
         showCopyToast(t('chainCopied') || '已複製跳轉鏈路');
 

@@ -2,6 +2,21 @@
 
 ## 2026-10-24
 
+### Critical Fix: Restored Trace Functionality, Unified Noto Sans TC Typography & WCAG Standards
+
+- **Resolved Fatal Script Syntax Error (`public/index.html`, `public/result.html`)**:
+  - Fixed a string literal formatting bug in `copyTechStack()` and `copyRedirectChain()` where an unescaped raw newline inside `.join('\n')` caused an uncaught `SyntaxError: Invalid or unexpected token` on script compilation.
+  - This error prevented event listener registration on `#trace-form`, causing form submissions to become unresponsive.
+  - Replaced string joining with `String.fromCharCode(10)`, verified clean Node VM compilation across all `<script>` blocks, and validated live end-to-end tracing with Playwright.
+- **Unified Traditional Chinese Typography with `Noto Sans TC` (`public/index.html`, `public/result.html`)**:
+  - Injected Google Fonts preconnect and loaded `Noto Sans TC` (weights 400, 500, 600, 700, 900) and `JetBrains Mono` (weights 400, 500, 600, 700).
+  - Explicitly configured base `html, body` font family with `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif` fallback.
+  - Configured Tailwind `fontFamily.sans` and `fontFamily.mono`, eliminating font size/style mismatch ("呼大呼小") between English and Chinese characters.
+- **Enhanced WCAG 2.1 Readability Standards**:
+  - Removed `truncate` class from hero description (`#hero-description`), ensuring full explanatory text wraps naturally without truncation ellipses.
+  - Increased microscopic badges from `9px` to accessible `11px` bold text (`#a9471d`).
+  - Streamlined `#history-empty` container padding to maintain clean visual balance.
+
 ### Total Emoji Elimination & Crisp Lucide Icons Integration
 
 - **Zero-Emoji Architecture (`public/index.html`, `public/result.html`)**:
