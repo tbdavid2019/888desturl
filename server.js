@@ -257,31 +257,37 @@ description: Use when you need to trace a URL through HTTP redirects, meta refre
 
 ## Response Shape
 
-- \`final_url\`: string (The destination URL)
-- \`clean_url\`: string (Destination URL stripped of marketing parameters)
-- \`removed_tracking_parameters\`: Array<string>
-- \`redirect_count\`: number
-- \`chain\`: Array of redirect hop objects (step, url, type, status_code, duration_ms)
-- \`technologies\`: Array of detected technology objects:
-  - \`name\`: string (e.g. "WordPress", "Nginx", "React")
-  - \`version\`: string | null (e.g. "6.5.2", "1.24.0")
-  - \`categories\`: Array<{ id: number, name: string }> (e.g. [{"id": 1, "name": "CMS"}])
-  - \`confidence\`: number (0-100)
-  - \`icon\`: string | null
-  - \`website\`: string | null
-  - \`description\`: string | null
-- \`security\`: object
-  - \`status\`: "safe" | "flagged" | "unknown"
-  - \`source\`: "google_webrisk"
-  - \`checked_url\`: string
-  - \`message\`: string
-  - \`threat_types\`: Array<string>
-- \`preview_url\`: string | null (Public preview screenshot URL)
-- \`final_image_url\`: string | null
-- \`markdown_content\`: string | null (Extracted article/page Markdown)
-- \`markdown_url\`: string | null (2md reader URL)
-- \`result_url\`: string | null (Permanent shareable web result URL)
-- \`total_duration_ms\`: number
+- `final_url`: string (The destination URL)
+- `input_url`: string (The initial target URL or domain requested)
+- `clean_url`: string (Destination URL stripped of marketing parameters)
+- `removed_tracking_parameters`: Array<string> (Names of stripped tracking parameters)
+- `redirect_count`: number (Number of redirect steps encountered)
+- `trace_context`: "default" | "line" (Active tracing context emulation)
+- `terminated_reason`: string (e.g. "completed", "timeout", "redirect_loop")
+- `page_title`: string | null (Document title of destination page)
+- `page_excerpt`: string | null (Brief textual excerpt from destination page)
+- `total_duration_ms`: number (Total milliseconds elapsed across entire trace)
+- `chain`: Array of redirect hop objects (step, url, from_url, type, status_code, status_text, duration_ms)
+- `technologies`: Array of detected technology objects:
+  - `name`: string (e.g. "WordPress", "Nginx", "React")
+  - `version`: string | null (e.g. "6.5.2", "1.24.0")
+  - `categories`: Array<{ id: number, name: string }> (e.g. [{"id": 1, "name": "CMS"}])
+  - `confidence`: number (0-100)
+  - `icon`: string | null
+  - `website`: string | null
+  - `description`: string | null
+- `security`: object
+  - `status`: "safe" | "flagged" | "unknown"
+  - `source`: "google_webrisk"
+  - `checked_url`: string
+  - `message`: string
+  - `threat_types`: Array<string>
+- `preview_url`: string | null (Public preview screenshot URL)
+- `final_image_url`: string | null (Alternative preview image URL)
+- `markdown_content`: string | null (Extracted clean article/page Markdown)
+- `markdown_url`: string | null (2md reader URL)
+- `result_id`: string (Unique identifier for the trace result permalink)
+- `result_url`: string | null (Permanent shareable web result URL)
 `;
 }
 

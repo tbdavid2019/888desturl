@@ -2,6 +2,34 @@
 
 ## 2026-10-24
 
+### Full Feature Synchronization: AI Agent Skills, llms.txt & API (/trace)
+
+- **AI Agent Skill Specification Update (`/ai-agent-skill`, `.agents/skills/888desturl-url-trace/SKILL.md`)**:
+  - Fully updated the dynamic `/ai-agent-skill` endpoint and created the local repository agent skill at `.agents/skills/888desturl-url-trace/SKILL.md`.
+  - Documented complete JSON response fields including:
+    - `technologies`: Full array of detected software, version, confidence (0-100), categories, website, icon, and description.
+    - `markdown_content` & `markdown_url`: Readability-filtered Markdown content and direct reader links via 2md (`https://2md.aiurl.tw`).
+    - `security`: Google Web Risk verdict (`safe`, `has_threats`, `unsupported_protocol`, `unconfigured`), threat details, evaluated at timestamp, and checked URL.
+    - `clean_url`: Parameter-sanitized destination URL stripping 20+ tracking parameters (`utm_*`, `fbclid`, `gclid`, Threads `xmt`, etc.).
+    - `total_duration_ms` & hop timing: Granular performance breakdown (`duration_ms` on every hop).
+    - `result_id` & `result_url`: Persistent permalinks (`/result/:id`).
+    - `trace_context`: Detection environment indicator (`line_app` vs `generic_browser`).
+  - Added dedicated 12-step autonomous agent operational workflow and copy-paste bash / python invocation recipes.
+- **LLMs.txt & LLMs-Full.txt Standard Implementation (`/llms.txt`, `/llms-full.txt`, `llms.txt`, `llms-full.txt`, `public/`)**:
+  - Deployed both concise (`/llms.txt`) and comprehensive (`/llms-full.txt`) specifications following the [llmstxt.org](https://llmstxt.org) standard.
+  - Placed static files in root directory (`llms.txt`, `llms-full.txt`) and `public/` directory for offline crawling and GitHub viewing, while maintaining Fastify dynamic route support for dynamic Base URL resolution.
+  - Detailed all 6 primary programmatic interfaces:
+    1. REST API: `GET /trace?url=...` & `POST /api/trace`
+    2. Lightweight Final URL API: `GET /api/final-url?url=...`
+    3. Model Context Protocol (MCP JSON-RPC 2.0): `POST /mcp`
+    4. Client-side Chrome WebMCP: Declarative HTML form tools & Imperative `navigator.modelContextTesting` API
+    5. AI Agent Skill: `GET /ai-agent-skill`
+    6. LLMs Discovery: `GET /llms.txt` and `GET /llms-full.txt`
+- **Core API (`/trace`, `/api/trace`) Feature Parity**:
+  - Validated that all 28 response keys are fully active, tested, and returned across GET `/trace`, POST `/api/trace`, and JSON-RPC `/mcp`.
+  - Verified live production responses on `https://url.david888.com` returning 41+ web technologies, Google Web Risk assessment, and 2md Markdown dual-route reader.
+
+
 ### Major UI/UX Overhaul: CJK Legibility Scale, Mobile-First RWD & Zero-Clipping Tech Inspector
 
 - **Complete Elimination of Sub-12px Typography (`public/index.html`, `public/result.html`)**:

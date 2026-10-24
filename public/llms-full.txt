@@ -1,0 +1,89 @@
+# 888desturl - Full Technical Reference & API Manual
+
+> Complete documentation for 888desturl: URL Redirect Tracer, Google Web Risk Inspector, 7,600+ Web Technology Detector, and 2md Markdown Extractor.
+
+## 1. Overview
+888desturl is an enterprise-grade redirect tracer and web intelligence service. When an agent or user submits a URL or bare domain, 888desturl spins up an isolated Headless Chromium browser context via Playwright, executes the full navigation lifecycle (including HTTP 3xx, HTML meta refresh, JavaScript redirection, and shortlink countdown bypasses), captures a screenshot, runs Google Web Risk validation, fingerprints the destination site's technologies against 7,600+ rules from enthec/webappanalyzer, and converts the destination page HTML to clean Markdown.
+
+## 2. API Endpoints
+
+### 2.1 GET /trace or /api/trace
+Query parameters:
+- `url` (required): Target URL or domain to trace (e.g. `david888.com` or `https://bit.ly/xyz`).
+- `context` (optional): Set to `line` to emulate the LINE mobile in-app browser user agent.
+
+Response Schema (JSON):
+```json
+{
+  "input_url": "https://bit.ly/example",
+  "final_url": "https://example.com/dest",
+  "clean_url": "https://example.com/dest",
+  "removed_tracking_parameters": ["utm_source", "fbclid"],
+  "redirect_count": 2,
+  "trace_context": "default",
+  "terminated_reason": "completed",
+  "page_title": "Example Domain Destination",
+  "page_excerpt": "Welcome to the destination page...",
+  "total_duration_ms": 1280,
+  "security": {
+    "status": "safe",
+    "source": "google_webrisk",
+    "checked_url": "https://example.com/dest",
+    "threat_types": []
+  },
+  "technologies": [
+    {
+      "name": "WordPress",
+      "version": "6.5.2",
+      "confidence": 100,
+      "categories": [{ "id": 1, "name": "CMS" }, { "id": 11, "name": "Blogs" }],
+      "icon": "WordPress.svg",
+      "website": "https://wordpress.org",
+      "description": "WordPress is a free and open-source content management system."
+    },
+    {
+      "name": "Nginx",
+      "version": "1.24.0",
+      "confidence": 100,
+      "categories": [{ "id": 22, "name": "Web servers" }],
+      "website": "https://nginx.org"
+    }
+  ],
+  "chain": [
+    { "step": 1, "url": "https://bit.ly/example", "type": "initial", "status_code": 301, "duration_ms": 120 },
+    { "step": 2, "url": "https://example.com/dest", "type": "http_redirect", "status_code": 200, "duration_ms": 350 }
+  ],
+  "markdown_content": "# Example Destination\n\nWelcome to the destination page...",
+  "markdown_url": "https://2md.aiurl.tw/https://example.com/dest",
+  "preview_url": "/previews/2026/10/24/example.jpg",
+  "result_id": "AbCdEf123456",
+  "result_url": "https://url.david888.com/result/AbCdEf123456"
+}
+```
+
+### 2.2 GET /api/final-url or /api/final
+Query parameters:
+- `url` (required): Target URL.
+- `format` (optional): Set to `json` for structured metadata including `technologies`, or omit for plain text `final_url`.
+
+### 2.3 POST /mcp (Model Context Protocol)
+Standard JSON-RPC 2.0 protocol endpoint. Tools provided:
+1. `trace_url`: Parameters `{ url: string, context?: "default" | "line" }`. Returns full redirect chain, Google Web Risk audit, and web technologies.
+2. `clean_url`: Parameters `{ url: string }`. Pure URL string sanitizer removing tracking parameters without network calls.
+
+### 2.4 GET /ai-agent-skill
+Returns agent skill markdown for LLMs and autonomous coders.
+
+### 2.5 GET /result/:resultId
+HTML result page or permalink inspection.
+
+## 3. Web Technology Detection Engine
+The detection engine is built into `lib/tech-detector.js` and compiled against `enthec/webappanalyzer`:
+- Over 7,647 technology signatures across 109 categories.
+- Extracts signals from HTTP Response Headers, Cookies, Meta tags, Script sources, HTML snippets, DOM selectors, and JS global objects.
+- Supports version extraction and recursive implied technologies (e.g. WordPress implies PHP and MySQL).
+
+## 4. Client-side Chrome WebMCP
+The web frontend (`public/index.html`) implements:
+- Declarative WebMCP annotations on the form (`toolname="trace_url"`).
+- Imperative registration: `navigator.modelContext.registerTool('trace_url')` providing instant in-browser agent tool calling with `technologies`.

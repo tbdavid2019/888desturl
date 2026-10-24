@@ -1,0 +1,27 @@
+# 888desturl - URL Redirect Tracer & Web Technology Intelligence
+
+> High-speed URL redirect tracer, Google Web Risk safety inspector, 7,600+ Web Technology & CMS fingerprint detector, and 2md HTML-to-Markdown extractor. Built with Node.js, Fastify, and Playwright.
+
+## Core Services & Endpoints
+
+- [Web Interface](https://url.david888.com/): Interactive tracer with visual preview, redirect chain logs, web technologies badges, and 2md markdown reader.
+- [Trace API](https://url.david888.com/trace?url=https://example.com): Full JSON trace including redirects, status codes, timing, Google Web Risk, web technologies, and markdown.
+- [Final URL Lookup](https://url.david888.com/api/final-url?url=https://example.com&format=json): Lightweight endpoint returning final destination, clean URL, security status, and technologies.
+- [Model Context Protocol (MCP)](https://url.david888.com/mcp): Standard JSON-RPC 2.0 MCP endpoint supporting `trace_url` and `clean_url`. Compatible with Cursor, Claude Desktop, and Cloudflare WebMCP.
+- [AI Agent Skill](https://url.david888.com/ai-agent-skill): Machine-readable skill specification for autonomous coding agents and LLMs.
+- [Detailed LLMs Documentation](https://url.david888.com/llms-full.txt): Complete technical reference, API schemas, and sample outputs.
+- [2md HTML-to-Markdown Reader](https://2md.aiurl.tw): Direct web reader transforming destination HTML into clean LLM-ready markdown.
+
+## Key Capabilities
+
+1. **Deep Redirect Tracing**: Follows HTTP 3xx, meta refresh, JavaScript location changes, wrapped links (YouTube, Facebook, Google, Line), and intermediate shortlink countdowns.
+2. **Web Technology Fingerprinting**: Powered by the `enthec/webappanalyzer` database with 7,600+ technologies across 109 categories (CMS, Web servers, JavaScript frameworks, CDN, Analytics). Extracts versions and confidence scores.
+3. **Google Web Risk Security Audit**: Real-time evaluation against malware, social engineering/phishing, and unwanted software threats.
+4. **Marketing Tracker Scrubbing**: Automatically removes `utm_*`, `fbclid`, `gclid`, and tracking parameters to produce clean shareable URLs.
+5. **Chrome WebMCP Integration**: Supports client-side browser agent invocation via declarative annotations and `navigator.modelContext` imperative API.
+
+## Project & Maintainer Information
+
+- GitHub Repository: https://github.com/tbdavid2019/888desturl
+- Author & Maintainer: DAVID888 / GLSOFT (https://github.com/tbdavid2019)
+- License: MIT
