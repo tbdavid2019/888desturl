@@ -10,6 +10,7 @@ const { createAdminAuth } = require('./lib/admin-auth');
 const { analyzeUrl, normalizeUrl } = require('./lib/url-cleaner');
 const { extractPageMarkdown } = require('./lib/html-to-md');
 const { createMcpHandler } = require('./lib/mcp');
+const { detectTechnologies, extractPageTechSignals } = require('./lib/tech-detector');
 loadEnvFile(path.join(__dirname, '.env'));
 
 const PORT = Number(process.env.PORT || 3000);
@@ -880,6 +881,7 @@ function enrichResultWithPublicUrls(result, baseUrl) {
     removed_tracking_parameters: urlAnalysis.removed_tracking_parameters,
     markdown_url: result.markdown_url || markdownUrl,
     markdown_content: result.markdown_content || null,
+    technologies: Array.isArray(result.technologies) ? result.technologies : [],
     security_status: result.security_status || security.status,
     security_source: result.security_source || security.source,
     security_message: result.security_message || security.message,
@@ -1041,13 +1043,19 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
     const startedAt = requestStartedAt.get(request) || null;
     const durationMs = startedAt === null ? null : Math.max(0, Date.now() - startedAt);
 
+    let headers = {};
+    try {
+      headers = response.headers();
+    } catch {}
+
     navigationResponses.push({
       url: response.url(),
       status: response.status(),
       statusText: response.statusText(),
       method: request.method(),
       startedAt,
-      durationMs
+      durationMs,
+      headers
     });
   });
 
@@ -1241,6 +1249,8 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
       .catch(() => '');
     const markdownContent = await extractPageMarkdown(page).catch(() => '');
     const markdownUrl = finalUrl ? `https://2md.aiurl.tw/${finalUrl}` : null;
+    const techSignals = await extractPageTechSignals(page, navigationResponses, context).catch(() => null);
+    const technologies = techSignals ? detectTechnologies(techSignals) : [];
     const previewPath = await capturePreview(page, options.previewDir, inputUrl, finalUrl).catch(() => null);
     const totalDurationMs = Math.max(0, Date.now() - traceStartedAt);
 
@@ -1258,6 +1268,7 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
       page_excerpt: pageExcerpt || null,
       markdown_content: markdownContent || null,
       markdown_url: markdownUrl,
+      technologies,
       preview_path: previewPath,
       preview_url: options.toPublicPreviewUrl ? options.toPublicPreviewUrl(previewPath) : null
     });
@@ -1291,6 +1302,7 @@ async function buildTracePayload(request, targetUrl, traceContext) {
     preview_path: traceResult.preview_path,
     total_duration_ms: traceResult.total_duration_ms,
     markdown_content: traceResult.markdown_content,
+    technologies: traceResult.technologies || [],
     security_status: securityCheck.status,
     security_source: securityCheck.source,
     security_message: securityCheck.message,
@@ -1323,6 +1335,7 @@ async function persistFailure(request, targetUrl, traceContext, classified) {
     page_title: null,
     page_excerpt: null,
     preview_path: null,
+    technologies: [],
     security_status: 'unknown',
     security_source: 'google_webrisk',
     security_message: null,
@@ -1334,7 +1347,7 @@ async function persistFailure(request, targetUrl, traceContext, classified) {
   });
 }
 
-app.get('/api/trace', async (request, reply) => {
+async function handleTraceRequest(request, reply) {
   const targetUrl = normalizeUrl(request.query.url);
   const traceContext = normalizeTraceContext(request.query.context);
 
@@ -1376,7 +1389,10 @@ app.get('/api/trace', async (request, reply) => {
       details: error.message
     }, getBaseUrl(request));
   }
-});
+}
+
+app.get('/api/trace', handleTraceRequest);
+app.get('/trace', handleTraceRequest);
 
 async function handleFinalLookup(request, reply) {
   const targetUrl = normalizeUrl(request.query.url);
@@ -1416,7 +1432,8 @@ async function handleFinalLookup(request, reply) {
         loop_detected: result.loop_detected,
         preview_url: result.preview_url,
         final_image_url: result.final_image_url,
-        security: result.security
+        security: result.security,
+        technologies: result.technologies || []
       };
     }
 
@@ -1443,6 +1460,7 @@ async function handleFinalLookup(request, reply) {
         final_url: null,
         preview_url: null,
         result_id: persisted ? persisted.result_id : null,
+        technologies: [],
         security: toPublicSecurity({
           status: 'unknown',
           source: 'google_webrisk',
@@ -1460,6 +1478,7 @@ async function handleFinalLookup(request, reply) {
 }
 
 app.get('/api/final', handleFinalLookup);
+app.get('/api/final-url', handleFinalLookup);
 app.get('/api/f', handleFinalLookup);
 
 app.get('/api/results/:resultId', async (request, reply) => {

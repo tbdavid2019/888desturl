@@ -166,6 +166,28 @@ __OG_IMAGE_META__
           </div>
         </section>
 
+        <!-- Web Technologies (網站技術棧) Section -->
+        <section id="tech-section" class="mt-8 rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/60">
+          <div class="flex flex-col gap-2 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <h2 class="text-xl font-bold tracking-tight text-slate-900">網站技術棧</h2>
+                <span id="tech-count-badge" class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-bold text-indigo-700 border border-indigo-200">
+                  <span class="h-1.5 w-1.5 rounded-full bg-indigo-500"></span>
+                  <span id="tech-count-text">Web Technologies</span>
+                </span>
+              </div>
+              <p class="mt-1 text-sm text-slate-500">分析最終目標網頁所使用的伺服器、CMS、框架、函式庫與分析工具等技術指紋。</p>
+            </div>
+          </div>
+          <div class="p-5">
+            <div id="tech-empty" class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
+              未在此網頁偵測到已知的 Web 技術指紋。
+            </div>
+            <div id="tech-list" class="hidden grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
+          </div>
+        </section>
+
         <section class="mt-8 rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/60">
           <div class="border-b border-slate-100 pb-4">
             <h2 class="text-xl font-bold tracking-tight">Redirect Chain</h2>
@@ -237,6 +259,9 @@ __OG_IMAGE_META__
       const copyMarkdownButton = document.getElementById('copy-markdown-button');
       const open2mdLink = document.getElementById('open-2md-link');
       const chainList = document.getElementById('chain-list');
+      const techList = document.getElementById('tech-list');
+      const techEmpty = document.getElementById('tech-empty');
+      const techCountText = document.getElementById('tech-count-text');
       let activeResultUrl = '';
       let activeCleanUrl = '';
       let activeMarkdownContent = '';
@@ -358,6 +383,72 @@ __OG_IMAGE_META__
         markdownSection.classList.remove('hidden');
       }
 
+      function renderTechnologies(technologies) {
+        if (!Array.isArray(technologies) || technologies.length === 0) {
+          techEmpty.classList.remove('hidden');
+          techList.classList.add('hidden');
+          techList.innerHTML = '';
+          techCountText.textContent = '0 detected';
+          return;
+        }
+
+        techEmpty.classList.add('hidden');
+        techList.classList.remove('hidden');
+        techCountText.textContent = `${technologies.length} detected`;
+
+        techList.innerHTML = technologies
+          .map((tech) => {
+            const categories = Array.isArray(tech.categories) ? tech.categories : [];
+            const categoryBadges = categories
+              .map(
+                (cat) =>
+                  `<span class="inline-flex rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-slate-600 border border-slate-200/80">${escapeHtml(
+                    cat.name || cat
+                  )}</span>`
+              )
+              .join('');
+
+            const versionBadge = tech.version
+              ? `<span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-mono font-semibold text-emerald-700 border border-emerald-200">v${escapeHtml(
+                  tech.version
+                )}</span>`
+              : '';
+
+            const websiteLink = tech.website
+              ? `<a href="${sanitizeHref(tech.website)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold text-accent hover:underline decoration-accent/40">官方網站 ↗</a>`
+              : '<span class="text-slate-400">無官方連結</span>';
+
+            const description = tech.description
+              ? `<p class="mt-1.5 text-xs text-slate-500 line-clamp-2">${escapeHtml(tech.description)}</p>`
+              : '';
+
+            const confidence =
+              typeof tech.confidence === 'number'
+                ? `<span class="text-slate-400 font-mono text-[11px]">${escapeHtml(tech.confidence)}% 信心度</span>`
+                : '';
+
+            return `
+              <div class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50/70 p-4 transition hover:bg-slate-50 hover:border-slate-300">
+                <div>
+                  <div class="flex flex-wrap items-center gap-1.5 mb-2">
+                    ${categoryBadges}
+                  </div>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-base font-bold text-slate-900">${escapeHtml(tech.name)}</span>
+                    ${versionBadge}
+                  </div>
+                  ${description}
+                </div>
+                <div class="mt-3 flex items-center justify-between pt-2 border-t border-slate-200/60 text-xs">
+                  ${websiteLink}
+                  ${confidence}
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+      }
+
       async function fetchResultById(resultId) {
         if (
           window.__RESULT_DATA__ &&
@@ -405,6 +496,7 @@ __OG_IMAGE_META__
         renderPreview(payload.preview_url);
         renderSecurity(payload);
         renderMarkdown(payload);
+        renderTechnologies(payload.technologies);
         renderChain(payload.chain);
       }
 

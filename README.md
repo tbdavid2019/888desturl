@@ -10,6 +10,11 @@
 - 每次 trace 的獨立結果頁
 - 可分享的結果頁 metadata 與結果頁連結複製
 - 追蹤參數分析與可分享的乾淨網址（保留原始最終網址）
+- **Web 技術棧指紋偵測 (Web Technology Detection)**：
+  - 基於 `enthec/webappanalyzer` 指紋庫（7,600+ 技術與 100+ 分類）。
+  - 在 Playwright trace 流程中直接擷取 final 頁面與跳轉過程的 HTTP Headers、Cookies、Meta 標籤、Script URLs、DOM 選擇器及 JS 全域變數。
+  - 支援版本萃取（如 `v6.5.2`）、條件式版本判斷、信心度計算與遞迴技術繼承（`implies`，如 WordPress 帶入 PHP 與 MySQL）。
+  - 在結果頁以徽章卡片展示技術分類、名稱、版本與官方網站連結。
 - **雙路線偵測 (Dual-Route Detection)**：
   - **路線 A**：Redirect Chain 追蹤、去追蹤參數（Clean URL）、安全檢查與即時截圖預覽。
   - **路線 B**：HTML to Markdown 頁面內容解析，直接提取最終頁面的純淨 Markdown 內文，支援一鍵複製與 [`2md.aiurl.tw`](https://2md.aiurl.tw) 深度閱讀。
@@ -208,12 +213,17 @@ Query:
 - `preview_url`
 - `final_image_url`
 - `security`
+- `technologies`
 
 The default `text` response remains the literal `final_url` for CLI compatibility.
 
-### `GET /api/f`
+### `GET /api/final-url` and `GET /api/f`
 
-Short CLI alias for `/api/final`.
+Aliases for `/api/final`.
+
+### `GET /trace`
+
+Alias for `/api/trace`.
 
 ### `GET /ai-agent-skill`
 

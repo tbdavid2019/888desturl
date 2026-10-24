@@ -1,5 +1,35 @@
 # Changelog
 
+## 2026-10-24
+
+### Web Technology Detection (WebAppAnalyzer Integration)
+
+- **Fingerprints Database Compilation & Refresh (`data/technologies.json` & `scripts/update-technologies.js`)**:
+  - Compiled 7,647 technology fingerprint definitions across 109 categories based on `enthec/webappanalyzer`.
+  - Added `scripts/update-technologies.js` supporting both local compilation from `/tmp/webappanalyzer` and remote fetching from GitHub `enthec/webappanalyzer` raw sources.
+  - Adjusted `.gitignore` to allow tracking `data/technologies.json` while keeping runtime SQLite and preview files ignored.
+- **Technology Detector Engine (`lib/tech-detector.js`)**:
+  - Created high-performance CommonJS detection engine with pre-indexed inverted lookups for headers, cookies, meta tags, and JS globals.
+  - Supported advanced Wappalyzer syntax: version extraction (`\;version:\1`), conditional versions (`\;version:\1?trueVal:falseVal`), and custom confidence scores (`\;confidence:50`).
+  - Added multi-signal matching across HTTP response headers, cookies, meta tags, script source URLs, JS global objects/properties, HTML snippets, and DOM selectors.
+  - Implemented recursive `implies` resolution (e.g., WordPress implies PHP and MySQL) with circular dependency protection.
+  - Added `extractPageTechSignals(page, navigationResponses, context)` helper to capture signals from the final Playwright destination page and redirect responses without launching extra browser processes.
+- **Server & API Integration (`server.js`)**:
+  - Integrated tech detection into `traceUrl()` after the destination page settles.
+  - Included `technologies` in `buildTracePayload()` and `enrichResultWithPublicUrls()`.
+  - Exposed `technologies` array across public endpoints: `/api/trace`, `/trace`, `/api/final`, `/api/final-url`, and `/api/results/:resultId`.
+- **Database Storage Migration (`lib/storage.js`)**:
+  - Added `technologies_json TEXT` column to SQLite `history` table with automatic PRAGMA migration for existing deployments.
+  - Updated `recordTrace()` and `mapHistoryRow()` to persist and deserialize detected technologies as JSON.
+- **MCP Server Enhancement (`lib/mcp.js`)**:
+  - Updated `trace_url` tool output and description to include detected web technologies and server frameworks.
+- **Frontend Web UI (`public/result.html` & `public/index.html`)**:
+  - Added dedicated "Web Technologies" (網站技術棧) badge panel displaying detected technology items with category badges, version numbers, official website links, and confidence ratings.
+  - Implemented empty state handling when no technologies are detected.
+  - Strictly enforced `escapeHtml()` and `sanitizeHref()` defenses against DOM XSS on all rendered technology metadata.
+- **Automated Tests (`test/tech-detector.test.js`)**:
+  - Added comprehensive test suite verifying version extraction, conditional ternary logic, confidence scoring, multi-signal matching, recursive implies resolution, circular implies safety, graceful fallbacks on malformed input, storage serialization, and frontend DOM XSS sanitization.
+
 ## 2026-09-02
 
 ### Security & Hardening (7-Layer Security Audit)

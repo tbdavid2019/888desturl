@@ -46,7 +46,8 @@ Thumbs.db
 dist/
 build/
 out/
-data/
+data/*
+!data/technologies.json
 url.*.conf
 
 # Local-only notes

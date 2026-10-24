@@ -104,7 +104,15 @@ test('MCP handler tools/call trace_url invokes onTrace and returns structured to
         final_url: 'https://final-destination.com',
         clean_url: 'https://final-destination.com',
         redirect_count: 2,
-        security: { status: 'safe', threat_types: [] }
+        security: { status: 'safe', threat_types: [] },
+        technologies: [
+          {
+            name: 'Nginx',
+            version: '1.24.0',
+            confidence: 100,
+            categories: [{ id: 22, name: 'Web servers' }]
+          }
+        ]
       };
     }
   });
@@ -128,6 +136,9 @@ test('MCP handler tools/call trace_url invokes onTrace and returns structured to
   const parsed = JSON.parse(response.result.content[0].text);
   assert.equal(parsed.final_url, 'https://final-destination.com');
   assert.equal(parsed.redirect_count, 2);
+  assert.equal(parsed.technologies.length, 1);
+  assert.equal(parsed.technologies[0].name, 'Nginx');
+  assert.equal(parsed.technologies[0].version, '1.24.0');
 });
 
 test('MCP handler returns error for unknown tool and unknown method', async () => {
