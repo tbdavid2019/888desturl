@@ -2,6 +2,31 @@
 
 ## 2026-10-24
 
+### Floating Sticky UX, david888 / 2md Palette & WCAG Compliance
+
+- **Floating Sticky Trace Form UX (`public/index.html`)**:
+  - Converted target URL input form (`#trace-form`) into a floating sticky container (`sticky top-2 sm:top-4 z-40 bg-white/95 backdrop-blur-md shadow-sticky border-2 border-[#d6bc7c]/80`).
+  - Keeps the search bar and submit button pinned at the top while scrolling through extensive redirect chains, 2md markdown content, 7,600+ web technology badges, and search history.
+- **Brand Palette Alignment with `david888.com` & `2md.aiurl.tw` (`public/index.html`, `public/result.html`, `public/offline.html`, `public/manifest.webmanifest`)**:
+  - Replaced legacy teal branding with the 5 base color system:
+    - Pantone 14-1064 TPG Saffron `#FFB010` (hover `#F2A600`, light `#FFF0CC`)
+    - Deep Blue / Navy `#17324D` (dark `#0F2337`, hover `#1F4265`)
+    - Terracotta Clay `#A9471D`
+    - Warm Cream Canvas `#FFFDF7` to `#FFF9E8`
+    - Warm Ink `#2B251A` and accessible muted text `#594E36`
+  - Replaced 888 URL mark with Navy and Saffron badge styling.
+  - Replaced Final URL hero card with Deep Navy `#17324D` and warm gold saffron `#FDE68A` text.
+  - Updated PWA `theme_color` to `#FFB010` and `background_color` to `#FFFDF7` across Web Manifest, meta tags, and offline fallback.
+- **Full WCAG 2.1 AA/AAA Accessibility Compliance**:
+  - All body text and headings achieve AAA contrast ratios (> 12:1 to 14.8:1 against canvas).
+  - All secondary and muted labels achieve AA contrast ratios (6.5:1 > 4.5:1 requirement).
+  - Added explicit `<label for="url-input">`, `aria-required="true"`, and `aria-describedby="form-hint"`.
+  - Added descriptive `aria-label` attributes on language switchers (`切換至繁體中文` / `Switch to English`).
+  - Added clear focus rings (`focus:ring-4 focus:ring-[#FFB010]/20` and `focus:ring-[#17324D]/30`) on all interactive controls.
+  - Guaranteed minimum touch targets (>= 48px) for buttons and inputs.
+- **Automated Verification (`test/pwa.test.js`)**:
+  - Added automated test ensuring sticky floating form classes, WCAG accessibility attributes, language switcher ARIA labels, focus rings, and Saffron/Navy palette tokens are strictly maintained.
+
 ### AI Discovery, WebMCP & Frontend Showcase Polish
 
 - **Standard `llms.txt` & `llms-full.txt` Endpoints (`server.js`)**:

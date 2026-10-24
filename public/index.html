@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0f766e" />
+    <meta name="theme-color" content="#ffb010" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="888desturl" />
@@ -17,56 +17,74 @@
         theme: {
           extend: {
             colors: {
-              ink: '#101828',
-              accent: '#0f766e',
-              accentSoft: '#ccfbf1'
+              saffron: {
+                DEFAULT: '#ffb010',
+                hover: '#f2a600',
+                light: '#fff0cc',
+              },
+              navy: {
+                DEFAULT: '#17324d',
+                dark: '#0f2337',
+                hover: '#1f4265',
+              },
+              clay: '#a9471d',
+              ink: '#2b251a',
+              warmCream: '#fff9e8',
+              canvas: '#fffdf7',
+              borderMuted: '#d6bc7c',
+              textMuted: '#594e36',
+              accent: '#17324d',
+              accentSaffron: '#ffb010',
+              accentSoft: '#fff0cc'
             },
             boxShadow: {
-              panel: '0 24px 80px rgba(15, 23, 42, 0.14)'
+              panel: '0 24px 80px rgba(43, 37, 26, 0.08)',
+              card: '0 8px 30px rgba(23, 50, 77, 0.06)',
+              sticky: '0 12px 32px -4px rgba(23, 50, 77, 0.14), 0 4px 12px -2px rgba(23, 50, 77, 0.08)'
             }
           }
         }
       };
     </script>
   </head>
-  <body class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(20,184,166,0.18),_transparent_30%),linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] text-ink">
+  <body class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(255,176,16,0.18),_transparent_36%),linear-gradient(180deg,_#fffdf7_0%,_#fff9e8_45%,_#fff3d6_100%)] text-[#2b251a] antialiased">
     <main class="mx-auto min-h-screen w-full max-w-5xl px-3 py-4 sm:px-6 sm:py-8">
       <div class="w-full">
-        <section class="mx-auto w-full rounded-[2rem] border border-white/70 bg-white/85 p-5 shadow-panel backdrop-blur md:p-8">
+        <section class="mx-auto w-full rounded-[2rem] border border-[#d6bc7c]/60 bg-white/95 p-4 sm:p-6 md:p-8 shadow-panel backdrop-blur">
           <!-- Compact Modern Navbar / Brand Header -->
-          <header class="relative mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100/80 pb-5">
+          <header class="relative mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-[#d6bc7c]/30 pb-5">
             <div class="flex items-center gap-3.5">
-              <div class="flex items-center gap-1.5 rounded-2xl bg-gradient-to-br from-slate-900 via-teal-950 to-emerald-950 px-3.5 py-2 text-white shadow-md shadow-teal-950/20 shrink-0" aria-label="888 URL">
-                <span class="text-xl font-black tracking-tight leading-none">888</span>
-                <span class="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[11px] font-black tracking-widest text-emerald-300 uppercase leading-none">URL</span>
+              <div class="flex items-center gap-1.5 rounded-2xl bg-gradient-to-br from-[#17324d] via-[#0f2337] to-[#17324d] px-3.5 py-2 text-white shadow-md shadow-[#17324d]/25 shrink-0 border border-[#d6bc7c]/40" aria-label="888 URL">
+                <span class="text-xl font-black tracking-tight leading-none text-white">888</span>
+                <span class="rounded bg-[#ffb010] px-1.5 py-0.5 text-[11px] font-black tracking-widest text-[#17324d] uppercase leading-none">URL</span>
               </div>
               <div class="min-w-0">
                 <div class="flex flex-wrap items-center gap-2">
-                  <h1 data-i18n="heroTitle" class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900">
+                  <h1 data-i18n="heroTitle" class="text-lg sm:text-xl font-extrabold tracking-tight text-[#17324d]">
                     追蹤網址真正的最終目的地
                   </h1>
-                  <span data-i18n="eyebrow" class="hidden md:inline-flex rounded-full bg-accentSoft px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
+                  <span data-i18n="eyebrow" class="hidden md:inline-flex rounded-full bg-[#fff0cc] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#a9471d] border border-[#d6bc7c]/60">
                     Redirect Trace
                   </span>
                 </div>
-                <p data-i18n="heroDescription" class="text-xs text-slate-500 hidden sm:block mt-0.5 truncate max-w-xl">
+                <p data-i18n="heroDescription" class="text-xs text-[#594e36] hidden sm:block mt-0.5 truncate max-w-xl">
                   使用 Headless Chromium 模擬真實瀏覽器，抓出 HTTP 轉址、meta refresh、JavaScript 導向與 7,600+ Web 技術棧指紋。
                 </p>
                 <div class="mt-2 flex flex-wrap items-center gap-1.5 text-[11px]">
-                  <span class="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-800 border border-emerald-200/70">
-                    <span>🔍</span> 網址跳轉追蹤
+                  <span class="inline-flex items-center gap-1 rounded-md bg-[#fff9e8] px-2 py-0.5 font-semibold text-[#2b251a] border border-[#d6bc7c]/60">
+                    <span aria-hidden="true">🔍</span> 網址跳轉追蹤
                   </span>
-                  <span class="inline-flex items-center gap-1 rounded-md bg-indigo-50 px-2 py-0.5 font-semibold text-indigo-800 border border-indigo-200/70">
-                    <span>🛠️</span> 7,600+ Web 技術棧指紋
+                  <span class="inline-flex items-center gap-1 rounded-md bg-[#fff9e8] px-2 py-0.5 font-semibold text-[#2b251a] border border-[#d6bc7c]/60">
+                    <span aria-hidden="true">🛠️</span> 7,600+ Web 技術棧指紋
                   </span>
-                  <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 font-semibold text-blue-800 border border-blue-200/70">
-                    <span>🛡️</span> Google Web Risk
+                  <span class="inline-flex items-center gap-1 rounded-md bg-[#fff9e8] px-2 py-0.5 font-semibold text-[#2b251a] border border-[#d6bc7c]/60">
+                    <span aria-hidden="true">🛡️</span> Google Web Risk
                   </span>
-                  <span class="inline-flex items-center gap-1 rounded-md bg-purple-50 px-2 py-0.5 font-semibold text-purple-800 border border-purple-200/70">
-                    <span>📝</span> 2md 全文 Markdown
+                  <span class="inline-flex items-center gap-1 rounded-md bg-[#fff9e8] px-2 py-0.5 font-semibold text-[#2b251a] border border-[#d6bc7c]/60">
+                    <span aria-hidden="true">📝</span> 2md 全文 Markdown
                   </span>
-                  <span class="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 font-semibold text-amber-800 border border-amber-200/70">
-                    <span>🧹</span> 去除行銷參數
+                  <span class="inline-flex items-center gap-1 rounded-md bg-[#fff9e8] px-2 py-0.5 font-semibold text-[#2b251a] border border-[#d6bc7c]/60">
+                    <span aria-hidden="true">🧹</span> 去除行銷參數
                   </span>
                 </div>
               </div>
@@ -76,16 +94,17 @@
                 id="install-button"
                 type="button"
                 data-i18n="installApp"
-                class="hidden rounded-xl bg-accent px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-teal-800 shadow-sm"
+                class="hidden rounded-xl bg-[#17324d] px-3.5 py-1.5 text-xs font-bold text-white transition hover:bg-[#1f4265] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#17324d]/40"
               >
                 安裝 App
               </button>
-              <div class="flex gap-1 rounded-xl border border-slate-200 bg-white/90 p-1 shadow-sm text-xs">
+              <div class="flex gap-1 rounded-xl border border-[#d6bc7c]/60 bg-white/90 p-1 shadow-sm text-xs">
                 <button
                   id="lang-zh"
                   type="button"
                   data-lang="zh-TW"
-                  class="rounded-lg px-2.5 py-1 font-semibold text-slate-600 transition"
+                  aria-label="切換至繁體中文"
+                  class="rounded-lg px-2.5 py-1 font-semibold text-[#594e36] transition"
                 >
                   繁中
                 </button>
@@ -93,7 +112,8 @@
                   id="lang-en"
                   type="button"
                   data-lang="en"
-                  class="rounded-lg px-2.5 py-1 font-semibold text-slate-600 transition"
+                  aria-label="Switch to English"
+                  class="rounded-lg px-2.5 py-1 font-semibold text-[#594e36] transition"
                 >
                   EN
                 </button>
@@ -103,36 +123,46 @@
 
           <form
             id="trace-form"
-            class="space-y-4"
+            class="sticky top-2 sm:top-4 z-40 my-6 rounded-2xl border-2 border-[#d6bc7c]/80 bg-[#fffdf8]/95 p-3.5 sm:p-5 shadow-sticky backdrop-blur-md transition-all duration-200"
             novalidate
             toolname="trace_url"
             tooldescription="Trace the real final destination of any redirecting URL or bare domain through HTTP redirects, HTML meta refresh, and JavaScript navigation. Automatically detects 7,600+ web technologies & server frameworks, strips marketing tracking parameters, and checks Google Web Risk safety."
           >
-            <label
-              for="url-input"
-              data-i18n="urlLabel"
-              class="block text-sm font-semibold text-slate-700"
-            >
-              目標網址
-            </label>
-            <div class="flex flex-col gap-3 sm:flex-row">
-              <input
-                id="url-input"
-                name="url"
-                type="text"
-                inputmode="url"
-                autocorrect="off"
-                autocapitalize="none"
-                spellcheck="false"
-                required
-                toolparamdescription="Target URL or bare domain to trace (e.g. david888.com or https://example.com)"
-                placeholder="https://example.com 或 example.com"
-                class="min-h-14 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-base outline-none transition focus:border-accent focus:ring-4 focus:ring-accent/10"
-              />
+            <div class="flex items-center justify-between mb-2">
+              <label
+                for="url-input"
+                data-i18n="urlLabel"
+                class="block text-xs sm:text-sm font-bold text-[#2b251a]"
+              >
+                目標網址
+              </label>
+              <span class="text-[11px] font-semibold text-[#594e36] hidden sm:inline-flex items-center gap-1.5">
+                <span class="h-2 w-2 rounded-full bg-[#ffb010]"></span>
+                <span>自動偵測技術棧 & 深度鏈路</span>
+              </span>
+            </div>
+            <div class="flex flex-col gap-2.5 sm:flex-row">
+              <div class="relative flex-1">
+                <input
+                  id="url-input"
+                  name="url"
+                  type="text"
+                  inputmode="url"
+                  autocorrect="off"
+                  autocapitalize="none"
+                  spellcheck="false"
+                  required
+                  aria-required="true"
+                  aria-describedby="form-hint"
+                  toolparamdescription="Target URL or bare domain to trace (e.g. david888.com or https://example.com)"
+                  placeholder="https://example.com 或 example.com"
+                  class="min-h-13 w-full rounded-xl sm:rounded-2xl border-2 border-[#d6bc7c]/70 bg-white px-4 text-base text-[#2b251a] placeholder-[#594e36]/60 outline-none transition focus:border-[#ffb010] focus:ring-4 focus:ring-[#ffb010]/20"
+                />
+              </div>
               <button
                 id="submit-button"
                 type="submit"
-                class="inline-flex min-h-14 items-center justify-center rounded-2xl bg-ink px-6 font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-300 disabled:cursor-not-allowed disabled:bg-slate-400"
+                class="inline-flex min-h-13 items-center justify-center rounded-xl sm:rounded-2xl bg-[#17324d] px-6 font-bold text-white transition hover:bg-[#1f4265] focus:outline-none focus:ring-4 focus:ring-[#17324d]/30 disabled:cursor-not-allowed disabled:bg-[#594e36]/40 shadow-sm cursor-pointer"
               >
                 <span id="submit-text">開始追蹤</span>
               </button>
@@ -140,75 +170,75 @@
             <p
               id="form-hint"
               data-i18n="formHint"
-              class="text-sm text-slate-500"
+              class="mt-2 text-xs text-[#594e36]"
             >
               輸入完整的 `http://` 或 `https://` 網址。
             </p>
           </form>
 
           <!-- Core Capabilities Highlights (核心功能特色) -->
-          <section id="features-overview" class="mt-8 border-t border-slate-100 pt-6">
+          <section id="features-overview" class="mt-8 border-t border-[#d6bc7c]/30 pt-6">
             <div class="mb-4 flex items-center justify-between">
-              <h2 data-i18n="featuresTitle" class="text-sm font-bold uppercase tracking-wider text-slate-500">
+              <h2 data-i18n="featuresTitle" class="text-sm font-bold uppercase tracking-wider text-[#594e36]">
                 核心功能與分析維度
               </h2>
-              <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">
+              <span class="rounded-full bg-[#fff0cc] px-2.5 py-0.5 text-[11px] font-bold text-[#17324d] border border-[#d6bc7c]/60">
                 5-in-1 URL Intelligence
               </span>
             </div>
             <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
               <!-- Feature 1: Web Technologies -->
-              <div class="rounded-2xl border border-indigo-100 bg-indigo-50/40 p-4 transition hover:bg-indigo-50/70 hover:border-indigo-200">
+              <div class="rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/60 p-4 transition hover:bg-[#fff9e8] hover:border-[#d6bc7c]">
                 <div class="flex items-center gap-2">
-                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600 text-white text-sm shadow-sm">🛠️</span>
+                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#17324d] text-white text-sm shadow-sm" aria-hidden="true">🛠️</span>
                   <div>
-                    <h3 data-i18n="featureTechTitle" class="text-sm font-bold text-slate-900">7,600+ Web 技術棧指紋</h3>
-                    <span class="text-[10px] font-semibold text-indigo-700">enthec/webappanalyzer</span>
+                    <h3 data-i18n="featureTechTitle" class="text-sm font-bold text-[#17324d]">7,600+ Web 技術棧指紋</h3>
+                    <span class="text-[10px] font-semibold text-[#a9471d]">enthec/webappanalyzer</span>
                   </div>
                 </div>
-                <p data-i18n="featureTechDesc" class="mt-2 text-xs leading-relaxed text-slate-600">
+                <p data-i18n="featureTechDesc" class="mt-2 text-xs leading-relaxed text-[#594e36]">
                   即時探測 CMS (WordPress, Shopify)、伺服器 (Nginx, Cloudflare)、前端框架 (React, Vue) 與套件版本。
                 </p>
               </div>
 
               <!-- Feature 2: Deep Redirect Trace -->
-              <div class="rounded-2xl border border-emerald-100 bg-emerald-50/40 p-4 transition hover:bg-emerald-50/70 hover:border-emerald-200">
+              <div class="rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/60 p-4 transition hover:bg-[#fff9e8] hover:border-[#d6bc7c]">
                 <div class="flex items-center gap-2">
-                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-600 text-white text-sm shadow-sm">🔍</span>
+                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#17324d] text-white text-sm shadow-sm" aria-hidden="true">🔍</span>
                   <div>
-                    <h3 data-i18n="featureTraceTitle" class="text-sm font-bold text-slate-900">深度跳轉鏈路還原</h3>
-                    <span class="text-[10px] font-semibold text-emerald-700">Headless Chromium</span>
+                    <h3 data-i18n="featureTraceTitle" class="text-sm font-bold text-[#17324d]">深度跳轉鏈路還原</h3>
+                    <span class="text-[10px] font-semibold text-[#a9471d]">Headless Chromium</span>
                   </div>
                 </div>
-                <p data-i18n="featureTraceDesc" class="mt-2 text-xs leading-relaxed text-slate-600">
+                <p data-i18n="featureTraceDesc" class="mt-2 text-xs leading-relaxed text-[#594e36]">
                   精確追蹤 HTTP 3xx、Meta Refresh、JS 導向與倒數時短網址，還原完整真實鏈路。
                 </p>
               </div>
 
               <!-- Feature 3: Google Web Risk -->
-              <div class="rounded-2xl border border-blue-100 bg-blue-50/40 p-4 transition hover:bg-blue-50/70 hover:border-blue-200">
+              <div class="rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/60 p-4 transition hover:bg-[#fff9e8] hover:border-[#d6bc7c]">
                 <div class="flex items-center gap-2">
-                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-white text-sm shadow-sm">🛡️</span>
+                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#17324d] text-white text-sm shadow-sm" aria-hidden="true">🛡️</span>
                   <div>
-                    <h3 data-i18n="featureSecurityTitle" class="text-sm font-bold text-slate-900">Google Web Risk 審核</h3>
-                    <span class="text-[10px] font-semibold text-blue-700">Real-time Threat Check</span>
+                    <h3 data-i18n="featureSecurityTitle" class="text-sm font-bold text-[#17324d]">Google Web Risk 審核</h3>
+                    <span class="text-[10px] font-semibold text-[#a9471d]">Real-time Threat Check</span>
                   </div>
                 </div>
-                <p data-i18n="featureSecurityDesc" class="mt-2 text-xs leading-relaxed text-slate-600">
+                <p data-i18n="featureSecurityDesc" class="mt-2 text-xs leading-relaxed text-[#594e36]">
                   即時比對安全威脅資料庫，檢驗目標網址是否涉及網路釣魚、惡意軟體或已知資安風險。
                 </p>
               </div>
 
               <!-- Feature 4: 2md Full Markdown -->
-              <div class="rounded-2xl border border-purple-100 bg-purple-50/40 p-4 transition hover:bg-purple-50/70 hover:border-purple-200">
+              <div class="rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/60 p-4 transition hover:bg-[#fff9e8] hover:border-[#d6bc7c]">
                 <div class="flex items-center gap-2">
-                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-600 text-white text-sm shadow-sm">📝</span>
+                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#17324d] text-white text-sm shadow-sm" aria-hidden="true">📝</span>
                   <div>
-                    <h3 data-i18n="featureMarkdownTitle" class="text-sm font-bold text-slate-900">2md 全文 Markdown</h3>
-                    <span class="text-[10px] font-semibold text-purple-700">LLM-ready Content</span>
+                    <h3 data-i18n="featureMarkdownTitle" class="text-sm font-bold text-[#17324d]">2md 全文 Markdown</h3>
+                    <span class="text-[10px] font-semibold text-[#a9471d]">LLM-ready Content</span>
                   </div>
                 </div>
-                <p data-i18n="featureMarkdownDesc" class="mt-2 text-xs leading-relaxed text-slate-600">
+                <p data-i18n="featureMarkdownDesc" class="mt-2 text-xs leading-relaxed text-[#594e36]">
                   雙路線解析網頁內文，去除廣告雜訊，提取純淨 Markdown 內文供 AI Agent 閱讀。
                 </p>
               </div>
@@ -218,19 +248,19 @@
           <section id="feedback" class="mt-6 hidden rounded-2xl border px-4 py-3 text-sm"></section>
 
           <section id="results" class="mt-8 hidden space-y-6">
-            <article class="overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 p-[1px] shadow-panel">
-              <div class="rounded-[1.7rem] bg-slate-950/95 p-6 text-white md:p-7">
+            <article class="overflow-hidden rounded-[1.75rem] bg-[#17324d] border-2 border-[#ffb010]/60 p-1 shadow-panel">
+              <div class="rounded-[1.6rem] bg-[#17324d] p-6 text-white md:p-7">
                 <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div class="min-w-0">
                     <p
                       data-i18n="finalUrlEyebrow"
-                      class="text-xs font-bold uppercase tracking-[0.28em] text-emerald-200"
+                      class="text-xs font-bold uppercase tracking-[0.28em] text-[#fde68a]"
                     >
                       Final URL
                     </p>
                     <h2
                       data-i18n="finalUrlTitle"
-                      class="mt-2 text-2xl font-black tracking-tight md:text-3xl"
+                      class="mt-2 text-2xl font-black tracking-tight text-white md:text-3xl"
                     >
                       最終目的地網址
                     </h2>
@@ -239,14 +269,14 @@
                       href="#"
                       target="_blank"
                       rel="noreferrer"
-                      class="mt-4 block break-all text-base font-medium text-cyan-200 underline decoration-cyan-400/60 underline-offset-4 hover:text-white"
+                      class="mt-4 block break-all text-base font-medium text-[#fde68a] underline decoration-[#fde68a]/60 underline-offset-4 hover:text-white"
                     ></a>
                   </div>
                   <button
                     id="copy-button"
                     type="button"
                     data-i18n="copyButton"
-                    class="inline-flex shrink-0 items-center justify-center rounded-2xl bg-white/12 px-4 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/20"
+                    class="inline-flex shrink-0 items-center justify-center rounded-2xl bg-[#ffb010] px-5 py-3 text-sm font-bold text-[#17324d] transition hover:bg-[#f2a600] focus:outline-none focus:ring-4 focus:ring-[#ffb010]/40 shadow-sm"
                   >
                     複製網址
                   </button>
@@ -258,7 +288,7 @@
                     target="_blank"
                     rel="noreferrer"
                     data-i18n="resultPageButton"
-                    class="hidden inline-flex items-center justify-center rounded-2xl bg-white/12 px-4 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/20"
+                    class="hidden inline-flex items-center justify-center rounded-2xl bg-white/15 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/25 focus:outline-none focus:ring-4 focus:ring-white/20"
                   >
                     查看結果頁
                   </a>
@@ -266,7 +296,7 @@
                 <div id="clean-url-section" class="mt-5 hidden border-t border-white/15 pt-5">
                   <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div class="min-w-0">
-                      <p data-i18n="cleanUrlEyebrow" class="text-xs font-bold uppercase tracking-[0.2em] text-emerald-100">
+                      <p data-i18n="cleanUrlEyebrow" class="text-xs font-bold uppercase tracking-[0.2em] text-[#fde68a]">
                         Recommended to Share
                       </p>
                       <a
@@ -274,76 +304,76 @@
                         href="#"
                         target="_blank"
                         rel="noreferrer"
-                        class="mt-2 block break-all text-base font-semibold text-emerald-100 underline decoration-emerald-200/60 underline-offset-4 hover:text-white"
+                        class="mt-2 block break-all text-base font-semibold text-[#fde68a] underline decoration-[#fde68a]/60 underline-offset-4 hover:text-white"
                       ></a>
-                      <p id="removed-tracking-parameters" class="mt-2 break-all text-xs text-white/70"></p>
+                      <p id="removed-tracking-parameters" class="mt-2 break-all text-xs text-white/80"></p>
                     </div>
                     <button
                       id="copy-clean-button"
                       type="button"
                       data-i18n="copyCleanButton"
-                      class="inline-flex shrink-0 items-center justify-center rounded-2xl bg-emerald-300 px-4 py-3 text-sm font-bold text-emerald-950 transition hover:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-200/50"
+                      class="inline-flex shrink-0 items-center justify-center rounded-2xl bg-[#fde68a] px-5 py-3 text-sm font-bold text-[#17324d] transition hover:bg-white focus:outline-none focus:ring-4 focus:ring-[#fde68a]/50 shadow-sm"
                     >
                       複製乾淨網址
                     </button>
                   </div>
                 </div>
                 <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                  <div class="rounded-2xl bg-white/10 px-4 py-3">
+                  <div class="rounded-2xl bg-[#0f2337]/90 border border-white/10 px-4 py-3">
                     <p
                       data-i18n="inputStat"
-                      class="text-xs uppercase tracking-[0.2em] text-emerald-100"
+                      class="text-xs uppercase tracking-[0.2em] text-[#fde68a]"
                     >
                       Input
                     </p>
                     <p id="input-url" class="mt-2 break-all text-sm text-white/90"></p>
                   </div>
-                  <div class="rounded-2xl bg-white/10 px-4 py-3">
+                  <div class="rounded-2xl bg-[#0f2337]/90 border border-white/10 px-4 py-3">
                     <p
                       data-i18n="redirectStat"
-                      class="text-xs uppercase tracking-[0.2em] text-emerald-100"
+                      class="text-xs uppercase tracking-[0.2em] text-[#fde68a]"
                     >
                       Redirects
                     </p>
-                    <p id="redirect-count" class="mt-2 text-2xl font-black"></p>
+                    <p id="redirect-count" class="mt-2 text-2xl font-black text-white"></p>
                   </div>
-                  <div class="rounded-2xl bg-white/10 px-4 py-3">
+                  <div class="rounded-2xl bg-[#0f2337]/90 border border-white/10 px-4 py-3">
                     <p
                       data-i18n="stepsStat"
-                      class="text-xs uppercase tracking-[0.2em] text-emerald-100"
+                      class="text-xs uppercase tracking-[0.2em] text-[#fde68a]"
                     >
                       Steps
                     </p>
-                    <p id="step-count" class="mt-2 text-2xl font-black"></p>
+                    <p id="step-count" class="mt-2 text-2xl font-black text-white"></p>
                   </div>
-                  <div class="rounded-2xl bg-white/10 px-4 py-3">
+                  <div class="rounded-2xl bg-[#0f2337]/90 border border-white/10 px-4 py-3">
                     <p
                       data-i18n="totalTimeStat"
-                      class="text-xs uppercase tracking-[0.2em] text-emerald-100"
+                      class="text-xs uppercase tracking-[0.2em] text-[#fde68a]"
                     >
                       Total Time
                     </p>
-                    <p id="total-duration" class="mt-2 text-2xl font-black font-mono"></p>
+                    <p id="total-duration" class="mt-2 text-2xl font-black font-mono text-white"></p>
                   </div>
                 </div>
               </div>
             </article>
 
             <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-              <article class="overflow-hidden rounded-[1.75rem] border border-slate-200/70 bg-white/90 shadow-lg shadow-slate-200/60">
-                <div class="border-b border-slate-100 px-5 py-4">
-                  <h3 data-i18n="previewTitle" class="text-xl font-bold tracking-tight">
+              <article class="overflow-hidden rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white p-5 shadow-lg shadow-amber-950/5">
+                <div class="border-b border-[#d6bc7c]/30 pb-4">
+                  <h3 data-i18n="previewTitle" class="text-xl font-bold tracking-tight text-[#17324d]">
                     Final Preview
                   </h3>
-                  <p data-i18n="previewDescription" class="text-sm text-slate-500">
+                  <p data-i18n="previewDescription" class="text-sm text-[#594e36]">
                     使用最終頁面的即時截圖做預覽。
                   </p>
                 </div>
-                <div class="p-5">
+                <div class="pt-5">
                   <div
                     id="preview-empty"
                     data-i18n="previewUnavailable"
-                    class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-12 text-center text-sm text-slate-500"
+                    class="rounded-2xl border border-dashed border-[#d6bc7c] bg-[#fff9e8]/50 px-4 py-12 text-center text-sm text-[#594e36]"
                   >
                     目前沒有可用的頁面預覽。
                   </div>
@@ -352,7 +382,7 @@
                     href="#"
                     target="_blank"
                     rel="noreferrer"
-                    class="hidden overflow-hidden rounded-2xl border border-slate-200 bg-slate-100"
+                    class="hidden overflow-hidden rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/30"
                   >
                     <img
                       id="preview-image"
@@ -363,42 +393,42 @@
                 </div>
               </article>
 
-              <article class="rounded-[1.75rem] border border-slate-200/70 bg-white/90 p-5 shadow-lg shadow-slate-200/60">
-                <div class="border-b border-slate-100 pb-4">
-                  <h3 data-i18n="securityTitle" class="text-xl font-bold tracking-tight">
+              <article class="rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white p-5 shadow-lg shadow-amber-950/5">
+                <div class="border-b border-[#d6bc7c]/30 pb-4">
+                  <h3 data-i18n="securityTitle" class="text-xl font-bold tracking-tight text-[#17324d]">
                     Safety Check
                   </h3>
-                  <p data-i18n="securityDescription" class="text-sm text-slate-500">
+                  <p data-i18n="securityDescription" class="text-sm text-[#594e36]">
                     依 final URL 執行 Google Web Risk final-only 檢查。
                   </p>
                 </div>
                 <div id="security-card" class="mt-5 rounded-2xl border px-4 py-4">
                   <div class="flex items-center justify-between gap-3">
-                    <p data-i18n="securityStatusLabel" class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                    <p data-i18n="securityStatusLabel" class="text-xs font-semibold uppercase tracking-[0.24em] text-[#594e36]">
                       Security
                     </p>
-                    <span id="security-status-badge" class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"></span>
+                    <span id="security-status-badge" class="inline-flex rounded-full px-3 py-1 text-xs font-bold"></span>
                   </div>
-                  <p id="security-message" class="mt-3 text-sm leading-6 text-slate-700"></p>
-                  <p id="security-checked-url" class="mt-3 break-all text-xs text-slate-500"></p>
+                  <p id="security-message" class="mt-3 text-sm leading-6 text-[#2b251a]"></p>
+                  <p id="security-checked-url" class="mt-3 break-all text-xs text-[#594e36]"></p>
                 </div>
               </article>
             </div>
 
             <!-- HTML to Markdown (2md 雙路線支援) Section -->
-            <article id="markdown-section" class="hidden overflow-hidden rounded-[1.75rem] border border-slate-200/70 bg-white/90 shadow-lg shadow-slate-200/60">
-              <div class="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <article id="markdown-section" class="hidden overflow-hidden rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white shadow-lg shadow-amber-950/5">
+              <div class="flex flex-col gap-3 border-b border-[#d6bc7c]/30 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <div class="flex flex-wrap items-center gap-2">
-                    <h3 data-i18n="markdownTitle" class="text-xl font-bold tracking-tight text-slate-900">
+                    <h3 data-i18n="markdownTitle" class="text-xl font-bold tracking-tight text-[#17324d]">
                       頁面內容 Markdown
                     </h3>
-                    <span class="inline-flex items-center gap-1 rounded-full bg-cyan-50 px-2.5 py-0.5 text-xs font-bold text-cyan-700 border border-cyan-200">
-                      <span class="h-1.5 w-1.5 rounded-full bg-cyan-500"></span>
+                    <span class="inline-flex items-center gap-1 rounded-full bg-[#fff0cc] px-2.5 py-0.5 text-xs font-bold text-[#a9471d] border border-[#d6bc7c]/70">
+                      <span class="h-1.5 w-1.5 rounded-full bg-[#ffb010]"></span>
                       2md 雙路線
                     </span>
                   </div>
-                  <p data-i18n="markdownDescription" class="mt-1 text-sm text-slate-500">
+                  <p data-i18n="markdownDescription" class="mt-1 text-sm text-[#594e36]">
                     使用 2md.aiurl.tw 雙路線解析，直接提取最終頁面的純淨 Markdown 內文。
                   </p>
                 </div>
@@ -407,7 +437,7 @@
                     id="copy-markdown-button"
                     type="button"
                     data-i18n="copyMarkdown"
-                    class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400"
+                    class="inline-flex items-center justify-center rounded-xl bg-[#17324d] px-3.5 py-2 text-xs font-bold text-white transition hover:bg-[#1f4265] focus:outline-none focus:ring-2 focus:ring-[#17324d]/40"
                   >
                     複製 Markdown
                   </button>
@@ -417,51 +447,51 @@
                     target="_blank"
                     rel="noreferrer"
                     data-i18n="openIn2md"
-                    class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300"
+                    class="inline-flex items-center justify-center rounded-xl border border-[#d6bc7c] bg-white px-3.5 py-2 text-xs font-bold text-[#17324d] transition hover:bg-[#fff9e8] focus:outline-none focus:ring-2 focus:ring-[#17324d]/30"
                   >
                     在 2md 開啟 ↗
                   </a>
                 </div>
               </div>
               <div class="p-5">
-                <pre id="markdown-viewer" class="max-h-80 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-slate-900 p-4 font-mono text-xs leading-relaxed text-slate-100"></pre>
+                <pre id="markdown-viewer" class="max-h-80 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-[#0f2337] border border-[#17324d] p-4 font-mono text-xs leading-relaxed text-slate-100"></pre>
               </div>
             </article>
 
             <!-- Web Technologies (網站技術棧) Section -->
-            <article id="tech-section" class="hidden rounded-[1.75rem] border border-slate-200/70 bg-white/90 p-5 shadow-lg shadow-slate-200/60">
-              <div class="flex flex-col gap-2 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <article id="tech-section" class="hidden rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white p-5 shadow-lg shadow-amber-950/5">
+              <div class="flex flex-col gap-2 border-b border-[#d6bc7c]/30 pb-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <div class="flex flex-wrap items-center gap-2">
-                    <h3 data-i18n="techTitle" class="text-xl font-bold tracking-tight text-slate-900">網站技術棧</h3>
-                    <span id="tech-count-badge" class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-bold text-indigo-700 border border-indigo-200">
-                      <span class="h-1.5 w-1.5 rounded-full bg-indigo-500"></span>
+                    <h3 data-i18n="techTitle" class="text-xl font-bold tracking-tight text-[#17324d]">網站技術棧</h3>
+                    <span id="tech-count-badge" class="inline-flex items-center gap-1 rounded-full bg-[#fff0cc] px-2.5 py-0.5 text-xs font-bold text-[#17324d] border border-[#d6bc7c]/70">
+                      <span class="h-1.5 w-1.5 rounded-full bg-[#ffb010]"></span>
                       <span id="tech-count-text">Web Technologies</span>
                     </span>
                   </div>
-                  <p data-i18n="techDescription" class="mt-1 text-sm text-slate-500">分析最終目標網頁所使用的伺服器、CMS、框架、函式庫與分析工具等技術指紋。</p>
+                  <p data-i18n="techDescription" class="mt-1 text-sm text-[#594e36]">分析最終目標網頁所使用的伺服器、CMS、框架、函式庫與分析工具等技術指紋。</p>
                 </div>
               </div>
               <div class="p-5">
-                <div id="tech-empty" class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
+                <div id="tech-empty" class="rounded-2xl border border-dashed border-[#d6bc7c] bg-[#fff9e8]/50 px-4 py-8 text-center text-sm text-[#594e36]">
                   未在此網頁偵測到已知的 Web 技術指紋。
                 </div>
                 <div id="tech-list" class="hidden grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
               </div>
             </article>
 
-            <article class="rounded-[1.75rem] border border-slate-200/70 bg-white/90 p-5 shadow-lg shadow-slate-200/60">
-              <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <article class="rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white p-5 shadow-lg shadow-amber-950/5">
+              <div class="flex items-center justify-between gap-3 border-b border-[#d6bc7c]/30 pb-4">
                 <div>
                   <h3
                     data-i18n="chainTitle"
-                    class="text-xl font-bold tracking-tight"
+                    class="text-xl font-bold tracking-tight text-[#17324d]"
                   >
                     Redirect Chain
                   </h3>
                   <p
                     data-i18n="chainDescription"
-                    class="text-sm text-slate-500"
+                    class="text-sm text-[#594e36]"
                   >
                     完整跳轉過程與每個節點的細節。
                   </p>
@@ -471,13 +501,13 @@
             </article>
           </section>
 
-          <section class="mt-8 rounded-[1.75rem] border border-slate-200/70 bg-white/90 p-5 shadow-lg shadow-slate-200/60">
-            <div class="flex flex-col gap-3 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
+          <section class="mt-8 rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white p-5 shadow-lg shadow-amber-950/5">
+            <div class="flex flex-col gap-3 border-b border-[#d6bc7c]/30 pb-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 data-i18n="historyTitle" class="text-xl font-bold tracking-tight">
+                <h3 data-i18n="historyTitle" class="text-xl font-bold tracking-tight text-[#17324d]">
                   Recent Searches
                 </h3>
-                <p data-i18n="historyDescription" class="text-sm text-slate-500">
+                <p data-i18n="historyDescription" class="text-sm text-[#594e36]">
                   僅存在你的瀏覽器 localStorage 的最近查詢紀錄。
                 </p>
               </div>
@@ -485,7 +515,7 @@
                 id="clear-history-button"
                 type="button"
                 data-i18n="clearHistory"
-                class="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+                class="inline-flex items-center justify-center rounded-2xl border border-[#d6bc7c] px-4 py-2 text-sm font-semibold text-[#594e36] transition hover:bg-[#fff9e8]"
               >
                 清除紀錄
               </button>
@@ -493,14 +523,14 @@
             <div
               id="history-empty"
               data-i18n="historyEmpty"
-              class="mt-5 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500"
+              class="mt-5 rounded-2xl border border-dashed border-[#d6bc7c] bg-[#fff9e8]/50 px-4 py-10 text-center text-sm text-[#594e36]"
             >
               還沒有最近查詢紀錄。
             </div>
             <div id="history-list" class="mt-5 grid gap-4 md:grid-cols-2"></div>
           </section>
 
-          <footer class="mt-10 border-t border-slate-200 pt-6 text-center text-sm text-slate-500">
+          <footer class="mt-10 border-t border-[#d6bc7c]/40 pt-6 text-center text-sm text-[#594e36]">
             <p>© 2026 888desturl. All rights reserved.</p>
             <p class="mt-2 flex flex-wrap items-center justify-center gap-2">
               <span>Created by</span>
@@ -508,7 +538,7 @@
                 href="https://david888.com"
                 target="_blank"
                 rel="noreferrer"
-                class="font-semibold text-accent underline decoration-accent/40 underline-offset-4"
+                class="font-bold text-[#17324d] underline decoration-[#d6bc7c] underline-offset-4 hover:text-[#a9471d]"
               >
                 DAVID888
               </a>
@@ -518,7 +548,7 @@
                 href="/ai-agent-skill"
                 target="_blank"
                 rel="noreferrer"
-                class="font-semibold text-accent underline decoration-accent/40 underline-offset-4"
+                class="font-bold text-[#17324d] underline decoration-[#d6bc7c] underline-offset-4 hover:text-[#a9471d]"
               >
                 AI Agent Skills
               </a>
@@ -527,7 +557,7 @@
                 href="/llms.txt"
                 target="_blank"
                 rel="noreferrer"
-                class="font-semibold text-accent underline decoration-accent/40 underline-offset-4"
+                class="font-bold text-[#17324d] underline decoration-[#d6bc7c] underline-offset-4 hover:text-[#a9471d]"
               >
                 llms.txt
               </a>
@@ -536,7 +566,7 @@
                 href="/trace?url=https://wordpress.org"
                 target="_blank"
                 rel="noreferrer"
-                class="font-semibold text-accent underline decoration-accent/40 underline-offset-4"
+                class="font-bold text-[#17324d] underline decoration-[#d6bc7c] underline-offset-4 hover:text-[#a9471d]"
               >
                 API (/trace)
               </a>
@@ -545,9 +575,9 @@
                 href="https://developer.chrome.com/docs/ai/webmcp"
                 target="_blank"
                 rel="noreferrer"
-                class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200 transition hover:bg-emerald-100"
+                class="inline-flex items-center gap-1.5 rounded-full bg-[#fff0cc] px-2.5 py-0.5 text-xs font-bold text-[#17324d] border border-[#d6bc7c]/70 transition hover:bg-[#fff9e8]"
               >
-                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                <span class="h-1.5 w-1.5 rounded-full bg-[#ffb010]"></span>
                 <span data-i18n="webmcpSupported">支援 Chrome WebMCP</span>
               </a>
             </p>
@@ -561,26 +591,26 @@
       role="dialog"
       aria-modal="true"
       aria-labelledby="install-dialog-title"
-      class="fixed inset-0 z-50 hidden items-end bg-slate-950/45 p-4 backdrop-blur-sm sm:items-center sm:justify-center"
+      class="fixed inset-0 z-50 hidden items-end bg-slate-950/60 p-4 backdrop-blur-sm sm:items-center sm:justify-center"
     >
-      <div class="w-full max-w-md rounded-[2rem] border border-white/70 bg-white p-6 shadow-2xl shadow-slate-950/25 sm:p-8">
+      <div class="w-full max-w-md rounded-[2rem] border border-[#d6bc7c]/60 bg-[#fffdf8] p-6 shadow-2xl shadow-slate-950/25 sm:p-8">
         <div class="flex items-start gap-4">
           <img src="/icons/icon-192.png" alt="" width="56" height="56" class="h-14 w-14 rounded-2xl" />
           <div>
-            <p data-i18n="installDialogEyebrow" class="text-xs font-bold uppercase tracking-[0.2em] text-accent">Install App</p>
-            <h2 id="install-dialog-title" data-i18n="installDialogTitle" class="mt-1 text-2xl font-black tracking-tight text-slate-950">
+            <p data-i18n="installDialogEyebrow" class="text-xs font-bold uppercase tracking-[0.2em] text-[#a9471d]">Install App</p>
+            <h2 id="install-dialog-title" data-i18n="installDialogTitle" class="mt-1 text-2xl font-black tracking-tight text-[#17324d]">
               將 888desturl 加到主畫面？
             </h2>
           </div>
         </div>
-        <p data-i18n="installDialogDescription" class="mt-5 text-sm leading-6 text-slate-600">
+        <p data-i18n="installDialogDescription" class="mt-5 text-sm leading-6 text-[#594e36]">
           安裝後可從主畫面快速開啟，也能直接從 Threads 等 App 分享網址進來追蹤。
         </p>
         <div class="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <button id="install-dialog-dismiss" type="button" data-i18n="installDialogDismiss" class="min-h-12 rounded-2xl border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+          <button id="install-dialog-dismiss" type="button" data-i18n="installDialogDismiss" class="min-h-12 rounded-2xl border border-[#d6bc7c] px-5 text-sm font-semibold text-[#594e36] transition hover:bg-[#fff9e8]">
             稍後再說
           </button>
-          <button id="install-dialog-confirm" type="button" data-i18n="installDialogConfirm" class="min-h-12 rounded-2xl bg-ink px-5 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-300">
+          <button id="install-dialog-confirm" type="button" data-i18n="installDialogConfirm" class="min-h-12 rounded-2xl bg-[#17324d] px-5 text-sm font-bold text-white transition hover:bg-[#1f4265] focus:outline-none focus:ring-4 focus:ring-[#17324d]/30">
             立即安裝
           </button>
         </div>
@@ -873,9 +903,9 @@
       }
 
       function badgeClass(type) {
-        if (type === 'http_redirect') return 'bg-amber-100 text-amber-800';
-        if (type === 'client_redirect') return 'bg-sky-100 text-sky-800';
-        return 'bg-slate-100 text-slate-800';
+        if (type === 'http_redirect') return 'bg-amber-100 text-amber-900 border border-amber-300';
+        if (type === 'client_redirect') return 'bg-sky-100 text-sky-900 border border-sky-300';
+        return 'bg-[#fff0cc] text-[#2b251a] border border-[#d6bc7c]';
       }
 
       function localizedType(type) {
@@ -897,10 +927,10 @@
         feedback.className =
           'mt-6 rounded-2xl border px-4 py-3 text-sm ' +
           (type === 'error'
-            ? 'border-red-200 bg-red-50 text-red-700'
+            ? 'border-red-300 bg-red-50 text-red-900 font-medium'
             : type === 'warning'
-              ? 'border-amber-200 bg-amber-50 text-amber-800'
-              : 'border-emerald-200 bg-emerald-50 text-emerald-700');
+              ? 'border-amber-300 bg-amber-50 text-amber-900 font-medium'
+              : 'border-emerald-300 bg-emerald-50 text-emerald-900 font-medium');
         feedback.textContent = message;
         feedback.classList.remove('hidden');
       }
@@ -969,32 +999,32 @@
                 ? t('notAvailable')
                 : `${item.status_code} ${item.status_text || ''}`.trim();
             const fromUrl = item.from_url
-              ? `<p class="mt-2 break-all text-xs text-slate-500">${escapeHtml(t('fromLabel'))}: ${escapeHtml(item.from_url)}</p>`
+              ? `<p class="mt-2 break-all text-xs text-[#594e36]">${escapeHtml(t('fromLabel'))}: ${escapeHtml(item.from_url)}</p>`
               : '';
             const elapsedText =
               typeof item.elapsed_ms === 'number'
-                ? `<p class="mt-1 text-[11px] font-mono text-slate-400">⏱ +${item.duration_ms !== null ? item.duration_ms : 0} ms (${item.elapsed_ms} ms)</p>`
+                ? `<p class="mt-1 text-[11px] font-mono text-[#594e36] font-semibold">⏱ +${item.duration_ms !== null ? item.duration_ms : 0} ms (${item.elapsed_ms} ms)</p>`
                 : '';
 
             return `
-              <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+              <div class="rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/50 p-4">
                 <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div class="min-w-0">
                     <div class="flex flex-wrap items-center gap-2">
-                      <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-slate-900 px-2 text-sm font-bold text-white">${item.step}</span>
-                      <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ${badgeClass(item.type)}">${escapeHtml(localizedType(item.type))}</span>
+                      <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-[#17324d] px-2 text-sm font-bold text-white">${item.step}</span>
+                      <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold ${badgeClass(item.type)}">${escapeHtml(localizedType(item.type))}</span>
                     </div>
-                    <p class="mt-3 break-all text-sm font-semibold text-slate-900">${escapeHtml(item.url)}</p>
+                    <p class="mt-3 break-all text-sm font-bold text-[#17324d]">${escapeHtml(item.url)}</p>
                     ${fromUrl}
                   </div>
-                  <div class="grid shrink-0 grid-cols-2 gap-3 text-sm text-slate-600 md:min-w-56">
-                    <div class="rounded-xl bg-white px-3 py-2">
-                      <p class="text-xs uppercase tracking-wide text-slate-400">${escapeHtml(t('statusLabel'))}</p>
-                      <p class="mt-1 font-semibold text-slate-800">${escapeHtml(status)}</p>
+                  <div class="grid shrink-0 grid-cols-2 gap-3 text-sm text-[#594e36] md:min-w-56">
+                    <div class="rounded-xl border border-[#d6bc7c]/50 bg-white px-3 py-2">
+                      <p class="text-xs uppercase tracking-wide text-[#594e36] font-semibold">${escapeHtml(t('statusLabel'))}</p>
+                      <p class="mt-1 font-bold text-[#2b251a]">${escapeHtml(status)}</p>
                     </div>
-                    <div class="rounded-xl bg-white px-3 py-2">
-                      <p class="text-xs uppercase tracking-wide text-slate-400">${escapeHtml(t('timeLabel'))}</p>
-                      <p class="mt-1 font-semibold text-slate-800">${escapeHtml(duration)}</p>
+                    <div class="rounded-xl border border-[#d6bc7c]/50 bg-white px-3 py-2">
+                      <p class="text-xs uppercase tracking-wide text-[#594e36] font-semibold">${escapeHtml(t('timeLabel'))}</p>
+                      <p class="mt-1 font-bold text-[#2b251a]">${escapeHtml(duration)}</p>
                       ${elapsedText}
                     </div>
                   </div>
@@ -1041,44 +1071,44 @@
             const categoryBadges = categories
               .map(
                 (cat) =>
-                  `<span class="inline-flex rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-slate-600 border border-slate-200/80">${escapeHtml(
+                  `<span class="inline-flex rounded-full bg-[#fff9e8] px-2 py-0.5 text-[11px] font-semibold text-[#594e36] border border-[#d6bc7c]/70">${escapeHtml(
                     cat.name || cat
                   )}</span>`
               )
               .join('');
 
             const versionBadge = tech.version
-              ? `<span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-mono font-semibold text-emerald-700 border border-emerald-200">v${escapeHtml(
+              ? `<span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-mono font-bold text-emerald-900 border border-emerald-300">v${escapeHtml(
                   tech.version
                 )}</span>`
               : '';
 
             const websiteLink = tech.website
-              ? `<a href="${sanitizeHref(tech.website)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold text-accent hover:underline decoration-accent/40">官方網站 ↗</a>`
-              : '<span class="text-slate-400">無官方連結</span>';
+              ? `<a href="${sanitizeHref(tech.website)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-bold text-[#17324d] hover:text-[#a9471d] underline decoration-[#d6bc7c]">官方網站 ↗</a>`
+              : '<span class="text-[#594e36]/70">無官方連結</span>';
 
             const description = tech.description
-              ? `<p class="mt-1.5 text-xs text-slate-500 line-clamp-2">${escapeHtml(tech.description)}</p>`
+              ? `<p class="mt-1.5 text-xs text-[#594e36] line-clamp-2">${escapeHtml(tech.description)}</p>`
               : '';
 
             const confidence =
               typeof tech.confidence === 'number'
-                ? `<span class="text-slate-400 font-mono text-[11px]">${escapeHtml(tech.confidence)}% 信心度</span>`
+                ? `<span class="text-[#594e36] font-mono text-[11px] font-semibold">${escapeHtml(tech.confidence)}% 信心度</span>`
                 : '';
 
             return `
-              <div class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50/70 p-4 transition hover:bg-slate-50 hover:border-slate-300">
+              <div class="flex flex-col justify-between rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/40 p-4 transition hover:bg-[#fff9e8] hover:border-[#d6bc7c]">
                 <div>
                   <div class="flex flex-wrap items-center gap-1.5 mb-2">
                     ${categoryBadges}
                   </div>
                   <div class="flex flex-wrap items-center gap-2">
-                    <span class="text-base font-bold text-slate-900">${escapeHtml(tech.name)}</span>
+                    <span class="text-base font-bold text-[#17324d]">${escapeHtml(tech.name)}</span>
                     ${versionBadge}
                   </div>
                   ${description}
                 </div>
-                <div class="mt-3 flex items-center justify-between pt-2 border-t border-slate-200/60 text-xs">
+                <div class="mt-3 flex items-center justify-between pt-2 border-t border-[#d6bc7c]/40 text-xs">
                   ${websiteLink}
                   ${confidence}
                 </div>
@@ -1138,19 +1168,19 @@
               : 'securityUnknown';
         const badgeClassName =
           status === 'safe'
-            ? 'bg-emerald-100 text-emerald-800'
+            ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
             : status === 'flagged'
-              ? 'bg-red-100 text-red-800'
-              : 'bg-amber-100 text-amber-800';
+              ? 'bg-red-100 text-red-900 border border-red-300'
+              : 'bg-amber-100 text-amber-900 border border-amber-300';
         const cardClassName =
           status === 'safe'
-            ? 'mt-5 rounded-2xl border border-emerald-200 bg-emerald-50/50 px-4 py-4'
+            ? 'mt-5 rounded-2xl border border-emerald-300 bg-emerald-50/70 px-4 py-4'
             : status === 'flagged'
-              ? 'mt-5 rounded-2xl border border-red-200 bg-red-50/60 px-4 py-4'
-              : 'mt-5 rounded-2xl border border-amber-200 bg-amber-50/60 px-4 py-4';
+              ? 'mt-5 rounded-2xl border border-red-300 bg-red-50/70 px-4 py-4'
+              : 'mt-5 rounded-2xl border border-amber-300 bg-amber-50/70 px-4 py-4';
 
         securityCard.className = cardClassName;
-        securityStatusBadge.className = `inline-flex rounded-full px-3 py-1 text-xs font-semibold ${badgeClassName}`;
+        securityStatusBadge.className = `inline-flex rounded-full px-3 py-1 text-xs font-bold ${badgeClassName}`;
         securityStatusBadge.textContent = t(labelKey);
         securityMessage.textContent =
           status === 'safe'
@@ -1193,15 +1223,15 @@
         historyList.innerHTML = items
           .map((item) => {
             const preview = item.preview_url
-              ? `<img src="${escapeHtml(sanitizeHref(item.preview_url))}" alt="" class="h-24 w-32 rounded-xl object-cover" />`
-              : `<div class="flex h-24 w-32 items-center justify-center rounded-xl bg-slate-100 text-xs text-slate-400">${escapeHtml(t('previewUnavailable'))}</div>`;
+              ? `<img src="${escapeHtml(sanitizeHref(item.preview_url))}" alt="" class="h-24 w-32 rounded-xl object-cover border border-[#d6bc7c]/60" />`
+              : `<div class="flex h-24 w-32 items-center justify-center rounded-xl bg-[#fff9e8] text-xs text-[#594e36] border border-dashed border-[#d6bc7c]">${escapeHtml(t('previewUnavailable'))}</div>`;
 
             const securityClass =
               item.security_status === 'safe'
-                ? 'bg-emerald-100 text-emerald-800'
+                ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
                 : item.security_status === 'flagged'
-                  ? 'bg-red-100 text-red-800'
-                  : 'bg-amber-100 text-amber-800';
+                  ? 'bg-red-100 text-red-900 border border-red-300'
+                  : 'bg-amber-100 text-amber-900 border border-amber-300';
             const securityLabel =
               item.security_status === 'safe'
                 ? t('securitySafe')
@@ -1210,20 +1240,20 @@
                   : t('securityUnknown');
 
             return `
-              <article class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+              <article class="rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/50 p-4">
                 <div class="flex gap-4">
                   ${preview}
                   <div class="min-w-0 flex-1">
                     <div class="flex flex-wrap items-center gap-2">
-                      <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ${securityClass}">${escapeHtml(securityLabel)}</span>
-                      <span class="text-xs text-slate-500">${escapeHtml(t('historyRedirects'))}: ${escapeHtml(String(item.redirect_count))}</span>
+                      <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold ${securityClass}">${escapeHtml(securityLabel)}</span>
+                      <span class="text-xs text-[#594e36] font-semibold">${escapeHtml(t('historyRedirects'))}: ${escapeHtml(String(item.redirect_count))}</span>
                     </div>
-                    <p class="mt-3 break-all text-sm font-semibold text-slate-900">${escapeHtml(item.final_url)}</p>
-                    <p class="mt-2 break-all text-xs text-slate-500">${escapeHtml(item.input_url)}</p>
-                    <p class="mt-3 text-xs text-slate-500">${escapeHtml(t('historyQueriedAt'))}: ${escapeHtml(new Date(item.queried_at).toLocaleString())}</p>
+                    <p class="mt-3 break-all text-sm font-bold text-[#17324d]">${escapeHtml(item.final_url)}</p>
+                    <p class="mt-2 break-all text-xs text-[#594e36]">${escapeHtml(item.input_url)}</p>
+                    <p class="mt-3 text-xs text-[#594e36]">${escapeHtml(t('historyQueriedAt'))}: ${escapeHtml(new Date(item.queried_at).toLocaleString())}</p>
                     <div class="mt-3 flex flex-wrap gap-3">
-                      <a href="${escapeHtml(sanitizeHref(item.final_url))}" target="_blank" rel="noreferrer" class="inline-flex text-sm font-semibold text-accent underline decoration-accent/30 underline-offset-4">${escapeHtml(t('historyOpen'))}</a>
-                      ${item.result_url ? `<a href="${escapeHtml(sanitizeHref(item.result_url))}" target="_blank" rel="noreferrer" class="inline-flex text-sm font-semibold text-slate-700 underline decoration-slate-300 underline-offset-4">${escapeHtml(t('historyResult'))}</a>` : ''}
+                      <a href="${escapeHtml(sanitizeHref(item.final_url))}" target="_blank" rel="noreferrer" class="inline-flex text-sm font-bold text-[#17324d] underline decoration-[#d6bc7c] underline-offset-4 hover:text-[#a9471d]">${escapeHtml(t('historyOpen'))}</a>
+                      ${item.result_url ? `<a href="${escapeHtml(sanitizeHref(item.result_url))}" target="_blank" rel="noreferrer" class="inline-flex text-sm font-bold text-[#594e36] underline decoration-[#d6bc7c] underline-offset-4 hover:text-[#17324d]">${escapeHtml(t('historyResult'))}</a>` : ''}
                     </div>
                   </div>
                 </div>
@@ -1256,8 +1286,8 @@
         langButtons.forEach((button) => {
           const isActive = button.dataset.lang === currentLanguage;
           button.className = isActive
-            ? 'rounded-xl bg-ink px-3 py-2 text-sm font-semibold text-white transition'
-            : 'rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100';
+            ? 'rounded-xl bg-[#17324d] px-3 py-2 text-sm font-bold text-white transition'
+            : 'rounded-xl px-3 py-2 text-sm font-semibold text-[#594e36] transition hover:bg-[#fff9e8]';
         });
       }
 

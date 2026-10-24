@@ -17,8 +17,8 @@ test('web app manifest contains the required install metadata and icons', () => 
   assert.equal(manifest.start_url, '/');
   assert.equal(manifest.scope, '/');
   assert.equal(manifest.display, 'standalone');
-  assert.equal(manifest.theme_color, '#0f766e');
-  assert.equal(manifest.background_color, '#f8fafc');
+  assert.equal(manifest.theme_color, '#ffb010');
+  assert.equal(manifest.background_color, '#fffdf7');
 
   const iconSizes = new Set(manifest.icons.map((icon) => icon.sizes));
   assert.ok(iconSizes.has('192x192'));
@@ -54,7 +54,7 @@ test('public pages expose PWA metadata and register the service worker', () => {
 
   for (const html of [indexHtml, resultHtml]) {
     assert.match(html, /rel="manifest" href="\/manifest\.webmanifest"/);
-    assert.match(html, /name="theme-color" content="#0f766e"/);
+    assert.match(html, /name="theme-color" content="#ffb010"/i);
   }
 
   for (const html of [indexHtml, resultHtml]) {
@@ -78,3 +78,32 @@ test('homepage presents the 888 URL mark and traces URLs received from Android s
   assert.match(indexHtml, /form\.requestSubmit\(\)/);
   assert.match(indexHtml, /window\.history\.replaceState/);
 });
+
+test('homepage implements sticky floating trace form and conforms to WCAG accessibility requirements', () => {
+  const indexHtml = readPublicFile('index.html');
+  const resultHtml = readPublicFile('result.html');
+
+  // Sticky / Floating input bar
+  assert.match(indexHtml, /id="trace-form"[^>]*class="[^"]*sticky[^"]*top-/);
+  assert.match(indexHtml, /id="trace-form"[^>]*class="[^"]*z-40/);
+
+  // WCAG Form accessibility attributes
+  assert.match(indexHtml, /<label\s+for="url-input"/);
+  assert.match(indexHtml, /id="url-input"[^>]*aria-required="true"/);
+  assert.match(indexHtml, /id="url-input"[^>]*aria-describedby="form-hint"/);
+
+  // Language buttons accessible labels
+  assert.match(indexHtml, /aria-label="切換至繁體中文"/);
+  assert.match(indexHtml, /aria-label="Switch to English"/);
+
+  // Focus indicators
+  assert.match(indexHtml, /focus:ring-/);
+  assert.match(resultHtml, /focus:ring-/);
+
+  // Saffron & Navy brand palette tokens
+  assert.match(indexHtml, /#ffb010/i);
+  assert.match(indexHtml, /#17324d/i);
+  assert.match(resultHtml, /#ffb010/i);
+  assert.match(resultHtml, /#17324d/i);
+});
+

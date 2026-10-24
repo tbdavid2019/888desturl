@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0f766e" />
+    <meta name="theme-color" content="#ffb010" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
@@ -24,129 +24,146 @@ __OG_IMAGE_META__
         theme: {
           extend: {
             colors: {
-              ink: '#101828',
-              accent: '#0f766e'
+              saffron: {
+                DEFAULT: '#ffb010',
+                hover: '#f2a600',
+                light: '#fff0cc',
+              },
+              navy: {
+                DEFAULT: '#17324d',
+                dark: '#0f2337',
+                hover: '#1f4265',
+              },
+              clay: '#a9471d',
+              ink: '#2b251a',
+              warmCream: '#fff9e8',
+              canvas: '#fffdf7',
+              borderMuted: '#d6bc7c',
+              textMuted: '#594e36',
+              accent: '#17324d',
+              accentSaffron: '#ffb010',
+              accentSoft: '#fff0cc'
             },
             boxShadow: {
-              panel: '0 24px 80px rgba(15, 23, 42, 0.14)'
+              panel: '0 24px 80px rgba(43, 37, 26, 0.08)'
             }
           }
         }
       };
     </script>
   </head>
-  <body class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(20,184,166,0.18),_transparent_30%),linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] text-ink">
+  <body class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(255,176,16,0.18),_transparent_36%),linear-gradient(180deg,_#fffdf7_0%,_#fff9e8_45%,_#fff3d6_100%)] text-[#2b251a] antialiased">
     <main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-      <div class="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-panel backdrop-blur md:p-10">
-        <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <div class="rounded-[2rem] border border-[#d6bc7c]/60 bg-white/95 p-6 shadow-panel backdrop-blur md:p-10">
+        <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between border-b border-[#d6bc7c]/30 pb-6">
           <div>
-            <p class="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-accent">
+            <p class="inline-flex rounded-full bg-[#fff0cc] px-3 py-1 text-xs font-bold uppercase tracking-[0.24em] text-[#a9471d] border border-[#d6bc7c]/60">
               Trace Result
             </p>
-            <h1 class="mt-4 text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
+            <h1 class="mt-4 text-3xl font-black tracking-tight text-[#17324d] md:text-4xl">
               888desturl 結果頁
             </h1>
-            <p id="result-meta" class="mt-3 text-sm text-slate-500"></p>
+            <p id="result-meta" class="mt-3 text-sm text-[#594e36]"></p>
           </div>
-          <a href="/" class="inline-flex rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+          <a href="/" class="inline-flex rounded-2xl border border-[#d6bc7c] bg-white px-4 py-2 text-sm font-bold text-[#17324d] transition hover:bg-[#fff9e8] focus:outline-none focus:ring-2 focus:ring-[#17324d]/30">
             返回查詢首頁
           </a>
         </div>
 
-        <section id="status-card" class="mt-8 rounded-[1.75rem] border border-slate-200 bg-slate-50/70 p-5">
+        <section id="status-card" class="mt-8 rounded-[1.75rem] border border-[#d6bc7c]/60 bg-[#fff9e8]/50 p-5 shadow-sm">
           <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div class="min-w-0">
-              <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Final URL</p>
-              <a id="final-url" href="#" target="_blank" rel="noreferrer" class="mt-3 block break-all text-lg font-bold text-accent underline decoration-accent/30 underline-offset-4"></a>
-              <div id="clean-url-section" class="mt-5 hidden border-t border-slate-200 pt-5">
+              <p class="text-xs font-bold uppercase tracking-[0.24em] text-[#594e36]">Final URL</p>
+              <a id="final-url" href="#" target="_blank" rel="noreferrer" class="mt-3 block break-all text-lg font-bold text-[#17324d] underline decoration-[#d6bc7c] underline-offset-4 hover:text-[#a9471d]"></a>
+              <div id="clean-url-section" class="mt-5 hidden border-t border-[#d6bc7c]/40 pt-5">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                   <div class="min-w-0">
-                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">建議分享網址</p>
-                    <a id="clean-url" href="#" target="_blank" rel="noreferrer" class="mt-2 block break-all text-base font-semibold text-accent underline decoration-accent/30 underline-offset-4"></a>
-                    <p id="removed-tracking-parameters" class="mt-2 break-all text-xs text-slate-500"></p>
+                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-[#17324d]">建議分享網址</p>
+                    <a id="clean-url" href="#" target="_blank" rel="noreferrer" class="mt-2 block break-all text-base font-bold text-[#17324d] underline decoration-[#d6bc7c] underline-offset-4 hover:text-[#a9471d]"></a>
+                    <p id="removed-tracking-parameters" class="mt-2 break-all text-xs text-[#594e36]"></p>
                   </div>
-                  <button id="copy-clean-url-button" type="button" class="inline-flex shrink-0 items-center justify-center rounded-full bg-emerald-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-200">
+                  <button id="copy-clean-url-button" type="button" class="inline-flex shrink-0 items-center justify-center rounded-2xl bg-[#17324d] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#1f4265] focus:outline-none focus:ring-4 focus:ring-[#17324d]/30 shadow-sm">
                     複製乾淨網址
                   </button>
                 </div>
               </div>
-              <p id="input-url" class="mt-3 break-all text-sm text-slate-500"></p>
+              <p id="input-url" class="mt-3 break-all text-sm text-[#594e36]"></p>
             </div>
             <div class="flex flex-wrap gap-3">
-              <button id="copy-result-link-button" type="button" class="inline-flex items-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+              <button id="copy-result-link-button" type="button" class="inline-flex items-center rounded-2xl border border-[#d6bc7c] bg-white px-4 py-2 text-sm font-bold text-[#17324d] transition hover:bg-[#fff9e8] focus:outline-none focus:ring-2 focus:ring-[#17324d]/30">
                 複製結果頁連結
               </button>
-              <span id="security-badge" class="inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold"></span>
-              <span id="redirect-badge" class="inline-flex items-center rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700"></span>
+              <span id="security-badge" class="inline-flex items-center rounded-full px-4 py-2 text-sm font-bold"></span>
+              <span id="redirect-badge" class="inline-flex items-center rounded-full bg-[#fff0cc] px-4 py-2 text-sm font-bold text-[#17324d] border border-[#d6bc7c]/70"></span>
             </div>
           </div>
-          <p id="security-message" class="mt-4 text-sm leading-6 text-slate-700"></p>
-          <p id="checked-url" class="mt-2 break-all text-xs text-slate-500"></p>
+          <p id="security-message" class="mt-4 text-sm leading-6 text-[#2b251a]"></p>
+          <p id="checked-url" class="mt-2 break-all text-xs text-[#594e36]"></p>
         </section>
 
         <section class="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <article class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-lg shadow-slate-200/60">
-            <div class="border-b border-slate-100 px-5 py-4">
-              <h2 class="text-xl font-bold tracking-tight">Final 頁面預覽</h2>
-              <p class="text-sm text-slate-500">若預覽圖已超過保存期限，這裡會顯示為不可用。</p>
+          <article class="overflow-hidden rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white p-5 shadow-lg shadow-amber-950/5">
+            <div class="border-b border-[#d6bc7c]/30 pb-4">
+              <h2 class="text-xl font-bold tracking-tight text-[#17324d]">Final 頁面預覽</h2>
+              <p class="text-sm text-[#594e36]">若預覽圖已超過保存期限，這裡會顯示為不可用。</p>
             </div>
-            <div class="p-5">
-              <div id="preview-empty" class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-12 text-center text-sm text-slate-500">
+            <div class="pt-5">
+              <div id="preview-empty" class="rounded-2xl border border-dashed border-[#d6bc7c] bg-[#fff9e8]/50 px-4 py-12 text-center text-sm text-[#594e36]">
                 目前沒有可用的頁面預覽。
               </div>
-              <a id="preview-link" href="#" target="_blank" rel="noreferrer" class="hidden overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
+              <a id="preview-link" href="#" target="_blank" rel="noreferrer" class="hidden overflow-hidden rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/30">
                 <img id="preview-image" alt="Result preview" class="aspect-[16/10] w-full object-cover" />
               </a>
             </div>
           </article>
 
-          <article class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/60">
-            <div class="border-b border-slate-100 pb-4">
-              <h2 class="text-xl font-bold tracking-tight">結果摘要</h2>
+          <article class="rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white p-5 shadow-lg shadow-amber-950/5">
+            <div class="border-b border-[#d6bc7c]/30 pb-4">
+              <h2 class="text-xl font-bold tracking-tight text-[#17324d]">結果摘要</h2>
             </div>
-            <div class="mt-5 space-y-4 text-sm text-slate-600">
-              <div class="rounded-2xl bg-slate-50 px-4 py-3">
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Total Duration</p>
-                <p id="total-duration" class="mt-2 font-semibold font-mono text-slate-800"></p>
+            <div class="mt-5 space-y-3.5 text-sm text-[#594e36]">
+              <div class="rounded-2xl border border-[#d6bc7c]/40 bg-[#fff9e8]/50 px-4 py-3">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-[#594e36]">Total Duration</p>
+                <p id="total-duration" class="mt-1 font-bold font-mono text-[#2b251a] text-lg"></p>
               </div>
-              <div class="rounded-2xl bg-slate-50 px-4 py-3">
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Result ID</p>
-                <p id="result-id" class="mt-2 break-all font-semibold text-slate-800"></p>
+              <div class="rounded-2xl border border-[#d6bc7c]/40 bg-[#fff9e8]/50 px-4 py-3">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-[#594e36]">Result ID</p>
+                <p id="result-id" class="mt-1 break-all font-bold text-[#2b251a] font-mono"></p>
               </div>
-              <div class="rounded-2xl bg-slate-50 px-4 py-3">
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Trace Context</p>
-                <p id="trace-context" class="mt-2 font-semibold text-slate-800"></p>
+              <div class="rounded-2xl border border-[#d6bc7c]/40 bg-[#fff9e8]/50 px-4 py-3">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-[#594e36]">Trace Context</p>
+                <p id="trace-context" class="mt-1 font-bold text-[#2b251a]"></p>
               </div>
-              <div class="rounded-2xl bg-slate-50 px-4 py-3">
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Terminated Reason</p>
-                <p id="terminated-reason" class="mt-2 font-semibold text-slate-800"></p>
+              <div class="rounded-2xl border border-[#d6bc7c]/40 bg-[#fff9e8]/50 px-4 py-3">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-[#594e36]">Terminated Reason</p>
+                <p id="terminated-reason" class="mt-1 font-bold text-[#2b251a]"></p>
               </div>
-              <div class="rounded-2xl bg-slate-50 px-4 py-3">
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Page Title</p>
-                <p id="page-title" class="mt-2 font-semibold text-slate-800"></p>
+              <div class="rounded-2xl border border-[#d6bc7c]/40 bg-[#fff9e8]/50 px-4 py-3">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-[#594e36]">Page Title</p>
+                <p id="page-title" class="mt-1 font-bold text-[#2b251a]"></p>
               </div>
             </div>
           </article>
         </section>
 
         <!-- HTML to Markdown (2md 雙路線支援) Section -->
-        <section id="markdown-section" class="mt-8 hidden overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-lg shadow-slate-200/60">
-          <div class="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <section id="markdown-section" class="mt-8 hidden overflow-hidden rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white shadow-lg shadow-amber-950/5">
+          <div class="flex flex-col gap-3 border-b border-[#d6bc7c]/30 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <div class="flex flex-wrap items-center gap-2">
-                <h2 class="text-xl font-bold tracking-tight text-slate-900">頁面內容 Markdown</h2>
-                <span class="inline-flex items-center gap-1 rounded-full bg-cyan-50 px-2.5 py-0.5 text-xs font-bold text-cyan-700 border border-cyan-200">
-                  <span class="h-1.5 w-1.5 rounded-full bg-cyan-500"></span>
+                <h2 class="text-xl font-bold tracking-tight text-[#17324d]">頁面內容 Markdown</h2>
+                <span class="inline-flex items-center gap-1 rounded-full bg-[#fff0cc] px-2.5 py-0.5 text-xs font-bold text-[#a9471d] border border-[#d6bc7c]/70">
+                  <span class="h-1.5 w-1.5 rounded-full bg-[#ffb010]"></span>
                   2md 雙路線
                 </span>
               </div>
-              <p class="mt-1 text-sm text-slate-500">使用 2md.aiurl.tw 雙路線解析，直接提取最終頁面的純淨 Markdown 內文。</p>
+              <p class="mt-1 text-sm text-[#594e36]">使用 2md.aiurl.tw 雙路線解析，直接提取最終頁面的純淨 Markdown 內文。</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
               <button
                 id="copy-markdown-button"
                 type="button"
-                class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400"
+                class="inline-flex items-center justify-center rounded-xl bg-[#17324d] px-3.5 py-2 text-xs font-bold text-white transition hover:bg-[#1f4265] focus:outline-none focus:ring-2 focus:ring-[#17324d]/40"
               >
                 複製 Markdown
               </button>
@@ -155,48 +172,48 @@ __OG_IMAGE_META__
                 href="#"
                 target="_blank"
                 rel="noreferrer"
-                class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300"
+                class="inline-flex items-center justify-center rounded-xl border border-[#d6bc7c] bg-white px-3.5 py-2 text-xs font-bold text-[#17324d] transition hover:bg-[#fff9e8] focus:outline-none focus:ring-2 focus:ring-[#17324d]/30"
               >
                 在 2md 開啟 ↗
               </a>
             </div>
           </div>
           <div class="p-5">
-            <pre id="markdown-viewer" class="max-h-80 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-slate-900 p-4 font-mono text-xs leading-relaxed text-slate-100"></pre>
+            <pre id="markdown-viewer" class="max-h-80 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-[#0f2337] border border-[#17324d] p-4 font-mono text-xs leading-relaxed text-slate-100"></pre>
           </div>
         </section>
 
         <!-- Web Technologies (網站技術棧) Section -->
-        <section id="tech-section" class="mt-8 rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/60">
-          <div class="flex flex-col gap-2 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
+        <section id="tech-section" class="mt-8 rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white p-5 shadow-lg shadow-amber-950/5">
+          <div class="flex flex-col gap-2 border-b border-[#d6bc7c]/30 pb-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <div class="flex flex-wrap items-center gap-2">
-                <h2 class="text-xl font-bold tracking-tight text-slate-900">網站技術棧</h2>
-                <span id="tech-count-badge" class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-bold text-indigo-700 border border-indigo-200">
-                  <span class="h-1.5 w-1.5 rounded-full bg-indigo-500"></span>
+                <h2 class="text-xl font-bold tracking-tight text-[#17324d]">網站技術棧</h2>
+                <span id="tech-count-badge" class="inline-flex items-center gap-1 rounded-full bg-[#fff0cc] px-2.5 py-0.5 text-xs font-bold text-[#17324d] border border-[#d6bc7c]/70">
+                  <span class="h-1.5 w-1.5 rounded-full bg-[#ffb010]"></span>
                   <span id="tech-count-text">Web Technologies</span>
                 </span>
               </div>
-              <p class="mt-1 text-sm text-slate-500">分析最終目標網頁所使用的伺服器、CMS、框架、函式庫與分析工具等技術指紋。</p>
+              <p class="mt-1 text-sm text-[#594e36]">分析最終目標網頁所使用的伺服器、CMS、框架、函式庫與分析工具等技術指紋。</p>
             </div>
           </div>
           <div class="p-5">
-            <div id="tech-empty" class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
+            <div id="tech-empty" class="rounded-2xl border border-dashed border-[#d6bc7c] bg-[#fff9e8]/50 px-4 py-8 text-center text-sm text-[#594e36]">
               未在此網頁偵測到已知的 Web 技術指紋。
             </div>
             <div id="tech-list" class="hidden grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
           </div>
         </section>
 
-        <section class="mt-8 rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/60">
-          <div class="border-b border-slate-100 pb-4">
-            <h2 class="text-xl font-bold tracking-tight">Redirect Chain</h2>
-            <p class="text-sm text-slate-500">這筆查詢的完整跳轉過程。</p>
+        <section class="mt-8 rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white p-5 shadow-lg shadow-amber-950/5">
+          <div class="border-b border-[#d6bc7c]/30 pb-4">
+            <h2 class="text-xl font-bold tracking-tight text-[#17324d]">Redirect Chain</h2>
+            <p class="text-sm text-[#594e36]">這筆查詢的完整跳轉過程。</p>
           </div>
           <div id="chain-list" class="mt-5 space-y-4"></div>
         </section>
 
-        <footer class="mt-10 border-t border-slate-200 pt-6 text-center text-sm text-slate-500">
+        <footer class="mt-10 border-t border-[#d6bc7c]/40 pt-6 text-center text-sm text-[#594e36]">
           <p>© 2026 888desturl. All rights reserved.</p>
           <p class="mt-2 flex flex-wrap items-center justify-center gap-2">
             <span>Created by</span>
@@ -204,7 +221,7 @@ __OG_IMAGE_META__
               href="https://david888.com"
               target="_blank"
               rel="noreferrer"
-              class="font-semibold text-accent underline decoration-accent/40 underline-offset-4"
+              class="font-bold text-[#17324d] underline decoration-[#d6bc7c] underline-offset-4 hover:text-[#a9471d]"
             >
               DAVID888
             </a>
@@ -213,7 +230,7 @@ __OG_IMAGE_META__
               href="/ai-agent-skill"
               target="_blank"
               rel="noreferrer"
-              class="font-semibold text-accent underline decoration-accent/40 underline-offset-4"
+              class="font-bold text-[#17324d] underline decoration-[#d6bc7c] underline-offset-4 hover:text-[#a9471d]"
             >
               AI Agent Skills
             </a>
@@ -222,7 +239,7 @@ __OG_IMAGE_META__
               href="/llms.txt"
               target="_blank"
               rel="noreferrer"
-              class="font-semibold text-accent underline decoration-accent/40 underline-offset-4"
+              class="font-bold text-[#17324d] underline decoration-[#d6bc7c] underline-offset-4 hover:text-[#a9471d]"
             >
               llms.txt
             </a>
@@ -231,7 +248,7 @@ __OG_IMAGE_META__
               href="/trace?url=https://wordpress.org"
               target="_blank"
               rel="noreferrer"
-              class="font-semibold text-accent underline decoration-accent/40 underline-offset-4"
+              class="font-bold text-[#17324d] underline decoration-[#d6bc7c] underline-offset-4 hover:text-[#a9471d]"
             >
               API (/trace)
             </a>
@@ -240,9 +257,9 @@ __OG_IMAGE_META__
               href="https://developer.chrome.com/docs/ai/webmcp"
               target="_blank"
               rel="noreferrer"
-              class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200 transition hover:bg-emerald-100"
+              class="inline-flex items-center gap-1.5 rounded-full bg-[#fff0cc] px-2.5 py-0.5 text-xs font-bold text-[#17324d] border border-[#d6bc7c]/70 transition hover:bg-[#fff9e8]"
             >
-              <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+              <span class="h-1.5 w-1.5 rounded-full bg-[#ffb010]"></span>
               <span>支援 Chrome WebMCP</span>
             </a>
           </p>
@@ -323,15 +340,15 @@ __OG_IMAGE_META__
       function renderSecurity(result) {
         const status = result.security_status || 'unknown';
         if (status === 'safe') {
-          securityBadge.className = 'inline-flex items-center rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-800';
+          securityBadge.className = 'inline-flex items-center rounded-full bg-emerald-100 px-4 py-2 text-sm font-bold text-emerald-900 border border-emerald-300';
           securityBadge.textContent = '✓ 安全';
           securityMessage.textContent = '這個最終網址目前未被列入 Google Web Risk 已知風險名單。';
         } else if (status === 'flagged') {
-          securityBadge.className = 'inline-flex items-center rounded-full bg-red-100 px-4 py-2 text-sm font-semibold text-red-800';
+          securityBadge.className = 'inline-flex items-center rounded-full bg-red-100 px-4 py-2 text-sm font-bold text-red-900 border border-red-300';
           securityBadge.textContent = '⚠ 已知風險';
           securityMessage.textContent = '這個最終網址已被列入 Google Web Risk 已知風險名單，請不要輕易開啟或輸入個資。';
         } else {
-          securityBadge.className = 'inline-flex items-center rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-800';
+          securityBadge.className = 'inline-flex items-center rounded-full bg-amber-100 px-4 py-2 text-sm font-bold text-amber-900 border border-amber-300';
           securityBadge.textContent = '？ 無法判斷';
           securityMessage.textContent = '這次暫時無法完成風險判斷，請稍後再試。';
         }
@@ -341,7 +358,7 @@ __OG_IMAGE_META__
 
       function renderChain(chain) {
         if (!Array.isArray(chain) || chain.length === 0) {
-          chainList.innerHTML = '<p class="text-sm text-slate-500">這筆結果沒有可用的跳轉節點。</p>';
+          chainList.innerHTML = '<p class="text-sm text-[#594e36]">這筆結果沒有可用的跳轉節點。</p>';
           return;
         }
 
@@ -354,28 +371,28 @@ __OG_IMAGE_META__
             const duration = item.duration_ms === null ? 'N/A' : `${item.duration_ms} ms`;
             const elapsedText =
               typeof item.elapsed_ms === 'number'
-                ? `<p class="mt-1 text-[11px] font-mono text-slate-400">⏱ +${item.duration_ms !== null ? item.duration_ms : 0} ms (${item.elapsed_ms} ms)</p>`
+                ? `<p class="mt-1 text-[11px] font-mono text-[#594e36] font-semibold">⏱ +${item.duration_ms !== null ? item.duration_ms : 0} ms (${item.elapsed_ms} ms)</p>`
                 : '';
 
             return `
-              <article class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+              <article class="rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/50 p-4">
                 <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div class="min-w-0">
                     <div class="flex flex-wrap items-center gap-2">
-                      <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-slate-900 px-2 text-sm font-bold text-white">${item.step}</span>
-                      <span class="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700">${escapeHtml(item.type)}</span>
+                      <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-[#17324d] px-2 text-sm font-bold text-white">${item.step}</span>
+                      <span class="inline-flex rounded-full bg-[#fff0cc] px-3 py-1 text-xs font-bold text-[#2b251a] border border-[#d6bc7c]">${escapeHtml(item.type)}</span>
                     </div>
-                    <p class="mt-3 break-all text-sm font-semibold text-slate-900">${escapeHtml(item.url)}</p>
-                    ${item.from_url ? `<p class="mt-2 break-all text-xs text-slate-500">From: ${escapeHtml(item.from_url)}</p>` : ''}
+                    <p class="mt-3 break-all text-sm font-bold text-[#17324d]">${escapeHtml(item.url)}</p>
+                    ${item.from_url ? `<p class="mt-2 break-all text-xs text-[#594e36]">From: ${escapeHtml(item.from_url)}</p>` : ''}
                   </div>
-                  <div class="grid shrink-0 grid-cols-2 gap-3 text-sm text-slate-600 md:min-w-56">
-                    <div class="rounded-xl bg-white px-3 py-2">
-                      <p class="text-xs uppercase tracking-wide text-slate-400">Status</p>
-                      <p class="mt-1 font-semibold text-slate-800">${escapeHtml(status)}</p>
+                  <div class="grid shrink-0 grid-cols-2 gap-3 text-sm text-[#594e36] md:min-w-56">
+                    <div class="rounded-xl border border-[#d6bc7c]/50 bg-white px-3 py-2">
+                      <p class="text-xs uppercase tracking-wide text-[#594e36] font-semibold">Status</p>
+                      <p class="mt-1 font-bold text-[#2b251a]">${escapeHtml(status)}</p>
                     </div>
-                    <div class="rounded-xl bg-white px-3 py-2">
-                      <p class="text-xs uppercase tracking-wide text-slate-400">Time</p>
-                      <p class="mt-1 font-semibold text-slate-800">${escapeHtml(duration)}</p>
+                    <div class="rounded-xl border border-[#d6bc7c]/50 bg-white px-3 py-2">
+                      <p class="text-xs uppercase tracking-wide text-[#594e36] font-semibold">Time</p>
+                      <p class="mt-1 font-bold text-[#2b251a]">${escapeHtml(duration)}</p>
                       ${elapsedText}
                     </div>
                   </div>
@@ -420,47 +437,52 @@ __OG_IMAGE_META__
             const categoryBadges = categories
               .map(
                 (cat) =>
-                  `<span class="inline-flex rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-slate-600 border border-slate-200/80">${escapeHtml(
+                  `<span class="inline-flex rounded-full bg-[#fff9e8] px-2 py-0.5 text-[11px] font-semibold text-[#594e36] border border-[#d6bc7c]/70">${escapeHtml(
                     cat.name || cat
                   )}</span>`
               )
               .join('');
 
             const versionBadge = tech.version
-              ? `<span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-mono font-semibold text-emerald-700 border border-emerald-200">v${escapeHtml(
+              ? `<span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-mono font-bold text-emerald-900 border border-emerald-300">v${escapeHtml(
                   tech.version
                 )}</span>`
               : '';
 
             const websiteLink = tech.website
-              ? `<a href="${sanitizeHref(tech.website)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-semibold text-accent hover:underline decoration-accent/40">官方網站 ↗</a>`
-              : '<span class="text-slate-400">無官方連結</span>';
+              ? `<a href="${sanitizeHref(tech.website)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-bold text-[#17324d] hover:text-[#a9471d] underline decoration-[#d6bc7c]">官方網站 ↗</a>`
+              : '<span class="text-[#594e36]/70">無官方連結</span>';
 
             const description = tech.description
-              ? `<p class="mt-1.5 text-xs text-slate-500 line-clamp-2">${escapeHtml(tech.description)}</p>`
+              ? `<p class="mt-1.5 text-xs text-[#594e36] line-clamp-2">${escapeHtml(tech.description)}</p>`
               : '';
 
             const confidence =
               typeof tech.confidence === 'number'
-                ? `<span class="text-slate-400 font-mono text-[11px]">${escapeHtml(tech.confidence)}% 信心度</span>`
+                ? `<span class="text-[#594e36] font-mono text-[11px] font-semibold">${escapeHtml(tech.confidence)}% 信心度</span>`
                 : '';
 
             return `
-              <div class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50/70 p-4 transition hover:bg-slate-50 hover:border-slate-300">
+              <div class="flex flex-col justify-between rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/40 p-4 transition hover:bg-[#fff9e8] hover:border-[#d6bc7c]">
                 <div>
                   <div class="flex flex-wrap items-center gap-1.5 mb-2">
                     ${categoryBadges}
                   </div>
                   <div class="flex flex-wrap items-center gap-2">
-                    <span class="text-base font-bold text-slate-900">${escapeHtml(tech.name)}</span>
+                    <span class="text-base font-bold text-[#17324d]">${escapeHtml(tech.name)}</span>
                     ${versionBadge}
                   </div>
                   ${description}
                 </div>
-                <div class="mt-3 flex items-center justify-between pt-2 border-t border-slate-200/60 text-xs">
+                <div class="mt-3 flex items-center justify-between pt-2 border-t border-[#d6bc7c]/40 text-xs">
                   ${websiteLink}
                   ${confidence}
                 </div>
+              </div>
+            `;
+          })
+          .join('');
+      }
               </div>
             `;
           })
