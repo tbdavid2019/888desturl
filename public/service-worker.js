@@ -1,5 +1,5 @@
 const CACHE_PREFIX = '888desturl';
-const CACHE_VERSION = 'v8';
+const CACHE_VERSION = 'v9';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${CACHE_VERSION}`;
 const APP_SHELL = [

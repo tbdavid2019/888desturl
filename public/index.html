@@ -323,34 +323,6 @@
                   <!-- Category Filter Pills Bar -->
                   <div id="tech-category-filter" class="mb-3 flex flex-wrap gap-1.5"></div>
 
-                  <!-- Live Tech Inspector Card (Eliminates tooltip clipping, mobile touch friendly) -->
-                  <div id="tech-inspector-card" class="mb-3.5 rounded-xl border border-[#d6bc7c]/70 bg-[#fff9e8] p-3.5 sm:p-4 text-sm sm:text-base transition-all shadow-2xs">
-                    <div id="tech-inspector-empty" class="flex items-center gap-2.5 text-[#594e36] text-sm sm:text-base">
-                      <i data-lucide="info" class="w-4 h-4 sm:w-5 sm:h-5 text-[#a9471d] shrink-0"></i>
-                      <span data-i18n="techInspectorEmpty">點擊或懸停任一技術標籤，可在此檢視詳細說明與官方連結。</span>
-                    </div>
-                    <div id="tech-inspector-detail" class="hidden">
-                      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#d6bc7c]/40 pb-2.5 mb-2.5">
-                        <div class="flex flex-wrap items-center gap-2">
-                          <span id="tech-inspector-name" class="text-base sm:text-lg font-bold text-[#17324d]"></span>
-                          <span id="tech-inspector-version" class="hidden rounded bg-emerald-100 px-2 py-0.5 text-xs sm:text-sm font-mono font-bold text-emerald-900 border border-emerald-300"></span>
-                          <span id="tech-inspector-cat" class="rounded-full bg-[#fff0cc] px-2.5 py-0.5 text-xs sm:text-sm font-semibold text-[#a9471d] border border-[#d6bc7c]/60"></span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                          <a id="tech-inspector-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden inline-flex items-center gap-1.5 rounded-lg border border-[#d6bc7c] bg-white px-3 py-1.5 text-xs sm:text-sm font-bold text-[#17324d] hover:bg-[#fff0cc]">
-                            <span data-i18n="techInspectorWebsite">官方網站</span>
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                          </a>
-                          <button id="tech-inspector-copy" type="button" class="inline-flex items-center gap-1.5 rounded-lg bg-[#17324d] px-3 py-1.5 text-xs sm:text-sm font-bold text-white hover:bg-[#1f4265] cursor-pointer">
-                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                            <span data-i18n="techInspectorCopy">複製名稱</span>
-                          </button>
-                        </div>
-                      </div>
-                      <p id="tech-inspector-desc" class="text-sm sm:text-base leading-relaxed text-[#2b251a] font-medium"></p>
-                    </div>
-                  </div>
-
                   <div id="tech-empty" class="rounded-xl border border-dashed border-[#d6bc7c] bg-[#fff9e8]/50 px-4 py-8 text-center text-sm sm:text-base text-[#594e36]">
                     未在此網頁偵測到已知的 Web 技術指紋。
                   </div>
@@ -599,6 +571,30 @@
       </div>
     </section>
 
+    <!-- Floating Tech Inspector Popover (hover 漂浮顯示) -->
+    <div
+      id="tech-popover"
+      class="fixed z-50 hidden w-[320px] sm:w-[380px] max-w-[calc(100vw-32px)] max-h-[calc(100vh-32px)] overflow-y-auto rounded-xl border border-[#d6bc7c] bg-white p-3.5 sm:p-4 shadow-2xl transition-opacity duration-150 opacity-0 pointer-events-auto"
+      role="tooltip"
+      aria-hidden="true"
+    >
+      <div class="flex items-center justify-between gap-2 border-b border-[#d6bc7c]/30 pb-2 mb-2">
+        <div class="flex items-center gap-2 min-w-0">
+          <span id="popover-tech-name" class="text-sm sm:text-base font-bold text-[#17324d] truncate"></span>
+          <span id="popover-tech-version" class="hidden shrink-0 rounded bg-emerald-100 px-1.5 py-0.5 text-xs font-mono font-bold text-emerald-900 border border-emerald-300"></span>
+        </div>
+        <span id="popover-tech-cat" class="shrink-0 rounded-full bg-[#fff0cc] px-2 py-0.5 text-xs font-semibold text-[#a9471d] border border-[#d6bc7c]/50"></span>
+      </div>
+      <p id="popover-tech-desc" class="text-xs sm:text-sm text-[#2b251a] leading-relaxed mb-2.5 font-normal"></p>
+      <div class="flex items-center justify-between text-xs text-[#594e36] pt-1.5 border-t border-[#d6bc7c]/20">
+        <a id="popover-tech-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden inline-flex items-center gap-1 font-bold text-[#17324d] hover:text-[#a9471d] hover:underline">
+          <span data-i18n="techInspectorWebsite">官方網站</span>
+          <i data-lucide="external-link" class="w-3 h-3"></i>
+        </a>
+        <span class="text-[11px] text-[#594e36]/75" data-i18n="techChipTip">點擊標籤直接複製名稱</span>
+      </div>
+    </div>
+
     <script>
       const LOCAL_HISTORY_KEY = '888desturl-recent-history';
       const LOCAL_HISTORY_LIMIT = 20;
@@ -658,9 +654,8 @@
           techCopied: '已複製技術清單',
           singleTechCopied: '已複製：',
           allCategories: '全部',
-          techInspectorEmpty: '點擊或懸停任一技術標籤，可在此檢視詳細說明與官方連結。',
           techInspectorWebsite: '官方網站',
-          techInspectorCopy: '複製名稱',
+          techChipTip: '點擊標籤直接複製名稱',
           featuresTitle: '核心功能與分析維度',
           featureTechTitle: '7,600+ Web 技術棧指紋',
           featureTechDesc: '即時探測 CMS (WordPress, Shopify)、伺服器 (Nginx, Cloudflare)、前端框架 (React, Vue) 與套件版本。',
@@ -765,9 +760,8 @@
           techCopied: 'Tech stack copied',
           singleTechCopied: 'Copied: ',
           allCategories: 'All',
-          techInspectorEmpty: 'Hover or click any technology chip to inspect full details and official link.',
           techInspectorWebsite: 'Official Website',
-          techInspectorCopy: 'Copy Name',
+          techChipTip: 'Click chip to copy name',
           featuresTitle: 'Core Capabilities & Intelligence',
           featureTechTitle: '7,600+ Web Tech Fingerprints',
           featureTechDesc: 'Automatically detect CMS, web servers, frontend frameworks, analytics, and software versions.',
@@ -1122,47 +1116,108 @@
         markdownSection.classList.remove('hidden');
       }
 
-      function inspectTechnology(tech) {
-        const inspectorEmpty = document.getElementById('tech-inspector-empty');
-        const inspectorDetail = document.getElementById('tech-inspector-detail');
-        const inspectorName = document.getElementById('tech-inspector-name');
-        const inspectorVersion = document.getElementById('tech-inspector-version');
-        const inspectorCat = document.getElementById('tech-inspector-cat');
-        const inspectorDesc = document.getElementById('tech-inspector-desc');
-        const inspectorLink = document.getElementById('tech-inspector-link');
-        const inspectorCopy = document.getElementById('tech-inspector-copy');
+      const techPopover = document.getElementById('tech-popover');
+      const popoverTechName = document.getElementById('popover-tech-name');
+      const popoverTechVersion = document.getElementById('popover-tech-version');
+      const popoverTechCat = document.getElementById('popover-tech-cat');
+      const popoverTechDesc = document.getElementById('popover-tech-desc');
+      const popoverTechLink = document.getElementById('popover-tech-link');
+      let popoverHideTimer = null;
 
-        if (!inspectorDetail) return;
+      function hideTechPopover(immediate = false) {
+        clearTimeout(popoverHideTimer);
+        if (!techPopover) return;
+        if (immediate) {
+          techPopover.classList.add('hidden', 'opacity-0');
+          techPopover.classList.remove('opacity-100');
+          techPopover.setAttribute('aria-hidden', 'true');
+          return;
+        }
+        popoverHideTimer = setTimeout(() => {
+          techPopover.classList.add('hidden', 'opacity-0');
+          techPopover.classList.remove('opacity-100');
+          techPopover.setAttribute('aria-hidden', 'true');
+        }, 200);
+      }
 
-        inspectorEmpty.classList.add('hidden');
-        inspectorDetail.classList.remove('hidden');
+      function showTechPopover(chipEl, tech) {
+        if (!techPopover || !tech) return;
+        clearTimeout(popoverHideTimer);
 
-        inspectorName.textContent = tech.name || '';
+        popoverTechName.textContent = tech.name || '';
         if (tech.version) {
-          inspectorVersion.textContent = `v${tech.version}`;
-          inspectorVersion.classList.remove('hidden');
+          popoverTechVersion.textContent = `v${tech.version}`;
+          popoverTechVersion.classList.remove('hidden');
         } else {
-          inspectorVersion.classList.add('hidden');
+          popoverTechVersion.classList.add('hidden');
         }
 
-        inspectorCat.textContent = tech.category || '';
-        inspectorDesc.textContent = tech.description || (currentLanguage === 'zh-TW' ? '暫無詳細技術描述。' : 'No description available.');
+        popoverTechCat.textContent = tech.category || '';
+        popoverTechDesc.textContent = tech.description || (currentLanguage === 'zh-TW' ? '暫無詳細技術描述。' : 'No description available.');
 
         if (tech.website) {
-          inspectorLink.href = sanitizeHref(tech.website);
-          inspectorLink.classList.remove('hidden');
+          popoverTechLink.href = sanitizeHref(tech.website);
+          popoverTechLink.classList.remove('hidden');
         } else {
-          inspectorLink.classList.add('hidden');
+          popoverTechLink.classList.add('hidden');
         }
 
-        inspectorCopy.onclick = async () => {
-          const copyVal = tech.name + (tech.version ? ` v${tech.version}` : '');
-          await navigator.clipboard.writeText(copyVal);
-          showCopyToast(`${t('singleTechCopied') || '已複製：'}${copyVal}`);
-        };
+        refreshIcons(techPopover);
 
-        refreshIcons(inspectorDetail);
+        techPopover.classList.remove('hidden', 'opacity-0');
+        techPopover.classList.add('opacity-100');
+        techPopover.setAttribute('aria-hidden', 'false');
+
+        const rect = chipEl.getBoundingClientRect();
+        const popoverRect = techPopover.getBoundingClientRect();
+
+        const margin = 10;
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        let left = rect.left;
+        if (left + popoverRect.width > viewportWidth - margin) {
+          left = viewportWidth - popoverRect.width - margin;
+        }
+        if (left < margin) {
+          left = margin;
+        }
+
+        let top = rect.top - popoverRect.height - margin;
+        if (top < margin) {
+          top = rect.bottom + margin;
+        }
+        if (top + popoverRect.height > viewportHeight - margin) {
+          if (rect.top > viewportHeight - rect.bottom) {
+            top = Math.max(margin, rect.top - popoverRect.height - margin);
+          } else {
+            top = Math.max(margin, viewportHeight - popoverRect.height - margin);
+          }
+        }
+
+        techPopover.style.left = `${Math.round(left)}px`;
+        techPopover.style.top = `${Math.round(top)}px`;
       }
+
+      if (techPopover) {
+        techPopover.addEventListener('mouseenter', () => {
+          clearTimeout(popoverHideTimer);
+        });
+        techPopover.addEventListener('mouseleave', () => {
+          hideTechPopover(false);
+        });
+      }
+
+      window.addEventListener('scroll', () => hideTechPopover(true), { passive: true });
+      window.addEventListener('resize', () => hideTechPopover(true), { passive: true });
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') hideTechPopover(true);
+      });
+      document.addEventListener('pointerdown', (e) => {
+        if (techPopover && !techPopover.contains(e.target) && !e.target.closest('.tech-chip')) {
+          hideTechPopover(true);
+        }
+      });
 
       function renderTechnologies(technologies) {
         if (!techSection) return;
@@ -1170,6 +1225,7 @@
         latestTechnologies = Array.isArray(technologies) ? technologies : [];
 
         if (latestTechnologies.length === 0) {
+          hideTechPopover(true);
           techEmpty.classList.remove('hidden');
           techList.classList.add('hidden');
           techList.innerHTML = '';
@@ -1257,7 +1313,10 @@
 
                 return `
                   <div
-                    class="tech-chip group relative inline-flex items-center gap-1.5 rounded-lg border border-[#d6bc7c]/70 bg-[#fffdf8] px-3 py-1.5 shadow-2xs transition hover:border-[#ffb010] hover:bg-[#fff9e8] cursor-pointer"
+                    role="button"
+                    tabindex="0"
+                    aria-haspopup="dialog"
+                    class="tech-chip group relative inline-flex items-center gap-1.5 rounded-lg border border-[#d6bc7c]/70 bg-[#fffdf8] px-3 py-1.5 shadow-2xs transition hover:border-[#ffb010] hover:bg-[#fff9e8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#17324d] focus-visible:ring-offset-2 cursor-pointer"
                     title="${escapeHtml(tech.description || tech.name)}"
                     data-tech-item="${dataPayload}"
                     data-copy-tech="${escapeHtml(tech.name + (tech.version ? ' v' + tech.version : ''))}"
@@ -1297,17 +1356,28 @@
           }
 
           if (parsed) {
-            el.addEventListener('mouseenter', () => inspectTechnology(parsed));
+            el.addEventListener('mouseenter', () => showTechPopover(el, parsed));
+            el.addEventListener('mouseleave', () => hideTechPopover(false));
+            el.addEventListener('focus', () => showTechPopover(el, parsed));
+            el.addEventListener('blur', () => hideTechPopover(false));
           }
 
-          el.addEventListener('click', async () => {
+          async function triggerTechAction() {
             if (parsed) {
-              inspectTechnology(parsed);
+              showTechPopover(el, parsed);
             }
             const textToCopy = el.getAttribute('data-copy-tech');
             if (textToCopy) {
               await navigator.clipboard.writeText(textToCopy);
               showCopyToast(`${t('singleTechCopied') || '已複製：'}${textToCopy}`);
+            }
+          }
+
+          el.addEventListener('click', triggerTechAction);
+          el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              triggerTechAction();
             }
           });
         });
@@ -1695,6 +1765,7 @@
 
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
+        hideTechPopover(true);
         hideFeedback();
         results.classList.add('hidden');
         latestResultUrl = '';

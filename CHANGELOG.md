@@ -2,6 +2,30 @@
 
 ## 2026-10-24
 
+### Technology Detection Precision Fix & Floating Hover Popover Overhaul
+
+- **Eliminated False-Positive Tech Fingerprint Matches (`lib/tech-detector.js`)**:
+  - Fixed a critical DOM fingerprint evaluation bug where technologies with complex DOM sub-rules (e.g. `Drupal Multisite`, `WordPress Multisite`, `Headless UI`, `Apple Sign-in`) were falsely flagged simply because standard tags like `<style>` or `<div>` existed in the DOM.
+  - Implemented `compiledDomRules` in `buildIndexes` that compiles `attributes` regex patterns, `text` regex patterns, and `properties` rules alongside selector queries.
+  - In `extractPageTechSignals`, the DOM scanning routine queries nodes and rigorously executes regex checks on `textContent` and `getAttribute`, resolving version templates and backreferences (`resolveVersionTemplate`).
+  - Verified on static sites like `https://david888.com`: eliminated 32+ false positive backend technologies (Drupal, WordPress, PHP, MySQL, Java, Python), accurately identifying only genuine client-side technologies (GitHub Pages, Fastly, Google Fonts, Lucide, React, Preact, PWA).
+- **Floating Hover Tooltip / Popover Overhaul (`public/index.html`, `public/result.html`)**:
+  - Removed the static pinned `#tech-inspector-card` that took up permanent vertical layout space, pushed tech lists down, and remained stuck across subsequent traces.
+  - Implemented `#tech-popover`: a sleek, floating popover (`fixed z-50 pointer-events-auto`) positioned dynamically relative to the hovered chip (`top`/`left` boundary clamped with viewport overflow protection and `max-h-[calc(100vh-32px)] overflow-y-auto`).
+  - Automatically disappears on mouse leave (with smooth 200ms debounce buffer), window scroll, viewport resize, and `Escape` key press.
+  - Automatically resets and hides immediately on form submission (`submit`) with zero residue on subsequent traces.
+  - Preserved 1-click clipboard copy of technology name and version upon clicking or tapping chips.
+- **Full WCAG 2.1.1 Keyboard & Screen Reader Accessibility (`public/index.html`, `public/result.html`)**:
+  - Converted `.tech-chip` elements into fully accessible interactive widgets with `role="button"`, `tabindex="0"`, `aria-haspopup="dialog"`, and high-contrast `focus-visible` outline rings.
+  - Added keyboard interaction handling for `Enter` and `Space` keys (with `e.preventDefault()` to prevent scrolling).
+  - Wired `focus` and `blur` events to toggle the floating popover seamlessly for keyboard-only and screen reader navigation.
+- **Service Worker Cache Upgrade to `v9` (`public/service-worker.js`)**:
+  - Bumped shell cache version from `v8` to `v9` to immediately evict old shell caches and deliver the floating popover layout.
+- **Comprehensive Test Suite & OpenCode Review (`test/tech-detector.test.js`)**:
+  - Added unit and DOM probing tests covering structured DOM signals, attribute regex matching, version extraction, and WCAG accessibility attributes (all 47 tests passing).
+  - Passed dual OpenCode CLI automated code review with 0 remaining warnings or defects.
+
+
 ### Footer UX Cleanup: Removed Redundant WebMCP Badge & Cleaned Footer Links
 
 - **Eliminated Redundant WebMCP External Badge (`public/index.html`, `public/result.html`)**:

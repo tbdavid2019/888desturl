@@ -166,6 +166,47 @@ test('detectTechnologies handles null, undefined, and malformed inputs gracefull
   );
 });
 
+test('detectTechnologies matches structured DOM signals accurately and avoids false positives', () => {
+  const customDb = {
+    technologies: {
+      TechWithText: {
+        cats: [1],
+        dom: {
+          style: {
+            text: '/sites/(?:default|all)/'
+          }
+        }
+      },
+      TechWithPresenceOnly: {
+        cats: [2],
+        dom: ['div#special-marker']
+      }
+    },
+    categories: {
+      1: { name: 'CMS' },
+      2: { name: 'Framework' }
+    }
+  };
+
+  // 1. Tag presence without text match should NOT match TechWithText
+  const signalsNoMatch = {
+    dom: []
+  };
+  const detectedNoMatch = detectTechnologies(signalsNoMatch, customDb);
+  assert.equal(detectedNoMatch.some((t) => t.name === 'TechWithText'), false);
+
+  // 2. Structured match reported from extractor should match
+  const signalsMatch = {
+    dom: [
+      { techName: 'TechWithText', version: '2.0', confidence: 100 },
+      'div#special-marker'
+    ]
+  };
+  const detectedMatch = detectTechnologies(signalsMatch, customDb);
+  assert.equal(detectedMatch.some((t) => t.name === 'TechWithText'), true);
+  assert.equal(detectedMatch.some((t) => t.name === 'TechWithPresenceOnly'), true);
+});
+
 test('extractPageTechSignals extracts headers from navigationResponses and cookies from context', async () => {
   const mockResponses = [
     {
@@ -199,7 +240,69 @@ test('extractPageTechSignals extracts headers from navigationResponses and cooki
   assert.equal(signals.cookies.theme, 'dark');
 });
 
-test('result.html includes Web Technologies section with DOM XSS defenses', () => {
+test('extractPageTechSignals evaluates page DOM rules with attributes and text matching', async () => {
+  const mockPage = {
+    evaluate: async (fn, arg) => {
+      // Simulate evaluate with mock document
+      return fn({
+        probeJsKeys: arg.probeJsKeys,
+        probeDomRules: arg.probeDomRules
+      });
+    }
+  };
+
+  // Run in mock browser environment with minimal DOM globals
+  const originalDoc = global.document;
+  try {
+    global.document = {
+      querySelectorAll: (sel) => {
+        if (sel === 'style') {
+          return [{ textContent: '/* Drupal multisite /sites/all/themes */', getAttribute: () => null }];
+        }
+        if (sel === 'meta[name="generator"]') {
+          return [{ textContent: '', getAttribute: (attr) => (attr === 'content' ? 'WordPress 6.4.2' : null) }];
+        }
+        return [];
+      }
+    };
+
+    const customDb = {
+      technologies: {
+        DrupalMultisite: {
+          cats: [1],
+          dom: {
+            style: {
+              text: '/sites/(?:default|all)/'
+            }
+          }
+        },
+        WordPressGen: {
+          cats: [1],
+          dom: {
+            'meta[name="generator"]': {
+              attributes: {
+                content: 'WordPress (\\d+\\.\\d+(?:\\.\\d+)?)'
+              }
+            }
+          }
+        }
+      },
+      categories: { 1: { name: 'CMS' } }
+    };
+
+    const signals = await extractPageTechSignals(mockPage, [], null, customDb);
+    assert.ok(Array.isArray(signals.dom), 'signals.dom should be an array');
+    const matchedNames = signals.dom.map((d) => d.techName);
+    assert.ok(matchedNames.includes('DrupalMultisite'), 'DrupalMultisite text regex should match style text');
+    assert.ok(matchedNames.includes('WordPressGen'), 'WordPressGen attribute regex should match generator content');
+    const wpMatch = signals.dom.find((d) => d.techName === 'WordPressGen');
+    assert.equal(wpMatch.version, '6.4.2', 'WordPress version should be extracted from regex group');
+  } finally {
+    global.document = originalDoc;
+  }
+});
+
+test('result.html includes Web Technologies section with floating popover and DOM XSS defenses', () => {
   const resultPath = path.join(__dirname, '..', 'public', 'result.html');
   const resultHtml = fs.readFileSync(resultPath, 'utf8');
 
@@ -208,6 +311,12 @@ test('result.html includes Web Technologies section with DOM XSS defenses', () =
   assert.ok(resultHtml.includes('id="tech-list"'), 'result.html must include tech-list container');
   assert.ok(resultHtml.includes('id="tech-empty"'), 'result.html must include tech-empty state');
   assert.ok(resultHtml.includes('id="tech-count-text"'), 'result.html must include tech-count-text badge');
+  assert.ok(resultHtml.includes('id="tech-popover"'), 'result.html must include floating tech-popover');
+  assert.ok(!resultHtml.includes('id="tech-inspector-card"'), 'result.html must NOT have static tech-inspector-card');
+  assert.ok(resultHtml.includes('role="button"'), 'tech chips must have role="button"');
+  assert.ok(resultHtml.includes('tabindex="0"'), 'tech chips must be focusable with tabindex="0"');
+  assert.ok(resultHtml.includes('aria-haspopup="dialog"'), 'tech chips must announce dialog popup');
+  assert.ok(resultHtml.includes('Escape'), 'popover must dismiss on Escape key');
 
   // Verify renderTechnologies function and XSS escaping
   assert.ok(resultHtml.includes('function renderTechnologies'), 'result.html must define renderTechnologies');
@@ -215,13 +324,19 @@ test('result.html includes Web Technologies section with DOM XSS defenses', () =
   assert.ok(resultHtml.includes('sanitizeHref(tech.website)'), 'tech.website must be sanitized with sanitizeHref');
 });
 
-test('index.html includes Web Technologies section with DOM XSS defenses', () => {
+test('index.html includes Web Technologies section with floating popover and DOM XSS defenses', () => {
   const indexPath = path.join(__dirname, '..', 'public', 'index.html');
   const indexHtml = fs.readFileSync(indexPath, 'utf8');
 
   assert.ok(indexHtml.includes('id="tech-section"'), 'index.html must include tech-section');
   assert.ok(indexHtml.includes('id="tech-list"'), 'index.html must include tech-list container');
   assert.ok(indexHtml.includes('id="tech-empty"'), 'index.html must include tech-empty state');
+  assert.ok(indexHtml.includes('id="tech-popover"'), 'index.html must include floating tech-popover');
+  assert.ok(!indexHtml.includes('id="tech-inspector-card"'), 'index.html must NOT have static tech-inspector-card');
+  assert.ok(indexHtml.includes('role="button"'), 'tech chips must have role="button"');
+  assert.ok(indexHtml.includes('tabindex="0"'), 'tech chips must be focusable with tabindex="0"');
+  assert.ok(indexHtml.includes('aria-haspopup="dialog"'), 'tech chips must announce dialog popup');
+  assert.ok(indexHtml.includes('Escape'), 'popover must dismiss on Escape key');
   assert.ok(indexHtml.includes('function renderTechnologies'), 'index.html must define renderTechnologies');
   assert.ok(indexHtml.includes('escapeHtml(tech.name)'), 'tech.name must be escaped with escapeHtml');
   assert.ok(indexHtml.includes('sanitizeHref(tech.website)'), 'tech.website must be sanitized with sanitizeHref');
