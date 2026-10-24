@@ -2,6 +2,16 @@
 
 ## 2026-10-24
 
+### Automated CI/CD & Watchtower Deployment
+
+- **GitHub Actions Dual-Registry Publishing (`.github/workflows/docker-publish.yml`)**:
+  - Added GitHub Container Registry (`ghcr.io/tbdavid2019/888desturl:latest`) alongside Docker Hub (`tbdavid2019/888desturl:latest`).
+  - Added automatic multi-arch builds (`linux/amd64`, `linux/arm64`) with automated GitHub Packages token authentication.
+- **Continuous Deployment with Watchtower (`docker-compose.yml`)**:
+  - Added dedicated scoped Watchtower service (`watchtower-desturl`) with `com.centurylinklabs.watchtower.scope=desturl`.
+  - Configured 60-second polling interval and automatic stale image cleanup (`WATCHTOWER_CLEANUP=true`).
+  - Container automatically updates without manual SSH or restart commands upon Docker image publish.
+
 ### Web Technology Detection (WebAppAnalyzer Integration)
 
 - **Fingerprints Database Compilation & Refresh (`data/technologies.json` & `scripts/update-technologies.js`)**:

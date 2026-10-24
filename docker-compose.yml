@@ -15,4 +15,23 @@ services:
     volumes:
       - ./data:/app/data
     shm_size: "1gb"
+    labels:
+      - "com.centurylinklabs.watchtower.scope=desturl"
+      - "com.centurylinklabs.watchtower.enable=true"
     restart: unless-stopped
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower-desturl
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_API_VERSION=1.44
+      - WATCHTOWER_POLL_INTERVAL=60
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_RESTARTING=true
+      - WATCHTOWER_SCOPE=desturl
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_WARN_ON_HEAD_FAILURE=always
+    command: --label-enable --scope desturl
