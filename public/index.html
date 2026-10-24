@@ -123,26 +123,21 @@
 
           <form
             id="trace-form"
-            class="sticky top-2 sm:top-4 z-40 my-6 rounded-2xl border-2 border-[#d6bc7c]/80 bg-[#fffdf8]/95 p-3.5 sm:p-5 shadow-sticky backdrop-blur-md transition-all duration-200"
+            class="sticky top-2 sm:top-3 z-40 my-3 rounded-2xl border border-[#d6bc7c]/80 bg-[#fffdf8]/95 p-2 sm:p-2.5 shadow-sticky backdrop-blur-md transition-all duration-200"
             novalidate
             toolname="trace_url"
             tooldescription="Trace the real final destination of any redirecting URL or bare domain through HTTP redirects, HTML meta refresh, and JavaScript navigation. Automatically detects 7,600+ web technologies & server frameworks, strips marketing tracking parameters, and checks Google Web Risk safety."
           >
-            <div class="flex items-center justify-between mb-2">
-              <label
-                for="url-input"
-                data-i18n="urlLabel"
-                class="block text-xs sm:text-sm font-bold text-[#2b251a]"
-              >
-                目標網址
-              </label>
-              <span class="text-[11px] font-semibold text-[#594e36] hidden sm:inline-flex items-center gap-1.5">
-                <span class="h-2 w-2 rounded-full bg-[#ffb010]"></span>
-                <span>自動偵測技術棧 & 深度鏈路</span>
-              </span>
-            </div>
-            <div class="flex flex-col gap-2.5 sm:flex-row">
+            <label
+              for="url-input"
+              data-i18n="urlLabel"
+              class="sr-only"
+            >
+              目標網址
+            </label>
+            <div class="flex items-center gap-2">
               <div class="relative flex-1">
+                <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm text-[#594e36]/70" aria-hidden="true">🔍</span>
                 <input
                   id="url-input"
                   name="url"
@@ -156,13 +151,13 @@
                   aria-describedby="form-hint"
                   toolparamdescription="Target URL or bare domain to trace (e.g. david888.com or https://example.com)"
                   placeholder="https://example.com 或 example.com"
-                  class="min-h-13 w-full rounded-xl sm:rounded-2xl border-2 border-[#d6bc7c]/70 bg-white px-4 text-base text-[#2b251a] placeholder-[#594e36]/60 outline-none transition focus:border-[#ffb010] focus:ring-4 focus:ring-[#ffb010]/20"
+                  class="h-10 sm:h-11 w-full rounded-xl border border-[#d6bc7c]/70 bg-white pl-9 pr-3 text-sm text-[#2b251a] placeholder-[#594e36]/60 outline-none transition focus:border-[#ffb010] focus:ring-2 focus:ring-[#ffb010]/30"
                 />
               </div>
               <button
                 id="submit-button"
                 type="submit"
-                class="inline-flex min-h-13 items-center justify-center rounded-xl sm:rounded-2xl bg-[#17324d] px-6 font-bold text-white transition hover:bg-[#1f4265] focus:outline-none focus:ring-4 focus:ring-[#17324d]/30 disabled:cursor-not-allowed disabled:bg-[#594e36]/40 shadow-sm cursor-pointer"
+                class="inline-flex h-10 sm:h-11 shrink-0 items-center justify-center rounded-xl bg-[#17324d] px-4 sm:px-5 text-sm font-bold text-white transition hover:bg-[#1f4265] focus:outline-none focus:ring-2 focus:ring-[#17324d]/30 disabled:cursor-not-allowed disabled:bg-[#594e36]/40 shadow-sm cursor-pointer"
               >
                 <span id="submit-text">開始追蹤</span>
               </button>
@@ -170,335 +165,188 @@
             <p
               id="form-hint"
               data-i18n="formHint"
-              class="mt-2 text-xs text-[#594e36]"
+              class="hidden"
             >
               輸入完整的 `http://` 或 `https://` 網址。
             </p>
           </form>
 
-          <!-- Core Capabilities Highlights (核心功能特色) -->
-          <section id="features-overview" class="mt-8 border-t border-[#d6bc7c]/30 pt-6">
-            <div class="mb-4 flex items-center justify-between">
-              <h2 data-i18n="featuresTitle" class="text-sm font-bold uppercase tracking-wider text-[#594e36]">
-                核心功能與分析維度
-              </h2>
-              <span class="rounded-full bg-[#fff0cc] px-2.5 py-0.5 text-[11px] font-bold text-[#17324d] border border-[#d6bc7c]/60">
-                5-in-1 URL Intelligence
-              </span>
-            </div>
-            <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
-              <!-- Feature 1: Web Technologies -->
-              <div class="rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/60 p-4 transition hover:bg-[#fff9e8] hover:border-[#d6bc7c]">
-                <div class="flex items-center gap-2">
-                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#17324d] text-white text-sm shadow-sm" aria-hidden="true">🛠️</span>
-                  <div>
-                    <h3 data-i18n="featureTechTitle" class="text-sm font-bold text-[#17324d]">7,600+ Web 技術棧指紋</h3>
-                    <span class="text-[10px] font-semibold text-[#a9471d]">enthec/webappanalyzer</span>
-                  </div>
-                </div>
-                <p data-i18n="featureTechDesc" class="mt-2 text-xs leading-relaxed text-[#594e36]">
-                  即時探測 CMS (WordPress, Shopify)、伺服器 (Nginx, Cloudflare)、前端框架 (React, Vue) 與套件版本。
-                </p>
-              </div>
 
-              <!-- Feature 2: Deep Redirect Trace -->
-              <div class="rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/60 p-4 transition hover:bg-[#fff9e8] hover:border-[#d6bc7c]">
-                <div class="flex items-center gap-2">
-                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#17324d] text-white text-sm shadow-sm" aria-hidden="true">🔍</span>
-                  <div>
-                    <h3 data-i18n="featureTraceTitle" class="text-sm font-bold text-[#17324d]">深度跳轉鏈路還原</h3>
-                    <span class="text-[10px] font-semibold text-[#a9471d]">Headless Chromium</span>
-                  </div>
-                </div>
-                <p data-i18n="featureTraceDesc" class="mt-2 text-xs leading-relaxed text-[#594e36]">
-                  精確追蹤 HTTP 3xx、Meta Refresh、JS 導向與倒數時短網址，還原完整真實鏈路。
-                </p>
-              </div>
-
-              <!-- Feature 3: Google Web Risk -->
-              <div class="rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/60 p-4 transition hover:bg-[#fff9e8] hover:border-[#d6bc7c]">
-                <div class="flex items-center gap-2">
-                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#17324d] text-white text-sm shadow-sm" aria-hidden="true">🛡️</span>
-                  <div>
-                    <h3 data-i18n="featureSecurityTitle" class="text-sm font-bold text-[#17324d]">Google Web Risk 審核</h3>
-                    <span class="text-[10px] font-semibold text-[#a9471d]">Real-time Threat Check</span>
-                  </div>
-                </div>
-                <p data-i18n="featureSecurityDesc" class="mt-2 text-xs leading-relaxed text-[#594e36]">
-                  即時比對安全威脅資料庫，檢驗目標網址是否涉及網路釣魚、惡意軟體或已知資安風險。
-                </p>
-              </div>
-
-              <!-- Feature 4: 2md Full Markdown -->
-              <div class="rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/60 p-4 transition hover:bg-[#fff9e8] hover:border-[#d6bc7c]">
-                <div class="flex items-center gap-2">
-                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#17324d] text-white text-sm shadow-sm" aria-hidden="true">📝</span>
-                  <div>
-                    <h3 data-i18n="featureMarkdownTitle" class="text-sm font-bold text-[#17324d]">2md 全文 Markdown</h3>
-                    <span class="text-[10px] font-semibold text-[#a9471d]">LLM-ready Content</span>
-                  </div>
-                </div>
-                <p data-i18n="featureMarkdownDesc" class="mt-2 text-xs leading-relaxed text-[#594e36]">
-                  雙路線解析網頁內文，去除廣告雜訊，提取純淨 Markdown 內文供 AI Agent 閱讀。
-                </p>
-              </div>
-            </div>
-          </section>
 
           <section id="feedback" class="mt-6 hidden rounded-2xl border px-4 py-3 text-sm"></section>
 
-          <section id="results" class="mt-8 hidden space-y-6">
-            <article class="overflow-hidden rounded-[1.75rem] bg-[#17324d] border-2 border-[#ffb010]/60 p-1 shadow-panel">
-              <div class="rounded-[1.6rem] bg-[#17324d] p-6 text-white md:p-7">
-                <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                  <div class="min-w-0">
-                    <p
-                      data-i18n="finalUrlEyebrow"
-                      class="text-xs font-bold uppercase tracking-[0.28em] text-[#fde68a]"
-                    >
-                      Final URL
-                    </p>
-                    <h2
-                      data-i18n="finalUrlTitle"
-                      class="mt-2 text-2xl font-black tracking-tight text-white md:text-3xl"
-                    >
-                      最終目的地網址
-                    </h2>
-                    <a
-                      id="final-url"
-                      href="#"
-                      target="_blank"
-                      rel="noreferrer"
-                      class="mt-4 block break-all text-base font-medium text-[#fde68a] underline decoration-[#fde68a]/60 underline-offset-4 hover:text-white"
-                    ></a>
+          <section id="results" class="mt-4 hidden space-y-3.5">
+            <!-- 1. Destination Overview Bar (Compact, High-Density) -->
+            <article class="rounded-2xl border border-[#ffb010]/70 bg-[#17324d] p-3.5 sm:p-4 text-white shadow-md">
+              <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                    <span data-i18n="finalUrlEyebrow" class="rounded bg-[#ffb010] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#17324d]">Final URL</span>
+                    <span id="security-status-badge" class="inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">✓ 安全</span>
+                    <span class="inline-flex items-center gap-1 rounded bg-white/10 px-2 py-0.5 text-[11px] font-medium text-white/90">
+                      <span data-i18n="redirectStat">Redirects</span>:
+                      <strong id="redirect-count" class="font-mono font-bold text-white">0</strong>
+                      <span class="opacity-60">|</span>
+                      <span data-i18n="stepsStat">Steps</span>:
+                      <strong id="step-count" class="font-mono font-bold text-white">1</strong>
+                    </span>
+                    <span class="inline-flex items-center gap-1 rounded bg-white/10 px-2 py-0.5 text-[11px] font-medium text-white/90 font-mono">
+                      <span>⏱</span>
+                      <span data-i18n="totalTimeStat" class="hidden">總耗時</span>
+                      <strong id="total-duration" class="text-white">0 ms</strong>
+                    </span>
                   </div>
+                  <h2 data-i18n="finalUrlTitle" class="sr-only">最終目的地網址</h2>
+                  <a
+                    id="final-url"
+                    href="#"
+                    target="_blank"
+                    rel="noreferrer"
+                    class="block break-all text-sm sm:text-base font-bold text-[#fde68a] hover:underline"
+                  ></a>
+                  <p id="input-url" class="mt-1 break-all text-[11px] text-white/70"></p>
+
+                  <div id="clean-url-section" class="mt-2.5 hidden border-t border-white/15 pt-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span data-i18n="cleanUrlEyebrow" class="text-[10px] font-bold uppercase tracking-wider text-[#fde68a]">乾淨網址:</span>
+                      <a id="clean-url" href="#" target="_blank" rel="noreferrer" class="break-all text-xs font-semibold text-[#fde68a] hover:underline"></a>
+                      <button id="copy-clean-button" type="button" data-i18n="copyCleanButton" class="rounded bg-[#fde68a] px-2 py-0.5 text-[10px] font-bold text-[#17324d] hover:bg-white cursor-pointer">複製乾淨網址</button>
+                    </div>
+                    <p id="removed-tracking-parameters" class="mt-1 break-all text-[11px] text-white/70"></p>
+                  </div>
+                </div>
+
+                <div class="flex shrink-0 items-center gap-2">
                   <button
                     id="copy-button"
                     type="button"
                     data-i18n="copyButton"
-                    class="inline-flex shrink-0 items-center justify-center rounded-2xl bg-[#ffb010] px-5 py-3 text-sm font-bold text-[#17324d] transition hover:bg-[#f2a600] focus:outline-none focus:ring-4 focus:ring-[#ffb010]/40 shadow-sm"
+                    class="inline-flex items-center gap-1 rounded-xl bg-[#ffb010] px-3.5 py-2 text-xs font-bold text-[#17324d] transition hover:bg-[#f2a600] shadow-sm cursor-pointer"
                   >
-                    複製網址
+                    <span>📋</span>
+                    <span>複製網址</span>
                   </button>
-                </div>
-                <div class="mt-4">
                   <a
                     id="result-link-button"
                     href="#"
                     target="_blank"
                     rel="noreferrer"
                     data-i18n="resultPageButton"
-                    class="hidden inline-flex items-center justify-center rounded-2xl bg-white/15 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/25 focus:outline-none focus:ring-4 focus:ring-white/20"
+                    class="hidden inline-flex items-center rounded-xl bg-white/15 px-3 py-2 text-xs font-semibold text-white backdrop-blur transition hover:bg-white/25"
                   >
-                    查看結果頁
+                    查看結果頁 ↗
                   </a>
-                </div>
-                <div id="clean-url-section" class="mt-5 hidden border-t border-white/15 pt-5">
-                  <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                    <div class="min-w-0">
-                      <p data-i18n="cleanUrlEyebrow" class="text-xs font-bold uppercase tracking-[0.2em] text-[#fde68a]">
-                        Recommended to Share
-                      </p>
-                      <a
-                        id="clean-url"
-                        href="#"
-                        target="_blank"
-                        rel="noreferrer"
-                        class="mt-2 block break-all text-base font-semibold text-[#fde68a] underline decoration-[#fde68a]/60 underline-offset-4 hover:text-white"
-                      ></a>
-                      <p id="removed-tracking-parameters" class="mt-2 break-all text-xs text-white/80"></p>
-                    </div>
-                    <button
-                      id="copy-clean-button"
-                      type="button"
-                      data-i18n="copyCleanButton"
-                      class="inline-flex shrink-0 items-center justify-center rounded-2xl bg-[#fde68a] px-5 py-3 text-sm font-bold text-[#17324d] transition hover:bg-white focus:outline-none focus:ring-4 focus:ring-[#fde68a]/50 shadow-sm"
-                    >
-                      複製乾淨網址
-                    </button>
-                  </div>
-                </div>
-                <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                  <div class="rounded-2xl bg-[#0f2337]/90 border border-white/10 px-4 py-3">
-                    <p
-                      data-i18n="inputStat"
-                      class="text-xs uppercase tracking-[0.2em] text-[#fde68a]"
-                    >
-                      Input
-                    </p>
-                    <p id="input-url" class="mt-2 break-all text-sm text-white/90"></p>
-                  </div>
-                  <div class="rounded-2xl bg-[#0f2337]/90 border border-white/10 px-4 py-3">
-                    <p
-                      data-i18n="redirectStat"
-                      class="text-xs uppercase tracking-[0.2em] text-[#fde68a]"
-                    >
-                      Redirects
-                    </p>
-                    <p id="redirect-count" class="mt-2 text-2xl font-black text-white"></p>
-                  </div>
-                  <div class="rounded-2xl bg-[#0f2337]/90 border border-white/10 px-4 py-3">
-                    <p
-                      data-i18n="stepsStat"
-                      class="text-xs uppercase tracking-[0.2em] text-[#fde68a]"
-                    >
-                      Steps
-                    </p>
-                    <p id="step-count" class="mt-2 text-2xl font-black text-white"></p>
-                  </div>
-                  <div class="rounded-2xl bg-[#0f2337]/90 border border-white/10 px-4 py-3">
-                    <p
-                      data-i18n="totalTimeStat"
-                      class="text-xs uppercase tracking-[0.2em] text-[#fde68a]"
-                    >
-                      Total Time
-                    </p>
-                    <p id="total-duration" class="mt-2 text-2xl font-black font-mono text-white"></p>
-                  </div>
                 </div>
               </div>
             </article>
 
-            <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-              <article class="overflow-hidden rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white p-5 shadow-lg shadow-amber-950/5">
-                <div class="border-b border-[#d6bc7c]/30 pb-4">
-                  <h3 data-i18n="previewTitle" class="text-xl font-bold tracking-tight text-[#17324d]">
-                    Final Preview
-                  </h3>
-                  <p data-i18n="previewDescription" class="text-sm text-[#594e36]">
-                    使用最終頁面的即時截圖做預覽。
-                  </p>
-                </div>
-                <div class="pt-5">
-                  <div
-                    id="preview-empty"
-                    data-i18n="previewUnavailable"
-                    class="rounded-2xl border border-dashed border-[#d6bc7c] bg-[#fff9e8]/50 px-4 py-12 text-center text-sm text-[#594e36]"
-                  >
-                    目前沒有可用的頁面預覽。
+            <!-- 2. The Two Core Pillars Side-by-Side (Split View: Redirect Chain & Web Technologies) -->
+            <div class="grid grid-cols-1 gap-3.5 lg:grid-cols-12 items-start">
+              <!-- Left Pillar: 🔀 跳轉鏈路 (Redirect Chain) (5 cols on lg) -->
+              <article class="lg:col-span-5 rounded-2xl border border-[#d6bc7c]/60 bg-white p-3.5 sm:p-4 shadow-sm">
+                <div class="flex items-center justify-between border-b border-[#d6bc7c]/30 pb-2.5">
+                  <div class="flex items-center gap-2">
+                    <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#17324d] text-xs text-white" aria-hidden="true">🔀</span>
+                    <h3 data-i18n="chainTitle" class="text-sm sm:text-base font-bold text-[#17324d]">Redirect Chain</h3>
                   </div>
-                  <a
-                    id="preview-link"
-                    href="#"
-                    target="_blank"
-                    rel="noreferrer"
-                    class="hidden overflow-hidden rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/30"
+                  <button
+                    id="copy-chain-button"
+                    type="button"
+                    data-i18n="copyChainButton"
+                    class="inline-flex items-center gap-1 rounded-lg bg-[#17324d] px-2.5 py-1 text-[11px] font-bold text-white transition hover:bg-[#1f4265] shadow-xs cursor-pointer"
                   >
-                    <img
-                      id="preview-image"
-                      alt="Final preview"
-                      class="aspect-[16/10] w-full object-cover"
-                    />
-                  </a>
+                    <span>📋</span>
+                    <span id="copy-chain-text">複製跳轉鏈路</span>
+                  </button>
                 </div>
+                <p data-i18n="chainDescription" class="sr-only">完整跳轉過程與每個節點的細節。</p>
+                <div id="chain-list" class="mt-3 space-y-2 max-h-[580px] overflow-y-auto pr-1"></div>
               </article>
 
-              <article class="rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white p-5 shadow-lg shadow-amber-950/5">
-                <div class="border-b border-[#d6bc7c]/30 pb-4">
-                  <h3 data-i18n="securityTitle" class="text-xl font-bold tracking-tight text-[#17324d]">
-                    Safety Check
-                  </h3>
-                  <p data-i18n="securityDescription" class="text-sm text-[#594e36]">
-                    依 final URL 執行 Google Web Risk final-only 檢查。
-                  </p>
-                </div>
-                <div id="security-card" class="mt-5 rounded-2xl border px-4 py-4">
-                  <div class="flex items-center justify-between gap-3">
-                    <p data-i18n="securityStatusLabel" class="text-xs font-semibold uppercase tracking-[0.24em] text-[#594e36]">
-                      Security
-                    </p>
-                    <span id="security-status-badge" class="inline-flex rounded-full px-3 py-1 text-xs font-bold"></span>
+              <!-- Right Pillar: 🛠️ 網站技術棧 (Web Technologies) (7 cols on lg) -->
+              <article id="tech-section" class="lg:col-span-7 rounded-2xl border border-[#d6bc7c]/60 bg-white p-3.5 sm:p-4 shadow-sm">
+                <div class="flex flex-col gap-2 border-b border-[#d6bc7c]/30 pb-2.5 sm:flex-row sm:items-center sm:justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-[#17324d] text-xs text-white" aria-hidden="true">🛠️</span>
+                    <h3 data-i18n="techTitle" class="text-sm sm:text-base font-bold text-[#17324d]">網站技術棧</h3>
+                    <span id="tech-count-badge" class="inline-flex items-center rounded-full bg-[#fff0cc] px-2 py-0.2 text-[11px] font-bold text-[#17324d] border border-[#d6bc7c]/70">
+                      <span id="tech-count-text">0 detected</span>
+                    </span>
                   </div>
-                  <p id="security-message" class="mt-3 text-sm leading-6 text-[#2b251a]"></p>
-                  <p id="security-checked-url" class="mt-3 break-all text-xs text-[#594e36]"></p>
+                  <button
+                    id="copy-tech-button"
+                    type="button"
+                    data-i18n="copyTechButton"
+                    class="inline-flex items-center gap-1 rounded-lg bg-[#17324d] px-2.5 py-1 text-[11px] font-bold text-white transition hover:bg-[#1f4265] shadow-xs cursor-pointer self-start sm:self-auto"
+                  >
+                    <span>📋</span>
+                    <span id="copy-tech-text">複製技術清單</span>
+                  </button>
+                </div>
+                <p data-i18n="techDescription" class="sr-only">分析最終目標網頁所使用的伺服器、CMS、框架、函式庫與分析工具等技術指紋。</p>
+
+                <div class="pt-3">
+                  <!-- Category Filter Pills Bar -->
+                  <div id="tech-category-filter" class="mb-3 flex flex-wrap gap-1"></div>
+
+                  <div id="tech-empty" class="rounded-xl border border-dashed border-[#d6bc7c] bg-[#fff9e8]/50 px-4 py-8 text-center text-xs text-[#594e36]">
+                    未在此網頁偵測到已知的 Web 技術指紋。
+                  </div>
+                  <div id="tech-list" class="hidden space-y-3 max-h-[580px] overflow-y-auto pr-1"></div>
                 </div>
               </article>
             </div>
 
-            <!-- HTML to Markdown (2md 雙路線支援) Section -->
-            <article id="markdown-section" class="hidden overflow-hidden rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white shadow-lg shadow-amber-950/5">
-              <div class="flex flex-col gap-3 border-b border-[#d6bc7c]/30 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <div class="flex flex-wrap items-center gap-2">
-                    <h3 data-i18n="markdownTitle" class="text-xl font-bold tracking-tight text-[#17324d]">
-                      頁面內容 Markdown
-                    </h3>
-                    <span class="inline-flex items-center gap-1 rounded-full bg-[#fff0cc] px-2.5 py-0.5 text-xs font-bold text-[#a9471d] border border-[#d6bc7c]/70">
-                      <span class="h-1.5 w-1.5 rounded-full bg-[#ffb010]"></span>
-                      2md 雙路線
-                    </span>
-                  </div>
-                  <p data-i18n="markdownDescription" class="mt-1 text-sm text-[#594e36]">
-                    使用 2md.aiurl.tw 雙路線解析，直接提取最終頁面的純淨 Markdown 內文。
-                  </p>
+            <!-- 3. Secondary Inspection: Preview, Security Details, & Markdown -->
+            <div class="space-y-3 pt-1">
+              <details class="group rounded-2xl border border-[#d6bc7c]/50 bg-white shadow-xs">
+                <summary class="flex cursor-pointer items-center justify-between px-4 py-2.5 text-xs font-bold text-[#17324d] hover:bg-[#fff9e8]/50 transition rounded-2xl">
+                  <span class="flex items-center gap-2">
+                    <span>🖼️</span>
+                    <span>頁面預覽截圖 & Google Web Risk 安全檢查細節</span>
+                  </span>
+                  <span class="text-[#594e36] text-[10px] group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <div class="grid gap-4 border-t border-[#d6bc7c]/30 p-4 lg:grid-cols-2">
+                  <article>
+                    <h4 data-i18n="previewTitle" class="text-xs font-bold text-[#17324d] mb-1.5">Final Preview</h4>
+                    <p data-i18n="previewDescription" class="text-[11px] text-[#594e36] mb-2">使用最終頁面的即時截圖做預覽。</p>
+                    <div id="preview-empty" data-i18n="previewUnavailable" class="rounded-xl border border-dashed border-[#d6bc7c] bg-[#fff9e8]/50 p-6 text-center text-xs text-[#594e36]">目前沒有可用的頁面預覽。</div>
+                    <a id="preview-link" href="#" target="_blank" rel="noreferrer" class="hidden overflow-hidden rounded-xl border border-[#d6bc7c]/60">
+                      <img id="preview-image" alt="Final preview" class="aspect-[16/10] w-full object-cover" />
+                    </a>
+                  </article>
+                  <article>
+                    <h4 data-i18n="securityTitle" class="text-xs font-bold text-[#17324d] mb-1.5">Safety Check</h4>
+                    <p data-i18n="securityDescription" class="text-[11px] text-[#594e36] mb-2">依 final URL 執行 Google Web Risk 檢查。</p>
+                    <div id="security-card" class="rounded-xl border p-3 text-xs">
+                      <span data-i18n="securityStatusLabel" class="sr-only">Security</span>
+                      <p id="security-message" class="text-xs text-[#2b251a]"></p>
+                      <p id="security-checked-url" class="mt-2 break-all text-[11px] text-[#594e36]"></p>
+                    </div>
+                  </article>
                 </div>
-                <div class="flex flex-wrap items-center gap-2">
-                  <button
-                    id="copy-markdown-button"
-                    type="button"
-                    data-i18n="copyMarkdown"
-                    class="inline-flex items-center justify-center rounded-xl bg-[#17324d] px-3.5 py-2 text-xs font-bold text-white transition hover:bg-[#1f4265] focus:outline-none focus:ring-2 focus:ring-[#17324d]/40"
-                  >
-                    複製 Markdown
-                  </button>
-                  <a
-                    id="open-2md-link"
-                    href="#"
-                    target="_blank"
-                    rel="noreferrer"
-                    data-i18n="openIn2md"
-                    class="inline-flex items-center justify-center rounded-xl border border-[#d6bc7c] bg-white px-3.5 py-2 text-xs font-bold text-[#17324d] transition hover:bg-[#fff9e8] focus:outline-none focus:ring-2 focus:ring-[#17324d]/30"
-                  >
-                    在 2md 開啟 ↗
-                  </a>
-                </div>
-              </div>
-              <div class="p-5">
-                <pre id="markdown-viewer" class="max-h-80 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-[#0f2337] border border-[#17324d] p-4 font-mono text-xs leading-relaxed text-slate-100"></pre>
-              </div>
-            </article>
+              </details>
 
-            <!-- Web Technologies (網站技術棧) Section -->
-            <article id="tech-section" class="hidden rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white p-5 shadow-lg shadow-amber-950/5">
-              <div class="flex flex-col gap-2 border-b border-[#d6bc7c]/30 pb-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <div class="flex flex-wrap items-center gap-2">
-                    <h3 data-i18n="techTitle" class="text-xl font-bold tracking-tight text-[#17324d]">網站技術棧</h3>
-                    <span id="tech-count-badge" class="inline-flex items-center gap-1 rounded-full bg-[#fff0cc] px-2.5 py-0.5 text-xs font-bold text-[#17324d] border border-[#d6bc7c]/70">
-                      <span class="h-1.5 w-1.5 rounded-full bg-[#ffb010]"></span>
-                      <span id="tech-count-text">Web Technologies</span>
-                    </span>
+              <!-- HTML to Markdown (2md 雙路線支援) Section -->
+              <article id="markdown-section" class="hidden overflow-hidden rounded-2xl border border-[#d6bc7c]/50 bg-white shadow-xs">
+                <div class="flex flex-col gap-2 border-b border-[#d6bc7c]/30 px-4 py-2.5 sm:flex-row sm:items-center sm:justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs">📝</span>
+                    <h3 data-i18n="markdownTitle" class="text-xs sm:text-sm font-bold text-[#17324d]">頁面內容 Markdown</h3>
+                    <span class="rounded bg-[#fff0cc] px-2 py-0.2 text-[10px] font-bold text-[#a9471d] border border-[#d6bc7c]/70">2md 雙路線</span>
                   </div>
-                  <p data-i18n="techDescription" class="mt-1 text-sm text-[#594e36]">分析最終目標網頁所使用的伺服器、CMS、框架、函式庫與分析工具等技術指紋。</p>
+                  <p data-i18n="markdownDescription" class="sr-only">使用 2md.aiurl.tw 雙路線解析，直接提取最終頁面的純淨 Markdown 內文。</p>
+                  <div class="flex items-center gap-2">
+                    <button id="copy-markdown-button" type="button" data-i18n="copyMarkdown" class="rounded-lg bg-[#17324d] px-2.5 py-1 text-[11px] font-bold text-white hover:bg-[#1f4265]">複製 Markdown</button>
+                    <a id="open-2md-link" href="#" target="_blank" rel="noreferrer" data-i18n="openIn2md" class="rounded-lg border border-[#d6bc7c] px-2.5 py-1 text-[11px] font-bold text-[#17324d] hover:bg-[#fff9e8]">在 2md 開啟 ↗</a>
+                  </div>
                 </div>
-              </div>
-              <div class="p-5">
-                <div id="tech-empty" class="rounded-2xl border border-dashed border-[#d6bc7c] bg-[#fff9e8]/50 px-4 py-8 text-center text-sm text-[#594e36]">
-                  未在此網頁偵測到已知的 Web 技術指紋。
+                <div class="p-3">
+                  <pre id="markdown-viewer" class="max-h-56 overflow-y-auto whitespace-pre-wrap break-words rounded-xl bg-[#0f2337] p-3 font-mono text-xs leading-relaxed text-slate-100"></pre>
                 </div>
-                <div id="tech-list" class="hidden grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
-              </div>
-            </article>
-
-            <article class="rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white p-5 shadow-lg shadow-amber-950/5">
-              <div class="flex items-center justify-between gap-3 border-b border-[#d6bc7c]/30 pb-4">
-                <div>
-                  <h3
-                    data-i18n="chainTitle"
-                    class="text-xl font-bold tracking-tight text-[#17324d]"
-                  >
-                    Redirect Chain
-                  </h3>
-                  <p
-                    data-i18n="chainDescription"
-                    class="text-sm text-[#594e36]"
-                  >
-                    完整跳轉過程與每個節點的細節。
-                  </p>
-                </div>
-              </div>
-              <div id="chain-list" class="mt-5 space-y-4"></div>
-            </article>
+              </article>
+            </div>
           </section>
 
           <section class="mt-8 rounded-[1.75rem] border border-[#d6bc7c]/60 bg-white p-5 shadow-lg shadow-amber-950/5">
@@ -530,7 +378,75 @@
             <div id="history-list" class="mt-5 grid gap-4 md:grid-cols-2"></div>
           </section>
 
-          <footer class="mt-10 border-t border-[#d6bc7c]/40 pt-6 text-center text-sm text-[#594e36]">
+          <footer class="mt-12 border-t border-[#d6bc7c]/40 pt-8 text-center text-sm text-[#594e36]">
+            <!-- Core Capabilities Highlights in Footer -->
+            <section id="features-overview" class="mb-8 text-left border-b border-[#d6bc7c]/30 pb-6">
+              <div class="mb-4 flex items-center justify-between">
+                <h2 data-i18n="featuresTitle" class="text-xs font-bold uppercase tracking-wider text-[#594e36]">
+                  核心功能與分析維度
+                </h2>
+                <span class="rounded-full bg-[#fff0cc] px-2 py-0.5 text-[10px] font-bold text-[#17324d] border border-[#d6bc7c]/60">
+                  5-in-1 URL Intelligence
+                </span>
+              </div>
+              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <!-- Feature 1: Web Technologies -->
+                <div class="rounded-xl border border-[#d6bc7c]/60 bg-[#fff9e8]/50 p-3 transition hover:bg-[#fff9e8]">
+                  <div class="flex items-center gap-2">
+                    <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#17324d] text-white text-xs shadow-xs" aria-hidden="true">🛠️</span>
+                    <div>
+                      <h3 data-i18n="featureTechTitle" class="text-xs font-bold text-[#17324d]">7,600+ Web 技術棧指紋</h3>
+                      <span class="text-[9px] font-semibold text-[#a9471d]">enthec/webappanalyzer</span>
+                    </div>
+                  </div>
+                  <p data-i18n="featureTechDesc" class="mt-1.5 text-[11px] leading-relaxed text-[#594e36]">
+                    即時探測 CMS、伺服器、前端框架與套件版本。
+                  </p>
+                </div>
+
+                <!-- Feature 2: Deep Redirect Trace -->
+                <div class="rounded-xl border border-[#d6bc7c]/60 bg-[#fff9e8]/50 p-3 transition hover:bg-[#fff9e8]">
+                  <div class="flex items-center gap-2">
+                    <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#17324d] text-white text-xs shadow-xs" aria-hidden="true">🔍</span>
+                    <div>
+                      <h3 data-i18n="featureTraceTitle" class="text-xs font-bold text-[#17324d]">深度跳轉鏈路還原</h3>
+                      <span class="text-[9px] font-semibold text-[#a9471d]">Headless Chromium</span>
+                    </div>
+                  </div>
+                  <p data-i18n="featureTraceDesc" class="mt-1.5 text-[11px] leading-relaxed text-[#594e36]">
+                    精確追蹤 HTTP 3xx、Meta Refresh、JS 導向與倒數時短網址。
+                  </p>
+                </div>
+
+                <!-- Feature 3: Google Web Risk -->
+                <div class="rounded-xl border border-[#d6bc7c]/60 bg-[#fff9e8]/50 p-3 transition hover:bg-[#fff9e8]">
+                  <div class="flex items-center gap-2">
+                    <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#17324d] text-white text-xs shadow-xs" aria-hidden="true">🛡️</span>
+                    <div>
+                      <h3 data-i18n="featureSecurityTitle" class="text-xs font-bold text-[#17324d]">Google Web Risk 審核</h3>
+                      <span class="text-[9px] font-semibold text-[#a9471d]">Real-time Threat Check</span>
+                    </div>
+                  </div>
+                  <p data-i18n="featureSecurityDesc" class="mt-1.5 text-[11px] leading-relaxed text-[#594e36]">
+                    即時比對威脅資料庫，檢驗網址是否涉及網路釣魚或惡意軟體。
+                  </p>
+                </div>
+
+                <!-- Feature 4: 2md Full Markdown -->
+                <div class="rounded-xl border border-[#d6bc7c]/60 bg-[#fff9e8]/50 p-3 transition hover:bg-[#fff9e8]">
+                  <div class="flex items-center gap-2">
+                    <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#17324d] text-white text-xs shadow-xs" aria-hidden="true">📝</span>
+                    <div>
+                      <h3 data-i18n="featureMarkdownTitle" class="text-xs font-bold text-[#17324d]">2md 全文 Markdown</h3>
+                      <span class="text-[9px] font-semibold text-[#a9471d]">LLM-ready Content</span>
+                    </div>
+                  </div>
+                  <p data-i18n="featureMarkdownDesc" class="mt-1.5 text-[11px] leading-relaxed text-[#594e36]">
+                    雙路線解析網頁內文，去除廣告雜訊，提取純淨 Markdown 供 AI Agent 閱讀。
+                  </p>
+                </div>
+              </div>
+            </section>
             <p>© 2026 888desturl. All rights reserved.</p>
             <p class="mt-2 flex flex-wrap items-center justify-center gap-2">
               <span>Created by</span>
@@ -666,8 +582,14 @@
           resultPageButton: '查看結果頁',
           chainTitle: 'Redirect Chain',
           chainDescription: '完整跳轉過程與每個節點的細節。',
+          copyChainButton: '複製跳轉鏈路',
+          chainCopied: '已複製跳轉鏈路',
           techTitle: '網站技術棧',
           techDescription: '分析最終目標網頁所使用的伺服器、CMS、框架、函式庫與分析工具等技術指紋。',
+          copyTechButton: '複製技術清單',
+          techCopied: '已複製技術清單',
+          singleTechCopied: '已複製：',
+          allCategories: '全部',
           featuresTitle: '核心功能與分析維度',
           featureTechTitle: '7,600+ Web 技術棧指紋',
           featureTechDesc: '即時探測 CMS (WordPress, Shopify)、伺服器 (Nginx, Cloudflare)、前端框架 (React, Vue) 與套件版本。',
@@ -762,8 +684,14 @@
           resultPageButton: 'Open Result Page',
           chainTitle: 'Redirect Chain',
           chainDescription: 'Review the full chain with status codes and timing details.',
+          copyChainButton: 'Copy Redirect Chain',
+          chainCopied: 'Redirect chain copied',
           techTitle: 'Web Technologies',
           techDescription: 'Analyze web technologies, server frameworks, CMS, and libraries used by the final destination page.',
+          copyTechButton: 'Copy Tech Stack',
+          techCopied: 'Tech stack copied',
+          singleTechCopied: 'Copied: ',
+          allCategories: 'All',
           featuresTitle: 'Core Capabilities & Intelligence',
           featureTechTitle: '7,600+ Web Tech Fingerprints',
           featureTechDesc: 'Automatically detect CMS, web servers, frontend frameworks, analytics, and software versions.',
@@ -842,6 +770,11 @@
       const techList = document.getElementById('tech-list');
       const techEmpty = document.getElementById('tech-empty');
       const techCountText = document.getElementById('tech-count-text');
+      const techCategoryFilter = document.getElementById('tech-category-filter');
+      const copyTechButton = document.getElementById('copy-tech-button');
+      const copyTechText = document.getElementById('copy-tech-text');
+      const copyChainButton = document.getElementById('copy-chain-button');
+      const copyChainText = document.getElementById('copy-chain-text');
       const langButtons = document.querySelectorAll('[data-lang]');
       const skillLink = document.getElementById('skill-link');
       const installButton = document.getElementById('install-button');
@@ -869,6 +802,8 @@
       let lastFeedbackMessageKey = '';
       let lastFeedbackMessageText = '';
       let lastChain = [];
+      let latestTechnologies = [];
+      let selectedCategory = 'all';
 
       function detectLanguage() {
         const browserLanguage = (navigator.language || '').toLowerCase();
@@ -989,9 +924,66 @@
         return { response, payload };
       }
 
+      const CATEGORY_META = {
+        CMS: { icon: '📦', zh: '內容管理系統 (CMS)' },
+        'Web servers': { icon: '🖥️', zh: '網頁伺服器' },
+        'Web frameworks': { icon: '🛠️', zh: '網站框架' },
+        'JavaScript frameworks': { icon: '⚛️', zh: 'JavaScript 框架' },
+        'JavaScript libraries': { icon: '📚', zh: 'JavaScript 函式庫' },
+        'UI frameworks': { icon: '🎨', zh: 'UI 介面框架' },
+        Analytics: { icon: '📊', zh: '網站流量分析' },
+        'Tag managers': { icon: '🏷️', zh: '標籤管理' },
+        'Font scripts': { icon: '🔤', zh: '字體服務' },
+        'Reverse proxies': { icon: '🔀', zh: '反向代理' },
+        Security: { icon: '🛡️', zh: '資安防護' },
+        CDN: { icon: '🌐', zh: '內容傳遞網路 (CDN)' },
+        Hosting: { icon: '☁️', zh: '雲端主機' },
+        PaaS: { icon: '☁️', zh: '雲端平台 (PaaS)' },
+        Databases: { icon: '🗄️', zh: '資料庫' },
+        Caching: { icon: '⚡', zh: '快取架構' },
+        Ecommerce: { icon: '🛒', zh: '電子商務' },
+        SEO: { icon: '🔍', zh: 'SEO 搜尋引擎優化' },
+        'Programming languages': { icon: '💻', zh: '程式語言' }
+      };
+
+      function getCategoryDisplay(catName) {
+        const meta = CATEGORY_META[catName];
+        if (meta) {
+          return {
+            icon: meta.icon,
+            label: currentLanguage === 'zh-TW' ? meta.zh : catName
+          };
+        }
+        return { icon: '🔧', label: catName || 'Other' };
+      }
+
+      function showCopyToast(msg) {
+        let toast = document.getElementById('copy-toast');
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.id = 'copy-toast';
+          toast.className = 'fixed bottom-5 right-5 z-50 transform rounded-xl bg-[#0f2337] px-4 py-2 text-xs font-bold text-white shadow-xl transition-all duration-300 border border-[#17324d] opacity-0 pointer-events-none';
+          document.body.appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.classList.remove('opacity-0', 'pointer-events-none');
+        toast.classList.add('opacity-100');
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => {
+          toast.classList.remove('opacity-100');
+          toast.classList.add('opacity-0', 'pointer-events-none');
+        }, 2200);
+      }
+
       function renderChain(chain) {
+        if (!Array.isArray(chain) || chain.length === 0) {
+          chainList.innerHTML = '<p class="text-xs text-[#594e36]">無跳轉節點。</p>';
+          return;
+        }
+
         chainList.innerHTML = chain
-          .map((item) => {
+          .map((item, index) => {
+            const isLast = index === chain.length - 1;
             const duration =
               item.duration_ms === null ? t('notAvailable') : `${item.duration_ms} ms`;
             const status =
@@ -999,34 +991,21 @@
                 ? t('notAvailable')
                 : `${item.status_code} ${item.status_text || ''}`.trim();
             const fromUrl = item.from_url
-              ? `<p class="mt-2 break-all text-xs text-[#594e36]">${escapeHtml(t('fromLabel'))}: ${escapeHtml(item.from_url)}</p>`
+              ? `<p class="mt-1 break-all text-[11px] text-[#594e36]">${escapeHtml(t('fromLabel'))}: ${escapeHtml(item.from_url)}</p>`
               : '';
-            const elapsedText =
-              typeof item.elapsed_ms === 'number'
-                ? `<p class="mt-1 text-[11px] font-mono text-[#594e36] font-semibold">⏱ +${item.duration_ms !== null ? item.duration_ms : 0} ms (${item.elapsed_ms} ms)</p>`
-                : '';
 
             return `
-              <div class="rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/50 p-4">
-                <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                  <div class="min-w-0">
-                    <div class="flex flex-wrap items-center gap-2">
-                      <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-[#17324d] px-2 text-sm font-bold text-white">${item.step}</span>
-                      <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold ${badgeClass(item.type)}">${escapeHtml(localizedType(item.type))}</span>
+              <div class="rounded-xl border ${isLast ? 'border-[#ffb010] bg-[#fff9e8]' : 'border-[#d6bc7c]/50 bg-[#fffdf8]'} p-2.5 sm:p-3 transition hover:border-[#17324d]">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center gap-1.5">
+                      <span class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#17324d] px-1 text-[11px] font-bold text-white">${item.step}</span>
+                      <span class="inline-flex rounded-md px-1.5 py-0.2 text-[10px] font-bold ${badgeClass(item.type)}">${escapeHtml(localizedType(item.type))}</span>
+                      <span class="font-mono text-[11px] font-bold ${item.status_code >= 400 ? 'text-red-700' : 'text-[#17324d]'}">${escapeHtml(status)}</span>
+                      <span class="text-[10px] font-mono text-[#594e36]">⏱ ${escapeHtml(duration)}</span>
                     </div>
-                    <p class="mt-3 break-all text-sm font-bold text-[#17324d]">${escapeHtml(item.url)}</p>
+                    <p class="mt-1.5 break-all text-xs font-semibold text-[#17324d]">${escapeHtml(item.url)}</p>
                     ${fromUrl}
-                  </div>
-                  <div class="grid shrink-0 grid-cols-2 gap-3 text-sm text-[#594e36] md:min-w-56">
-                    <div class="rounded-xl border border-[#d6bc7c]/50 bg-white px-3 py-2">
-                      <p class="text-xs uppercase tracking-wide text-[#594e36] font-semibold">${escapeHtml(t('statusLabel'))}</p>
-                      <p class="mt-1 font-bold text-[#2b251a]">${escapeHtml(status)}</p>
-                    </div>
-                    <div class="rounded-xl border border-[#d6bc7c]/50 bg-white px-3 py-2">
-                      <p class="text-xs uppercase tracking-wide text-[#594e36] font-semibold">${escapeHtml(t('timeLabel'))}</p>
-                      <p class="mt-1 font-bold text-[#2b251a]">${escapeHtml(duration)}</p>
-                      ${elapsedText}
-                    </div>
                   </div>
                 </div>
               </div>
@@ -1053,69 +1032,218 @@
       function renderTechnologies(technologies) {
         if (!techSection) return;
         techSection.classList.remove('hidden');
-        if (!Array.isArray(technologies) || technologies.length === 0) {
+        latestTechnologies = Array.isArray(technologies) ? technologies : [];
+
+        if (latestTechnologies.length === 0) {
           techEmpty.classList.remove('hidden');
           techList.classList.add('hidden');
           techList.innerHTML = '';
+          if (techCategoryFilter) techCategoryFilter.innerHTML = '';
           techCountText.textContent = '0 detected';
           return;
         }
 
         techEmpty.classList.add('hidden');
         techList.classList.remove('hidden');
-        techCountText.textContent = `${technologies.length} detected`;
+        techCountText.textContent = `${latestTechnologies.length} detected`;
 
-        techList.innerHTML = technologies
-          .map((tech) => {
-            const categories = Array.isArray(tech.categories) ? tech.categories : [];
-            const categoryBadges = categories
-              .map(
-                (cat) =>
-                  `<span class="inline-flex rounded-full bg-[#fff9e8] px-2 py-0.5 text-[11px] font-semibold text-[#594e36] border border-[#d6bc7c]/70">${escapeHtml(
-                    cat.name || cat
-                  )}</span>`
-              )
+        // Group technologies by primary category
+        const groups = {};
+        for (const tech of latestTechnologies) {
+          const cats = Array.isArray(tech.categories) && tech.categories.length > 0 ? tech.categories : [{ name: 'Other' }];
+          const primaryCat = (typeof cats[0] === 'string' ? cats[0] : (cats[0].name || 'Other')).trim();
+          if (!groups[primaryCat]) {
+            groups[primaryCat] = [];
+          }
+          groups[primaryCat].push(tech);
+        }
+
+        const sortedCategories = Object.keys(groups).sort((a, b) => {
+          if (a === 'Other') return 1;
+          if (b === 'Other') return -1;
+          return groups[b].length - groups[a].length;
+        });
+
+        // Render Category Filter Tabs
+        if (techCategoryFilter) {
+          const filterPills = [
+            `<button type="button" data-cat="all" class="tech-filter-btn inline-flex items-center gap-1 rounded-lg px-2.5 py-0.5 text-xs font-bold transition-all cursor-pointer ${
+              selectedCategory === 'all'
+                ? 'bg-[#17324d] text-white shadow-xs'
+                : 'bg-[#fff9e8] text-[#594e36] border border-[#d6bc7c]/70 hover:bg-[#fff0cc]'
+            }"><span>${escapeHtml(t('allCategories'))}</span><span class="rounded-full ${selectedCategory === 'all' ? 'bg-white/20' : 'bg-[#17324d]/10'} px-1.5 py-0.2 text-[10px]">${latestTechnologies.length}</span></button>`
+          ];
+
+          for (const catName of sortedCategories) {
+            const { icon, label } = getCategoryDisplay(catName);
+            const count = groups[catName].length;
+            const isActive = selectedCategory === catName;
+            filterPills.push(
+              `<button type="button" data-cat="${escapeHtml(catName)}" class="tech-filter-btn inline-flex items-center gap-1 rounded-lg px-2.5 py-0.5 text-xs font-bold transition-all cursor-pointer ${
+                isActive
+                  ? 'bg-[#17324d] text-white shadow-xs'
+                  : 'bg-[#fff9e8] text-[#594e36] border border-[#d6bc7c]/70 hover:bg-[#fff0cc]'
+              }"><span>${icon}</span><span>${escapeHtml(label)}</span><span class="rounded-full ${isActive ? 'bg-white/20' : 'bg-[#17324d]/10'} px-1.5 py-0.2 text-[10px]">${count}</span></button>`
+            );
+          }
+          techCategoryFilter.innerHTML = filterPills.join('');
+
+          techCategoryFilter.querySelectorAll('.tech-filter-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              selectedCategory = btn.getAttribute('data-cat');
+              renderTechnologies(latestTechnologies);
+            });
+          });
+        }
+
+        const displayCategories = selectedCategory === 'all'
+          ? sortedCategories
+          : sortedCategories.filter((c) => c === selectedCategory);
+
+        techList.innerHTML = displayCategories
+          .map((catName) => {
+            const { icon, label } = getCategoryDisplay(catName);
+            const items = groups[catName] || [];
+
+            const pillsHtml = items
+              .map((tech) => {
+                const versionBadge = tech.version
+                  ? `<span class="inline-flex items-center rounded bg-emerald-50 px-1.5 py-0.2 text-[10px] font-mono font-bold text-emerald-800 border border-emerald-300">v${escapeHtml(tech.version)}</span>`
+                  : '';
+
+                const websiteLink = tech.website
+                  ? `<a href="${sanitizeHref(tech.website)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-[#17324d] hover:text-[#a9471d] font-bold text-xs" title="前往官方網站" onclick="event.stopPropagation()">↗</a>`
+                  : '';
+
+                const confidence =
+                  typeof tech.confidence === 'number' && tech.confidence < 100
+                    ? `<span class="text-[10px] text-[#594e36]/70 font-mono">${escapeHtml(tech.confidence)}%</span>`
+                    : '';
+
+                // Hover popover tooltip for tech.description (hidden by default)
+                const descriptionPopover = tech.description
+                  ? `
+                    <div class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden w-64 rounded-xl bg-[#0f2337] p-2.5 text-xs text-slate-100 shadow-xl border border-[#17324d] z-50 group-hover:block transition-all">
+                      <p class="font-bold text-[#fde68a] mb-1">${escapeHtml(tech.name)} ${tech.version ? 'v' + escapeHtml(tech.version) : ''}</p>
+                      <p class="leading-relaxed text-[11px] text-slate-200">${escapeHtml(tech.description)}</p>
+                      <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#0f2337]"></div>
+                    </div>
+                  `
+                  : '';
+
+                return `
+                  <div
+                    class="group relative inline-flex items-center gap-1.5 rounded-lg border border-[#d6bc7c]/70 bg-[#fffdf8] px-2.5 py-1 shadow-2xs transition hover:border-[#ffb010] hover:bg-[#fff9e8] cursor-pointer"
+                    title="${escapeHtml(tech.description || tech.name)}"
+                    data-copy-tech="${escapeHtml(tech.name + (tech.version ? ' v' + tech.version : ''))}"
+                  >
+                    <span class="text-xs font-bold text-[#17324d]">${escapeHtml(tech.name)}</span>
+                    ${versionBadge}
+                    ${websiteLink}
+                    ${confidence}
+                    ${descriptionPopover}
+                  </div>
+                `;
+              })
               .join('');
 
-            const versionBadge = tech.version
-              ? `<span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-mono font-bold text-emerald-900 border border-emerald-300">v${escapeHtml(
-                  tech.version
-                )}</span>`
-              : '';
-
-            const websiteLink = tech.website
-              ? `<a href="${sanitizeHref(tech.website)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 font-bold text-[#17324d] hover:text-[#a9471d] underline decoration-[#d6bc7c]">官方網站 ↗</a>`
-              : '<span class="text-[#594e36]/70">無官方連結</span>';
-
-            const description = tech.description
-              ? `<p class="mt-1.5 text-xs text-[#594e36] line-clamp-2">${escapeHtml(tech.description)}</p>`
-              : '';
-
-            const confidence =
-              typeof tech.confidence === 'number'
-                ? `<span class="text-[#594e36] font-mono text-[11px] font-semibold">${escapeHtml(tech.confidence)}% 信心度</span>`
-                : '';
-
             return `
-              <div class="flex flex-col justify-between rounded-2xl border border-[#d6bc7c]/60 bg-[#fff9e8]/40 p-4 transition hover:bg-[#fff9e8] hover:border-[#d6bc7c]">
-                <div>
-                  <div class="flex flex-wrap items-center gap-1.5 mb-2">
-                    ${categoryBadges}
-                  </div>
-                  <div class="flex flex-wrap items-center gap-2">
-                    <span class="text-base font-bold text-[#17324d]">${escapeHtml(tech.name)}</span>
-                    ${versionBadge}
-                  </div>
-                  ${description}
+              <div class="rounded-xl border border-[#d6bc7c]/40 bg-[#fff9e8]/30 p-2.5 sm:p-3">
+                <div class="mb-2 flex items-center justify-between">
+                  <h4 class="flex items-center gap-1.5 text-xs font-bold text-[#17324d]">
+                    <span>${icon}</span>
+                    <span>${escapeHtml(label)}</span>
+                    <span class="rounded-full bg-[#17324d]/10 px-1.5 py-0.2 text-[10px] font-bold text-[#17324d]">${items.length}</span>
+                  </h4>
                 </div>
-                <div class="mt-3 flex items-center justify-between pt-2 border-t border-[#d6bc7c]/40 text-xs">
-                  ${websiteLink}
-                  ${confidence}
+                <div class="flex flex-wrap gap-1.5">
+                  ${pillsHtml}
                 </div>
               </div>
             `;
           })
           .join('');
+
+        techList.querySelectorAll('[data-copy-tech]').forEach((el) => {
+          el.addEventListener('click', async () => {
+            const textToCopy = el.getAttribute('data-copy-tech');
+            if (textToCopy) {
+              await navigator.clipboard.writeText(textToCopy);
+              showCopyToast(`${t('singleTechCopied') || '已複製：'}${textToCopy}`);
+            }
+          });
+        });
+      }
+
+      async function copyTechStack() {
+        if (!latestTechnologies || latestTechnologies.length === 0) return;
+
+        const groups = {};
+        for (const tech of latestTechnologies) {
+          const cats = Array.isArray(tech.categories) && tech.categories.length > 0 ? tech.categories : [{ name: 'Other' }];
+          const primaryCat = (typeof cats[0] === 'string' ? cats[0] : (cats[0].name || 'Other')).trim();
+          if (!groups[primaryCat]) {
+            groups[primaryCat] = [];
+          }
+          groups[primaryCat].push(tech);
+        }
+
+        const lines = [
+          `### 網站技術棧 (共 ${latestTechnologies.length} 項)`,
+          latestFinalUrl ? `目標網址: ${latestFinalUrl}
+` : ''
+        ];
+
+        for (const [catName, items] of Object.entries(groups)) {
+          const { icon, label } = getCategoryDisplay(catName);
+          const itemList = items
+            .map((t) => `${t.name}${t.version ? ' v' + t.version : ''}${t.website ? ' (' + t.website + ')' : ''}`)
+            .join(', ');
+          lines.push(`- **${icon} ${label}**: ${itemList}`);
+        }
+
+        const markdownText = lines.filter(Boolean).join('
+');
+        await navigator.clipboard.writeText(markdownText);
+        showCopyToast(t('techCopied') || '已複製技術清單');
+
+        if (copyTechText) {
+          const originalText = copyTechText.textContent;
+          copyTechText.textContent = `✓ ${t('techCopied') || '已複製'}`;
+          setTimeout(() => {
+            copyTechText.textContent = originalText;
+          }, 2000);
+        }
+      }
+
+      async function copyRedirectChain() {
+        if (!lastChain || lastChain.length === 0) return;
+
+        const lines = [
+          `### 跳轉鏈路 (共 ${lastChain.length} 步)`,
+          latestFinalUrl ? `最終網址: ${latestFinalUrl}
+` : ''
+        ];
+
+        lastChain.forEach((item) => {
+          const status = item.status_code || 'N/A';
+          const duration = item.duration_ms !== null ? `${item.duration_ms} ms` : 'N/A';
+          const type = item.type || 'step';
+          lines.push(`${item.step}. [${status} ${type}] ${item.url} (${duration})`);
+        });
+
+        const markdownText = lines.filter(Boolean).join('
+');
+        await navigator.clipboard.writeText(markdownText);
+        showCopyToast(t('chainCopied') || '已複製跳轉鏈路');
+
+        if (copyChainText) {
+          const originalText = copyChainText.textContent;
+          copyChainText.textContent = `✓ ${t('chainCopied') || '已複製'}`;
+          setTimeout(() => {
+            copyChainText.textContent = originalText;
+          }, 2000);
+        }
       }
 
       function renderPreview(previewUrl) {
@@ -1322,8 +1450,14 @@
           showFeedback(nextMessage, lastFeedbackType, lastFeedbackMessageKey);
         }
 
+        if (copyMarkdownButton) copyMarkdownButton.textContent = t('copyMarkdown');
+        if (copyTechText) copyTechText.textContent = t('copyTechButton');
+        if (copyChainText) copyChainText.textContent = t('copyChainButton');
         if (lastChain.length > 0) {
           renderChain(lastChain);
+        }
+        if (latestTechnologies.length > 0) {
+          renderTechnologies(latestTechnologies);
         }
       }
 
@@ -1381,6 +1515,13 @@
           showFeedback(t('copyFailed'), 'error', 'copyFailed');
         }
       });
+
+      if (copyTechButton) {
+        copyTechButton.addEventListener('click', copyTechStack);
+      }
+      if (copyChainButton) {
+        copyChainButton.addEventListener('click', copyRedirectChain);
+      }
 
       form.addEventListener('submit', async (event) => {
         event.preventDefault();

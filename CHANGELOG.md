@@ -2,6 +2,30 @@
 
 ## 2026-10-24
 
+### Streamlined 2-Pillar UX, Technology Category Grouping & Single-Glance Dashboard
+
+- **Relocated Promotional Features Overview into Footer (`public/index.html`)**:
+  - Moved marketing cards (`#features-overview`) from prime viewport real estate down into the footer area, clearing screen clutter so user can focus strictly on core tools: 1. Redirect Tracking & 2. Final Destination Tech Stack.
+- **Single-Glance Split View Dashboard (`public/index.html`, `public/result.html`)**:
+  - Eliminated endless scrolling up/down by arranging results into a compact, high-density 2-pillar desktop layout:
+    - **Top Destination Overview Bar**: Compact header displaying Final Destination URL, Clean URL, Google Web Risk status badge, redirect count, total duration, and quick copy action buttons.
+    - **Left Pillar - Redirect Chain (`#chain-list`)**: Sleek, scannable timeline nodes displaying step number, redirect type badge, HTTP status code, timing duration, and origin URL. Includes "複製跳轉鏈路" (`#copy-chain-button`) button.
+    - **Right Pillar - Web Technologies (`#tech-section`)**: High-density categorized technology stack with interactive Category Filter Tabs (`全部`, `CMS`, `網頁伺服器`, `JavaScript 框架`, etc.) and "複製技術清單" (`#copy-tech-button`) button.
+    - **Secondary Details Drawer**: Compact collapsible `<details>` containing page preview screenshot and Google Web Risk safety audit details.
+    - **2md Markdown Extraction**: Compact viewer with copy and external 2md link.
+- **Categorized Technology Stack & Filter Tabs (`public/index.html`, `public/result.html`)**:
+  - Automatically groups detected technologies by primary category with category icons (📦 CMS, 🖥️ Web servers, 🛠️ Web frameworks, ⚛️ JavaScript frameworks, 📚 JavaScript libraries, 🎨 UI frameworks, 📊 Analytics, 🏷️ Tag managers, 🛡️ Security, 🌐 CDN, etc.).
+  - Category Filter Bar allows 1-click toggling between categories or viewing all.
+- **Removed Verbose Descriptions from Default View into Hover Tooltips (`public/index.html`, `public/result.html`)**:
+  - Cleaned up tech cards into dense, elegant chips displaying Name, Version badge (`v1.20`), Official Link (`↗`), and Confidence.
+  - Moved paragraph descriptions completely into CSS hover popover tooltips and `title` attributes, eliminating visual noise.
+- **Full Copy Capabilities Added (`public/index.html`, `public/result.html`)**:
+  - **Copy Tech Stack (`#copy-tech-button`)**: Exports all detected technologies grouped cleanly into structured Markdown with categories, versions, and links.
+  - **Copy Redirect Chain (`#copy-chain-button`)**: Copies the step-by-step redirect hops with status codes and timing.
+  - **Single Tech Click-to-Copy**: Clicking any technology chip copies its name and version with a sleek toast alert.
+- **Slimmed Sticky Floating Search Bar (`public/index.html`)**:
+  - Reduced sticky bar height to a sleek 48-52px (`h-10 sm:h-11`) with integrated 🔍 icon, accessible hidden label, and hidden hint to ensure non-intrusive navigation without blocking content.
+
 ### Floating Sticky UX, david888 / 2md Palette & WCAG Compliance
 
 - **Floating Sticky Trace Form UX (`public/index.html`)**:
