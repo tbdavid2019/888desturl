@@ -4,6 +4,8 @@
 
 ### Critical Fix: Restored Trace Functionality, Unified Noto Sans TC Typography & WCAG Standards
 
+- **Bumpped Service Worker Cache to `v5` (`public/service-worker.js`)**:
+  - Evicts stale cached app shell (`v4`) ensuring client browsers immediately download fresh HTML with Noto Sans TC fonts and syntax fixes.
 - **Resolved Fatal Script Syntax Error (`public/index.html`, `public/result.html`)**:
   - Fixed a string literal formatting bug in `copyTechStack()` and `copyRedirectChain()` where an unescaped raw newline inside `.join('\n')` caused an uncaught `SyntaxError: Invalid or unexpected token` on script compilation.
   - This error prevented event listener registration on `#trace-form`, causing form submissions to become unresponsive.
