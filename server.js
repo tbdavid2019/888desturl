@@ -1391,19 +1391,25 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
       });
     }
 
-    const finalUrlForResponse = new URL(finalUrl);
-    finalUrlForResponse.hash = '';
+    let finalUrlForResponse = null;
+    try {
+      finalUrlForResponse = new URL(finalUrl);
+      finalUrlForResponse.hash = '';
+    } catch {}
+
     const finalNavigationResponse = [...navigationResponses].reverse().find((item) => {
       try {
         const responseUrl = new URL(item.url);
         responseUrl.hash = '';
-        return responseUrl.href === finalUrlForResponse.href;
+        return finalUrlForResponse && responseUrl.href === finalUrlForResponse.href;
       } catch {
         return false;
       }
     }) || null;
+
     const finalContentType = finalNavigationResponse?.headers?.['content-type'] || '';
-    const isPdf = /\bapplication\/pdf\b/i.test(finalContentType) || /\.pdf(?:$|[/?#])/i.test(finalUrl);
+    const isExplicitHtml = /\btext\/(?:html|plain)\b/i.test(finalContentType);
+    const isPdf = /\bapplication\/pdf\b/i.test(finalContentType) || (!isExplicitHtml && /\.pdf(?:$|[/?#])/i.test(finalUrl));
     let pdfPageCount = null;
     let pdfExtractionError = null;
     let markdownContent = '';
@@ -1422,11 +1428,16 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
       }
     }
     const pageTitle = await page.title().catch(() => '');
-    const pageExcerpt = await page
+    let pageExcerpt = await page
       .evaluate(() => (document.body && document.body.innerText ? document.body.innerText.trim() : ''))
       .then((text) => text.replace(/\s+/g, ' ').slice(0, 240))
       .catch(() => '');
-    if (!isPdf) markdownContent = await extractPageMarkdown(page).catch(() => '');
+    if (!markdownContent) {
+      markdownContent = await extractPageMarkdown(page).catch(() => '');
+    }
+    if (!pageExcerpt && markdownContent) {
+      pageExcerpt = markdownContent.replace(/\s+/g, ' ').slice(0, 240).trim();
+    }
     const markdownUrl = finalUrl ? `https://2md.aiurl.tw/${finalUrl}` : null;
     const techSignals = await extractPageTechSignals(page, navigationResponses, context).catch(() => null);
     const technologies = techSignals ? detectTechnologies(techSignals) : [];
