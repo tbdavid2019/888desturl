@@ -15,6 +15,7 @@
   - 在 Playwright trace 流程中直接擷取 final 頁面與跳轉過程的 HTTP Headers、Cookies、Meta 標籤、Script URLs、DOM 選擇器及 JS 全域變數。
   - 支援版本萃取（如 `v6.5.2`）、條件式版本判斷、信心度計算與遞迴技術繼承（`implies`，如 WordPress 帶入 PHP 與 MySQL）。
   - 在結果頁以徽章卡片展示技術分類、名稱、版本與官方網站連結。
+- **PDF 內容解析**：最終網址為 PDF（副檔名或 `application/pdf`）時，以受限串流重新下載 PDF，再由 Rust `pdf_oxide` 擷取逐頁 Markdown。下載器會限制大小、時間、重新導向並拒絕非公開 IP；預設上限為 25 MiB、200 頁、輸出 1 MB。不含 OCR，掃描影像型 PDF 不會有文字。
 - **雙路線偵測 (Dual-Route Detection)**：
   - **路線 A**：Redirect Chain 追蹤、去追蹤參數（Clean URL）、安全檢查與即時截圖預覽。
   - **路線 B**：HTML to Markdown 頁面內容解析，直接提取最終頁面的純淨 Markdown 內文，支援一鍵複製與 [`2md.aiurl.tw`](https://2md.aiurl.tw) 深度閱讀。
@@ -38,6 +39,10 @@ Live sites:
 - `https://url.david888.com` (git.glsoft.ai)
 - `https://url.create360.ai` (office.fanpokka.ai)
 
+
+## PDF 解析器（本機開發）
+
+本機需要 Rust/Cargo；先執行 `npm run build:pdf`，再執行 `npm start`。Docker 映像會在建置時自動編譯 PDF 解析器。解析支援文字型 PDF；掃描件 OCR 暫不支援。上限可用環境變數調整：`PDF_MAX_BYTES`（預設 25 MiB）、`PDF_MAX_PAGES`（預設 200）、`PDF_MAX_OUTPUT_BYTES`（預設 1 MB）、`PDF_DOWNLOAD_TIMEOUT_MS` 與 `PDF_PARSER_TIMEOUT_MS`（各預設 10000 毫秒）。
 
 ## 🚀 Docker 快速安裝與使用 (Docker Quickstart)
 

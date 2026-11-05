@@ -9,6 +9,8 @@ const { createHistoryStore } = require('./lib/storage');
 const { createAdminAuth } = require('./lib/admin-auth');
 const { analyzeUrl, normalizeUrl } = require('./lib/url-cleaner');
 const { extractPageMarkdown } = require('./lib/html-to-md');
+const { extractPdfText, MAX_PDF_BYTES, PARSER_TIMEOUT_MS } = require('./lib/pdf-text');
+const { downloadPdfBytes } = require('./lib/pdf-download');
 const { createMcpHandler } = require('./lib/mcp');
 const { detectTechnologies, extractPageTechSignals } = require('./lib/tech-detector');
 loadEnvFile(path.join(__dirname, '.env'));
@@ -284,7 +286,10 @@ description: Use when you need to trace a URL through HTTP redirects, meta refre
   - \`threat_types\`: Array<string>
 - \`preview_url\`: string | null (Public preview screenshot URL)
 - \`final_image_url\`: string | null (Alternative preview image URL)
-- \`markdown_content\`: string | null (Extracted clean article/page Markdown)
+- \`markdown_content\`: string | null (Extracted clean page or PDF Markdown)
+- \`content_type\`: string | null (Final document MIME type)
+- \`pdf_page_count\`: number | null (Extracted PDF page count)
+- \`pdf_extraction_error\`: string | null (PDF extraction failure reason)
 - \`markdown_url\`: string | null (2md reader URL)
 - \`result_id\`: string (Unique identifier for the trace result permalink)
 - \`result_url\`: string | null (Permanent shareable web result URL)
@@ -1198,7 +1203,8 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
       method: request.method(),
       startedAt,
       durationMs,
-      headers
+      headers,
+      response
     });
   });
 
@@ -1385,12 +1391,42 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
       });
     }
 
+    const finalUrlForResponse = new URL(finalUrl);
+    finalUrlForResponse.hash = '';
+    const finalNavigationResponse = [...navigationResponses].reverse().find((item) => {
+      try {
+        const responseUrl = new URL(item.url);
+        responseUrl.hash = '';
+        return responseUrl.href === finalUrlForResponse.href;
+      } catch {
+        return false;
+      }
+    }) || null;
+    const finalContentType = finalNavigationResponse?.headers?.['content-type'] || '';
+    const isPdf = /\bapplication\/pdf\b/i.test(finalContentType) || /\.pdf(?:$|[/?#])/i.test(finalUrl);
+    let pdfPageCount = null;
+    let pdfExtractionError = null;
+    let markdownContent = '';
+    if (isPdf) {
+      try {
+        const pdfBytes = await downloadPdfBytes(finalUrl, {
+          maxBytes: MAX_PDF_BYTES,
+          timeoutMs: Number(process.env.PDF_DOWNLOAD_TIMEOUT_MS) || PARSER_TIMEOUT_MS
+        });
+        const extracted = await extractPdfText(pdfBytes);
+        markdownContent = extracted.markdown;
+        pdfPageCount = extracted.page_count;
+      } catch (error) {
+        pdfExtractionError = error.message || 'PDF extraction failed';
+        app.log.warn({ err: error, url: finalUrl }, 'PDF text extraction failed');
+      }
+    }
     const pageTitle = await page.title().catch(() => '');
     const pageExcerpt = await page
       .evaluate(() => (document.body && document.body.innerText ? document.body.innerText.trim() : ''))
       .then((text) => text.replace(/\s+/g, ' ').slice(0, 240))
       .catch(() => '');
-    const markdownContent = await extractPageMarkdown(page).catch(() => '');
+    if (!isPdf) markdownContent = await extractPageMarkdown(page).catch(() => '');
     const markdownUrl = finalUrl ? `https://2md.aiurl.tw/${finalUrl}` : null;
     const techSignals = await extractPageTechSignals(page, navigationResponses, context).catch(() => null);
     const technologies = techSignals ? detectTechnologies(techSignals) : [];
@@ -1410,6 +1446,11 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
       page_title: pageTitle || null,
       page_excerpt: pageExcerpt || null,
       markdown_content: markdownContent || null,
+      ...(isPdf ? {
+        content_type: finalContentType || 'application/pdf',
+        pdf_page_count: pdfPageCount,
+        pdf_extraction_error: pdfExtractionError
+      } : {}),
       markdown_url: markdownUrl,
       technologies,
       preview_path: previewPath,
@@ -1445,6 +1486,9 @@ async function buildTracePayload(request, targetUrl, traceContext) {
     preview_path: traceResult.preview_path,
     total_duration_ms: traceResult.total_duration_ms,
     markdown_content: traceResult.markdown_content,
+    content_type: traceResult.content_type,
+    pdf_page_count: traceResult.pdf_page_count,
+    pdf_extraction_error: traceResult.pdf_extraction_error,
     technologies: traceResult.technologies || [],
     security_status: securityCheck.status,
     security_source: securityCheck.source,

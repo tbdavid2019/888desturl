@@ -46,6 +46,7 @@ Thumbs.db
 dist/
 build/
 out/
+target/
 data/*
 !data/technologies.json
 url.*.conf

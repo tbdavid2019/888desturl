@@ -362,7 +362,10 @@ test('storage maps technologies_json to array and handles empty/corrupted JSON s
     technologies_json: JSON.stringify(sampleTechs)
   };
 
-  const mapped1 = mapHistoryRow(rowWithTech);
+  const mapped1 = mapHistoryRow({ ...rowWithTech, content_type: 'application/pdf', pdf_page_count: 3, pdf_extraction_error: null });
+  assert.equal(mapped1.content_type, 'application/pdf');
+  assert.equal(mapped1.pdf_page_count, 3);
+  assert.equal(mapped1.pdf_extraction_error, null);
   assert.equal(Array.isArray(mapped1.technologies), true);
   assert.equal(mapped1.technologies.length, 1);
   assert.equal(mapped1.technologies[0].name, 'Nginx');
@@ -370,7 +373,10 @@ test('storage maps technologies_json to array and handles empty/corrupted JSON s
 
   // Null technologies_json
   const rowNull = { ...rowWithTech, technologies_json: null };
-  const mapped2 = mapHistoryRow(rowNull);
+  const mapped2 = mapHistoryRow({ ...rowNull, pdf_extraction_error: 'PDF too large' });
+  assert.equal(mapped2.content_type, null);
+  assert.equal(mapped2.pdf_page_count, null);
+  assert.equal(mapped2.pdf_extraction_error, 'PDF too large');
   assert.deepEqual(mapped2.technologies, []);
 
   // Corrupted technologies_json

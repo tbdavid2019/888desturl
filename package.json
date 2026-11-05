@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "build:pdf": "cargo build --locked --release --manifest-path rust/pdf-text/Cargo.toml",
     "test": "node --test"
   },
   "dependencies": {

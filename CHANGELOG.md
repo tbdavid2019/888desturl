@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Rust PDF Text Extraction
+
+- Added a small Rust `pdf_oxide` CLI to extract text/Markdown from final PDF URLs; PDFs are detected by MIME type or URL path and included in `markdown_content`.
+- Added bounded, redirect-aware PDF downloads with public-IP checks and size/time limits; added configurable `PDF_MAX_BYTES` (default 25 MiB), `PDF_MAX_PAGES` (default 200), `PDF_MAX_OUTPUT_BYTES` (default 1 MB), `PDF_DOWNLOAD_TIMEOUT_MS` (default 10 seconds), and `PDF_PARSER_TIMEOUT_MS` (default 10 seconds).
+- Persisted `content_type`, `pdf_page_count`, and `pdf_extraction_error` with trace history; documented parser setup and limits.
+- Built the parser in the Docker image and excluded Rust build artifacts from the Docker context. Local development builds it with `npm run build:pdf`.
+- Extraction currently supports text-based PDFs only; OCR is not included.
+
 ## 2026-10-24
 
 ### Technology Detection Precision Fix & Floating Hover Popover Overhaul
