@@ -1263,7 +1263,11 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
         waitUntil: 'domcontentloaded'
       });
     } catch (error) {
-      if (navigationEvents.length === 0) {
+      const isDownloadOrPdf = /Download is starting|net::ERR_ABORTED/i.test(error.message) ||
+        (navigationResponses.length > 0 && /\bapplication\/pdf\b/i.test(navigationResponses[navigationResponses.length - 1].headers?.['content-type'] || ''));
+      if (isDownloadOrPdf) {
+        // Chromium aborted DOM navigation because the target started a download (e.g. PDF)
+      } else if (navigationEvents.length === 0) {
         throw error;
       }
     }
@@ -1375,16 +1379,23 @@ async function traceUrl(inputUrl, traceContext = 'default', options = {}) {
       previousUrl = event.url;
     }
 
-    const finalUrl = page.url();
+    const lastNavResponse = navigationResponses.length > 0 ? navigationResponses[navigationResponses.length - 1] : null;
+    let finalUrl = page.url();
+    if ((!finalUrl || finalUrl === 'about:blank') && lastNavResponse) {
+      finalUrl = lastNavResponse.url;
+    } else if (!finalUrl || finalUrl === 'about:blank') {
+      finalUrl = unwrappedUrl;
+    }
+
     if (chain.length === 0 || chain[chain.length - 1].url !== finalUrl) {
       chain.push({
         step: chain.length + 1,
         url: finalUrl,
         from_url: previousUrl,
         type: chain.length === 0 ? 'initial' : 'client_redirect',
-        status_code: null,
-        status_text: null,
-        method: null,
+        status_code: lastNavResponse?.status || null,
+        status_text: lastNavResponse?.statusText || null,
+        method: lastNavResponse?.method || null,
         duration_ms: Math.max(0, Date.now() - lastEventTime),
         elapsed_ms: Math.max(0, Date.now() - traceStartedAt),
         timestamp: new Date().toISOString()
